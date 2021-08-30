@@ -46,7 +46,8 @@ canvas {
   max-height: 2rem;
   margin-right: 1rem;
 }
-.logos img:first-child {
+.logos img:nth-child(1),
+.logos img:nth-child(2) {
   max-height: 1.5rem;
 }
 
