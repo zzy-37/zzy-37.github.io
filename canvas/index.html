@@ -1,0 +1,123 @@
+<meta name="color-scheme" content="dark light">
+<title>Fullscreen Canvas</title>
+<style>
+    canvas {
+        position: fixed;
+        top: 0;
+        left: 0;
+    }
+</style>
+<canvas id="cnv"></canvas>
+<script>
+    const ctx = cnv.getContext('2d')
+    let frameCount = 0, lastts
+    let starttime = performance.now()
+
+    const mouse = {
+        x: 0,
+        y: 0,
+        down: false,
+        pressed: false,
+    }
+
+    cnv.onmousemove = e => {
+        mouse.x = e.x
+        mouse.y = e.y
+    }
+    cnv.onmousedown = e => {
+        mouse.down = true
+    }
+    cnv.onmouseup = e => {
+        mouse.down = false
+    }
+
+    const pos = {
+        x: 0,
+        y: 0,
+    }
+
+    function draw(ts) {
+        frameCount++
+        const millis = Math.floor(ts - starttime)
+        ctx.clearRect(0, 0, cnv.width, cnv.height)
+
+        if (mouse.pressed) {
+            ctx.fillStyle = '#202020'
+            ctx.strokeStyle = 'white'
+            ctx.fillRect(pos.x, pos.y, mouse.x - pos.x, mouse.y - pos.y)
+            ctx.strokeRect(pos.x, pos.y, mouse.x - pos.x, mouse.y - pos.y)
+        }
+
+        if (mouse.pressed && !mouse.down) mouse.pressed = false
+        if (!mouse.pressed && mouse.down) {
+            pos.x = mouse.x
+            pos.y = mouse.y
+            mouse.pressed = true
+        }
+
+        // draw circle
+        ctx.fillStyle = 'white'
+        ctx.beginPath()
+        ctx.arc(mouse.x, mouse.y, 5, 0, 2 * Math.PI)
+        ctx.fill()
+
+        if (mouse.down)
+            ctx.strokeStyle = '#FF4040'
+        else
+            ctx.strokeStyle = '#40FF40'
+
+        // draw axies
+        ctx.beginPath()
+        ctx.moveTo(mouse.x, 0)
+        ctx.lineTo(mouse.x, cnv.height)
+        ctx.moveTo(0, mouse.y)
+        ctx.lineTo(cnv.width, mouse.y)
+        ctx.stroke()
+
+        ctx.font = '48px serif'
+        ctx.strokeStyle = 'white'
+        ctx.strokeText('Fullscreen Canvas', 24, 48 + 10)
+
+        const fontsize = 24
+        ctx.font = `${fontsize}px monospace`
+        ctx.fillStyle = 'white'
+        printBegin(fontsize + 10, fontsize, 48 + 10 + 40)
+        println(`width:          ${cnv.width}`)
+        println(`height:         ${cnv.height}`)
+        println(`mouse position: ${mouse.x} ${mouse.y}`)
+        println(`mouse pressed:  ${mouse.pressed}`)
+        println(`timestamp:      ${ts}`)
+        println(`milliseconds:   ${millis}`)
+        println(`seconds:        ${Math.floor(millis / 1000)}`)
+        println(`frame count:    ${frameCount}`)
+        if (lastts) {
+            const fps = Math.floor(1000 / (ts - lastts))
+            println(`fps:            ${fps}`)
+        }
+
+        lastts = ts
+        requestAnimationFrame(draw)
+    }
+
+    const paragraph = {}
+
+    function printBegin(lineheight, x, y) {
+        paragraph.lineheight = lineheight
+        paragraph.x = x
+        paragraph.y = y
+        paragraph.line = 0
+    }
+
+    function println(text) {
+        ctx.fillText(text, paragraph.x, ++paragraph.line * paragraph.lineheight + paragraph.y)
+    }
+
+    function resizeCanvas() {
+        cnv.width = innerWidth
+        cnv.height = innerHeight
+    }
+
+    onresize = resizeCanvas
+    resizeCanvas()
+    requestAnimationFrame(draw)
+</script>
