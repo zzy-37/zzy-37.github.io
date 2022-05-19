@@ -1,19 +1,57 @@
+<meta name="color-scheme" content="dark">
 <canvas id="cnv" width="600" height="600"></canvas>
+<p>FrameRate: <span id="fpsTag"></span></p>
 <script>
-    const ctx = cnv.getContext('2d')
+cnv.style.border = 'solid currentcolor'
+const ctx = cnv.getContext('2d')
 
-    const sets = []
-    for (let i = 0; i < 4; ++i)
-        sets.push(genSet())
+mapleLeafIFS()
 
-    ctx.translate(cnv.width / 2, cnv.height / 2)
+function arrToStr(arr, level = 0) {
+    function ws(level) { return ' '.repeat(level * 4) }
+    let substr
+    if (Array.isArray(arr[0])) substr = arr.map(x => arrToStr(x, level+1)).join(',\n' + ws(level))
+    else substr = ws(level + 1) + arr.join(',\n' + ws(level + 1))
+    return `${ws(level)}[\n${substr}\n${ws(level)}]`
+}
+
+function mapleLeafIFS() {
+    const sets = [
+        [0.1400,  0.0100,  0.0000, 0.5100, -0.0800, -1.3100],
+        [0.4300,  0.5200, -0.4500, 0.5000,  1.4900, -0.7500],
+        [0.4500, -0.4900,  0.4700, 0.4700, -1.6200, -0.7400],
+        [0.4900,  0.0000,  0.0000, 0.5100,  0.0200,  1.6200],
+    ]
+
+    const mouse = { x: 0, y: 0 }
+    cnv.onmousemove = e => {
+        mouse.x = e.offsetX
+        mouse.y = e.offsetY
+        //console.log(mouse.x, mouse.y)
+    }
+
+    let lastts
     let x = 0, y = 0
+    let iteration = 50000
     function draw(ts) {
-        for (let _ = 0; _ < 200; ++_) {
-            const scale = 50
+        ctx.fillStyle = '#00000020'
+        ctx.fillRect(0, 0, cnv.width, cnv.height)
+
+        ctx.save()
+        ctx.translate(cnv.width / 2, cnv.height / 2)
+        ctx.fillStyle = 'white'
+        const scale = mouse.y
+        for (let _ = 0; _ < iteration; ++_) {
             ctx.fillRect(x * scale, y * scale, 1, 1)
             iterate()
         }
+        ctx.restore()
+
+        if (lastts) {
+            const fps = Math.floor(1000 / (ts - lastts))
+            fpsTag.textContent = fps
+        }
+        lastts = ts
         requestAnimationFrame(draw)
     }
     requestAnimationFrame(draw)
@@ -21,12 +59,53 @@
     function iterate() {
         const r = Math.random()
         const i = Math.floor(r * sets.length)
-        const a = sets[i][0]
-        const b = sets[i][1]
-        const c = sets[i][2]
-        const d = sets[i][3]
-        const e = sets[i][4]
-        const f = sets[i][5]
+        const [a, b, c, d, e, f] = sets[i]
+        const nx = a * x + b * y + c
+        const ny = d * x + e * y + f
+        x = nx
+        y = ny
+    }
+}
+
+function randomIFS() {
+    const sets = []
+    for (let i = 0; i < 4; ++i)
+        sets.push(genSet())
+
+    setTag = document.createElement('pre')
+    setTag.textContent = arrToStr(sets)
+    document.body.append(setTag)
+
+    let x = 0, y = 0
+    let iteration = 20000
+    let lastts
+    let loop = false
+    function draw(ts) {
+        if (lastts) {
+            const fps = Math.floor(1000 / (ts - lastts))
+            fpsTag.textContent = fps
+        }
+
+        ctx.clearRect(0, 0, cnv.width, cnv.height)
+
+        ctx.save()
+        ctx.translate(cnv.width / 2, cnv.height / 2)
+        const scale = 50
+        for (let _ = 0; _ < iteration; ++_) {
+            ctx.fillRect(x * scale, y * scale, 1, 1)
+            iterate()
+        }
+        ctx.restore()
+
+        lastts = ts
+        if (loop) requestAnimationFrame(draw)
+    }
+    requestAnimationFrame(draw)
+
+    function iterate() {
+        const r = Math.random()
+        const i = Math.floor(r * sets.length)
+        const [a, b, c, d, e, f] = sets[i]
         const nx = a * x + b * y + c
         const ny = d * x + e * y + f
         x = nx
@@ -49,4 +128,5 @@
         //console.log(a, b, c, d, e, f)
         return [a, b, c, d, e, f]
     }
+}
 </script>
