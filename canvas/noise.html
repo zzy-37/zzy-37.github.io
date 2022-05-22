@@ -1,0 +1,61 @@
+<title>Noise JS</title>
+<script src="canvas.js"></script>
+<script>
+    const cnv = document.createElement('canvas')
+    cnv.width = cnv.height = 400
+
+    const ctx = cnv.getContext('2d')
+
+    const frameTag = document.createElement('p')
+    const disc = document.createElement('p')
+    disc.textContent = 'click to show the noise texture'
+    onload = () => document.body.append(cnv, frameTag, disc)
+
+    onclick = () => state = !state
+
+    const noise = improved_noise(80)
+
+    let dt = 0
+    let lastts
+    let state = true
+
+    requestAnimationFrame(draw)
+
+    function draw(ts) {
+        state ? motion() : showNoise()
+        if (lastts) frameTag.textContent = 'Frame rate: ' + 1000 / (ts - lastts)
+        lastts = ts
+        requestAnimationFrame(draw)
+    }
+
+    function showNoise() {
+        dt += 0.1
+        const detail = 5
+        const pixels = ctx.getImageData(0, 0, cnv.width, cnv.height)
+        for (let x = 0; x < cnv.width; ++x) {
+            for (let y = 0; y < cnv.height; ++y) {
+                const n = noise(x / cnv.width * detail, y / cnv.height * detail, dt)
+                const bri = (n + 1) * 128
+                const i = (x + y * cnv.width) * 4
+                pixels.data[i] = bri
+                pixels.data[i + 1] = bri
+                pixels.data[i + 2] = bri
+                pixels.data[i + 3] = 255
+            }
+        }
+        ctx.putImageData(pixels, 0, 0)
+    }
+
+
+    function motion() {
+        ctx.clearRect(0, 0, cnv.width, cnv.height)
+        dt += 0.02
+        for (let i = 0; i < 5; ++i) {
+            const x = (noise(dt + 0.03 * i * i) + 1) / 2 * cnv.width
+            const y = (noise(-dt * 1.5 + 0.1 * i) + 1) / 2 * cnv.height
+            ctx.beginPath()
+            ctx.arc(x, y, 5, 0, 2 * Math.PI)
+            ctx.fill()
+        }
+    }
+</script>
