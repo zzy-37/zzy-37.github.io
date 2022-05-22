@@ -1,69 +1,24 @@
-<h1>WebGL example</h1>
+<script src="canvas.js"></script>
+<style>
+    canvas { position: fixed; top: 0; left: 0; }
+    .over { color: white; position: relative; z-index: 10; }
+</style>
+<div class="over">
+    <h1>WebGL example</h1>
+    <p>FrameRate: <span id="span_frameRate"></span></p>
+</div>
 <canvas id="cnv" width="800" height="600"></canvas>
 <script>
-    // https://developer.mozilla.org/en-US/docs/Web/API/WebGL_API/Tutorial/Adding_2D_content_to_a_WebGL_context
-    function initShaderProgram(gl, vs, fs) {
-        function load(type, src) {
-            const shader = gl.createShader(type)
-            gl.shaderSource(shader, src)
-            gl.compileShader(shader)
-            if (!gl.getShaderParameter(shader, gl.COMPILE_STATUS)) {
-                console.error('An error occurred compiling the shaders: ' + gl.getShaderInfoLog(shader));
-                gl.deleteShader(shader);
-                return null;
-            }
-            return shader
-        }
-
-        const vertexShader = load(gl.VERTEX_SHADER, vs)
-        const fragmentShader = load(gl.FRAGMENT_SHADER, fs)
-        const program = gl.createProgram()
-        gl.attachShader(program, vertexShader)
-        gl.attachShader(program, fragmentShader)
-        gl.linkProgram(program)
-
-        if (!gl.getProgramParameter(program, gl.LINK_STATUS)) {
-            console.error('Unable to initialize the shader program: ' + gl.getProgramInfoLog(program))
-            return null
-        }
-
-        program.setVertxAttr = function (name, data) {
-            const arr = data.flat()
-            if (data.length * data[0].length != arr.flat().length)
-                throw Error('Array data is not rectangular')
-
-            gl.bindBuffer(gl.ARRAY_BUFFER, gl.createBuffer())
-            gl.bufferData(gl.ARRAY_BUFFER, new Float32Array(arr), gl.STATIC_DRAW)
-
-            const loc = gl.getAttribLocation(this, name)
-            gl.vertexAttribPointer(
-                loc,            // location
-                data[0].length, // numComponents
-                gl.FLOAT,       // type
-                false,          //normalize
-                0,              // stride
-                0               // offset
-            )
-            gl.enableVertexAttribArray(loc)
-        }
-
-        program.setUniform = function (dimension, name, data) {
-            const loc = gl.getUniformLocation(this, name)
-            switch (dimension) {
-                case 1: return gl.uniform1fv(loc, data)
-                case 2: return gl.uniform2fv(loc, data)
-                case 3: return gl.uniform3fv(loc, data)
-                case 4: return gl.uniform4fv(loc, data)
-                default: throw Error(`Invalid dimention for uniform: ${dimension}`)
-            }
-        }
-
-        return program
+    function resizeCanvas() {
+        cnv.width = innerWidth
+        cnv.height = innerHeight
     }
+    onresize = resizeCanvas
+    resizeCanvas()
 
     const gl = cnv.getContext('webgl')
 
-    const POINTS_NUM = 5
+    const POINTS_NUM = 20
 
     const vsSource = `
         attribute vec4 aPosition;
@@ -86,19 +41,19 @@
             gl_FragColor = vec4(vec3(bri), 1.0);
         }
     `
-    
+
     const program = initShaderProgram(gl, vsSource, fsSource)
 
     const vertices = [
-        [ 1,  1],
-        [-1,  1],
-        [ 1, -1],
-        [-1, -1],
+         1,  1,
+        -1,  1,
+         1, -1,
+        -1, -1,
     ]
 
-    program.setVertxAttr('aPosition', vertices)
+    program.setVertxAttr('aPosition', 2, vertices)
     gl.useProgram(program)
-    
+
     const mouse = { x: 0, y: 0 }
     cnv.onmousemove = e => {
         mouse.x = e.offsetX
@@ -108,12 +63,14 @@
     const pos = new Array(POINTS_NUM * 2)
     pos.fill(0)
 
+    let lastts
     function draw(ts) {
+        gl.viewport(0, 0, gl.canvas.width, gl.canvas.height);
         gl.clearColor(0, 0, 0, 1)
         gl.clear(gl.COLOR_BUFFER_BIT)
 
         for (let i = 0; i < POINTS_NUM; ++i) {
-            const scaler = 0.1 - i * 0.015
+            const scaler = 0.3 - i * 0.015
             pos[i * 2 + 0] += (mouse.x - pos[i * 2 + 0]) * scaler
             pos[i * 2 + 1] += (mouse.y - pos[i * 2 + 1]) * scaler
         }
@@ -122,6 +79,8 @@
         program.setUniform(2, 'uResolution', [cnv.clientWidth, cnv.clientHeight])
 
         gl.drawArrays(gl.TRIANGLE_STRIP, 0, vertices.length)
+        if (lastts) span_frameRate.textContent = 1000 / (ts - lastts)
+        lastts = ts
         requestAnimationFrame(draw)
     }
     requestAnimationFrame(draw)
