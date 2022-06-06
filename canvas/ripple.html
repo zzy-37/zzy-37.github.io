@@ -1,0 +1,124 @@
+<!DOCTYPE html>
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<script src="../util.js"></script>
+<script src="canvas.js"></script>
+<script id="vs" type="text/plain">
+    attribute vec4 a_position;
+    void main() {
+        gl_Position = a_position;
+    }
+</script>
+<script id="fs" type="text/plain">
+    precision highp float;
+    uniform vec2 u_resolution;
+    uniform float u_time;
+    uniform float u_start_time;
+    uniform float u_lifetime;
+    uniform float u_scale_x;
+    uniform float u_scale_y;
+    uniform vec2 u_mouse_pos;
+
+    float ripple(vec2 pos, float start_time) {
+        vec2 cpos = gl_FragCoord.xy - pos;
+        float cLength = length(cpos) * u_scale_x;
+        float dt = u_time - start_time;
+        float pow = (dt > u_lifetime) ? 0.0 : (u_lifetime - dt) / u_lifetime * u_scale_y;
+        float result = cos(cLength - u_time) / cLength * pow;
+        return result;
+    }
+
+    void main() {
+        float bri = 0.5 + ripple(u_resolution / 2.0, u_time);
+        bri += ripple(u_mouse_pos, u_start_time);
+        gl_FragColor = vec4(vec3(bri), 1.0);
+    }
+</script>
+<script>
+    const ctx = ce('canvas').$attr({
+        width: 800, height: 800
+    }).getContext('2d')
+
+    const gl = ce('canvas').$attr({
+        width: 800, height: 800
+    }).getContext('webgl2')
+
+    const program = initShaderProgram(gl, vs.textContent, fs.textContent)
+
+    const startts = performance.now()
+
+    let setup = setupGL
+    let draw
+
+    // parameters
+    let dt
+    let speed = 10
+    let scaleX = 0.05
+    let scaleY = 1
+    let lifetime = 10
+    const group = new SliderGroup
+    group.add('speed', { value: speed, oninput: function () { speed = this.value } })
+    group.add('scaleX', { min: 0.01, max: 1, step: 0.01, value: scaleX, oninput: function () { scaleX = this.value } })
+    group.add('scaleY', { min: 0.01, max: 2, step: 0.01, value: scaleY, oninput: function () { scaleY = this.value } })
+    group.add('lifetime', { value: lifetime, oninput: function () { lifetime = this.value } })
+
+    const mouse = { x: 0, y: 0 }
+    gl.canvas.onmousemove = e => {
+        mouse.x = e.offsetX
+        mouse.y = gl.canvas.height - e.offsetY
+    }
+
+    gl.canvas.onclick = e => {
+        program.setUniform('u_start_time', dt)
+        program.setUniform('u_mouse_pos', mouse.x, mouse.y)
+    }
+
+    onload = main
+
+    function main() {
+        document.body.append(group.container, ce('h2', 'Click to emit new ripple.'))
+
+        setup()
+        loop()
+    }
+
+    function setupGL() {
+        draw = drawGL
+        document.body.append(gl.canvas)
+
+        newAttributeBuffer(gl, program, 'a_position', [-1, -1, 1, -1, -1, 1, 1, 1], 2)
+
+        gl.useProgram(program)
+        program.setUniform('u_resolution', gl.canvas.width, gl.canvas.height)
+    }
+
+    function loop(ts) {
+        dt = (ts - startts) * 0.001 * speed
+        draw()
+        requestAnimationFrame(loop)
+    }
+
+    function draw2d() {
+        ctx.clearRect(0, 0, ctx.canvas.width, ctx.canvas.height)
+
+        ctx.beginPath()
+        for (let x = 0; x < ctx.canvas.width; ++x) {
+            const dist = Math.abs(x - ctx.canvas.width / 2) * scaleX
+            const r = Math.cos(dist - dt) / dist * ctx.canvas.height / 2 * scaleY
+            if (x === 0) ctx.moveTo(x, ctx.canvas.height / 2 - r)
+            else ctx.lineTo(x, ctx.canvas.height / 2 - r)
+        }
+        ctx.stroke()
+    }
+
+    function drawGL() {
+        gl.clearColor(0, 1, 0, 1)
+        gl.clear(gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT)
+
+        program.setUniform('u_time', dt)
+        program.setUniform('u_scale_x', scaleX)
+        program.setUniform('u_scale_y', scaleY)
+        program.setUniform('u_lifetime', lifetime)
+
+        gl.drawArrays(gl.TRIANGLE_STRIP, 0, 4)
+    }
+</script>
