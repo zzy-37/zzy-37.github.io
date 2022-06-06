@@ -16,7 +16,7 @@
     onresize = resizeCanvas
     resizeCanvas()
 
-    const gl = cnv.getContext('webgl')
+    const gl = cnv.getContext('webgl2')
 
     const POINTS_NUM = 20
 
@@ -51,7 +51,8 @@
         -1, -1,
     ]
 
-    program.setVertxAttr('aPosition', 2, vertices)
+    newAttributeBuffer(gl, program, 'aPosition', vertices, 2)
+
     gl.useProgram(program)
 
     const mouse = { x: 0, y: 0 }
@@ -75,10 +76,10 @@
             pos[i * 2 + 1] += (mouse.y - pos[i * 2 + 1]) * scaler
         }
 
-        program.setUniform(2, 'pos', pos)
-        program.setUniform(2, 'uResolution', [cnv.clientWidth, cnv.clientHeight])
+        program.setUniform('pos', pos)
+        program.setUniform('uResolution', [cnv.clientWidth, cnv.clientHeight])
 
-        gl.drawArrays(gl.TRIANGLE_STRIP, 0, vertices.length)
+        gl.drawArrays(gl.TRIANGLE_STRIP, 0, 4)
         if (lastts) span_frameRate.textContent = 1000 / (ts - lastts)
         lastts = ts
         requestAnimationFrame(draw)
