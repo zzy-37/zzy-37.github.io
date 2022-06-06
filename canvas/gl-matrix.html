@@ -1,0 +1,436 @@
+<script src="canvas.js"></script>
+<script id="vertSource" type="text/plain">
+    attribute vec4 a_position;
+    attribute vec4 a_color;
+    uniform mat4 u_matrix;
+    varying vec4 v_color;
+    void main() {
+        // Multiply the position by the matrix.
+        gl_Position = u_matrix * a_position;
+        v_color = a_color;
+    }
+</script>
+<script id="fragSource" type="text/plain">
+    precision highp float;
+    uniform vec4 u_color;
+    varying vec4 v_color;
+    void main() {
+        gl_FragColor = v_color;
+    }
+</script>
+<script>
+    function ce(name) { return document.createElement(name) }
+    function ator(a) { return a * Math.PI / 180 }
+
+    const cnv = ce('canvas')
+    cnv.width = 600
+    cnv.height = 600
+
+    const gl = cnv.getContext('webgl2')
+    const program = initShaderProgram(gl, vertSource.textContent, fragSource.textContent)
+
+    const sliders = new Sliders(drawScene)
+
+    onload = main
+
+    function main() {
+        document.body.append(cnv, sliders.container)
+
+        // init sliders
+        sliders.add('cameraAngle', {min: -360, max: 360})
+        sliders.add('fieldOfView', {value:   60, min:     1, max: 180})
+        // sliders.add('x',           {value: -150, min:  -200, max: 200})
+        // sliders.add('y',           {value:    0, min:  -200, max: 200})
+        // sliders.add('z',           {value: -360, min: -1000, max: 0})
+        // sliders.add('angleX',      {value:  190, max: 360})
+        // sliders.add('angleY',      {value:   40, max: 360})
+        // sliders.add('angleZ',      {value:   30, max: 360})
+        // sliders.add('scaleX',      {value:    1, min: -5, max: 5, step: 0.01, precision: 2})
+        // sliders.add('scaleY',      {value:    1, min: -5, max: 5, step: 0.01, precision: 2})
+        // sliders.add('scaleZ',      {value:    1, min: -5, max: 5, step: 0.01, precision: 2})
+
+        // translate vertices position
+        const matrix = M4.xRotation(Math.PI).translate(-50, -75, -15);
+        for (let ii = 0; ii < fPosition.length; ii += 3) {
+            const vector = M4.transformVector(matrix, [fPosition.slice(ii, ii + 3), 1].flat());
+            fPosition[ii + 0] = vector[0];
+            fPosition[ii + 1] = vector[1];
+            fPosition[ii + 2] = vector[2];
+        }
+
+        // bind buffers for the vertex attributes
+        newAttributeBuffer(gl, program, 'a_position', fPosition, 3)
+        newAttributeBuffer(gl, program, 'a_color', fColor, 3, gl.UNSIGNED_BYTE, true)
+
+        drawScene()
+    }
+
+    function drawScene() {
+        const numFs = 5
+        const radius = 200
+
+        // update variables
+        fieldOfViewRadians = ator(sliders.values.fieldOfView)
+        cameraAngleRadians = ator(sliders.values.cameraAngle)
+
+        const firstpos = [radius, 0, 0]
+        const up = [0, 1, 0]
+        const cameraPositon = M4.yRotation(cameraAngleRadians).translate(0, 50, radius * 1.5).slice(12, 15)
+        const viewProjectionMatrix = M4.perspective(fieldOfViewRadians, cnv.width / cnv.height, 1, 2000)
+                                       .multiply(M4.lookAt(cameraPositon, firstpos, up)
+                                                   .inverse())
+
+        gl.clearColor(0, 1, 0, 1)
+        gl.clear(gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT)
+
+        gl.enable(gl.DEPTH_TEST)
+        gl.enable(gl.CULL_FACE)
+
+        gl.useProgram(program)
+
+        for (let ii = 0; ii < numFs; ++ii) {
+            const angle = ii * Math.PI * 2 / numFs
+            const x = Math.cos(angle) * radius
+            const z = Math.sin(angle) * radius
+            const matrix = viewProjectionMatrix.translate(x, 0, z)
+
+            program.setUniform('u_matrix', matrix)
+
+            gl.drawArrays(gl.TRIANGLES, 0, 16 * 6)
+        }
+    }
+
+    function draw() {
+        setVars()
+        const matrix = M4.perspective(fieldOfViewRadians, cnv.width / cnv.height, 1, 2000)
+                         .translate(translationX, translationY, translationZ)
+                         .xRotate(rotationX)
+                         .yRotate(rotationY)
+                         .zRotate(rotationZ)
+                         .scale(scaleX, scaleY, scaleZ)
+
+        gl.clearColor(0, 1, 0, 1)
+        gl.clear(gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT)
+
+        gl.enable(gl.DEPTH_TEST)
+        gl.enable(gl.CULL_FACE)
+
+        gl.useProgram(program)
+
+        program.setUniform('u_matrix', matrix)
+
+        gl.drawArrays(gl.TRIANGLES, 0, 16 * 6)
+    }
+
+    function setVars() {
+        // update variables in global scope
+        fieldOfViewRadians = ator(sliders.values.fieldOfView)
+
+        translationX = sliders.values.x
+        translationY = sliders.values.y
+        translationZ = sliders.values.z
+
+        rotationX = ator(sliders.values.angleX)
+        rotationY = ator(sliders.values.angleY)
+        rotationZ = ator(sliders.values.angleZ)
+
+        scaleX = sliders.values.scaleX
+        scaleY = sliders.values.scaleY
+        scaleZ = sliders.values.scaleZ
+    }
+
+    function Sliders(callback) {
+        this.container = ce('div')
+        this.container.style['max-width'] = 'max-content'
+
+        this.values = {}
+
+        this.add = (name, attr) => {
+            const update = () => {
+                value.textContent = slider.value
+                this.values[name] = slider.value
+                callback()
+            }
+
+            const slider = ce('input')
+            slider.type = 'range'
+            Object.assign(slider, attr)
+            // value attribute will be clamped to the range
+            // so set value after assigning other attributes
+            if (attr.value) slider.value = attr.value
+            slider.style['margin'] = '0 10px'
+            slider.oninput = update
+
+
+            const label = ce('label')
+            label.textContent = name
+            label.style['display'] = 'inline-block'
+            label.style['width'] = '10ch'
+            label.style['text-align'] = 'right'
+
+            const value = ce('span')
+            update()
+            this.container.append(label, slider, value, ce('br'))
+        }
+    }
+
+    const fPosition = [
+          // left column front
+           0,   0,  0,
+           0, 150,  0,
+          30,   0,  0,
+           0, 150,  0,
+          30, 150,  0,
+          30,   0,  0,
+
+          // top rung front
+           30,   0,  0,
+           30,  30,  0,
+          100,   0,  0,
+           30,  30,  0,
+          100,  30,  0,
+          100,   0,  0,
+
+          // middle rung front
+          30,  60,  0,
+          30,  90,  0,
+          67,  60,  0,
+          30,  90,  0,
+          67,  90,  0,
+          67,  60,  0,
+
+          // left column back
+            0,   0,  30,
+           30,   0,  30,
+            0, 150,  30,
+            0, 150,  30,
+           30,   0,  30,
+           30, 150,  30,
+
+          // top rung back
+           30,   0,  30,
+          100,   0,  30,
+           30,  30,  30,
+           30,  30,  30,
+          100,   0,  30,
+          100,  30,  30,
+
+          // middle rung back
+           30,  60,  30,
+           67,  60,  30,
+           30,  90,  30,
+           30,  90,  30,
+           67,  60,  30,
+           67,  90,  30,
+
+          // top
+            0,   0,   0,
+          100,   0,   0,
+          100,   0,  30,
+            0,   0,   0,
+          100,   0,  30,
+            0,   0,  30,
+
+          // top rung right
+          100,   0,   0,
+          100,  30,   0,
+          100,  30,  30,
+          100,   0,   0,
+          100,  30,  30,
+          100,   0,  30,
+
+          // under top rung
+          30,   30,   0,
+          30,   30,  30,
+          100,  30,  30,
+          30,   30,   0,
+          100,  30,  30,
+          100,  30,   0,
+
+          // between top rung and middle
+          30,   30,   0,
+          30,   60,  30,
+          30,   30,  30,
+          30,   30,   0,
+          30,   60,   0,
+          30,   60,  30,
+
+          // top of middle rung
+          30,   60,   0,
+          67,   60,  30,
+          30,   60,  30,
+          30,   60,   0,
+          67,   60,   0,
+          67,   60,  30,
+
+          // right of middle rung
+          67,   60,   0,
+          67,   90,  30,
+          67,   60,  30,
+          67,   60,   0,
+          67,   90,   0,
+          67,   90,  30,
+
+          // bottom of middle rung.
+          30,   90,   0,
+          30,   90,  30,
+          67,   90,  30,
+          30,   90,   0,
+          67,   90,  30,
+          67,   90,   0,
+
+          // right of bottom
+          30,   90,   0,
+          30,  150,  30,
+          30,   90,  30,
+          30,   90,   0,
+          30,  150,   0,
+          30,  150,  30,
+
+          // bottom
+          0,   150,   0,
+          0,   150,  30,
+          30,  150,  30,
+          0,   150,   0,
+          30,  150,  30,
+          30,  150,   0,
+
+          // left side
+          0,   0,   0,
+          0,   0,  30,
+          0, 150,  30,
+          0,   0,   0,
+          0, 150,  30,
+          0, 150,   0,
+      ]
+
+    const fColor = [
+          // left column front
+        200,  70, 120,
+        200,  70, 120,
+        200,  70, 120,
+        200,  70, 120,
+        200,  70, 120,
+        200,  70, 120,
+
+          // top rung front
+        200,  70, 120,
+        200,  70, 120,
+        200,  70, 120,
+        200,  70, 120,
+        200,  70, 120,
+        200,  70, 120,
+
+          // middle rung front
+        200,  70, 120,
+        200,  70, 120,
+        200,  70, 120,
+        200,  70, 120,
+        200,  70, 120,
+        200,  70, 120,
+
+          // left column back
+        80, 70, 200,
+        80, 70, 200,
+        80, 70, 200,
+        80, 70, 200,
+        80, 70, 200,
+        80, 70, 200,
+
+          // top rung back
+        80, 70, 200,
+        80, 70, 200,
+        80, 70, 200,
+        80, 70, 200,
+        80, 70, 200,
+        80, 70, 200,
+
+          // middle rung back
+        80, 70, 200,
+        80, 70, 200,
+        80, 70, 200,
+        80, 70, 200,
+        80, 70, 200,
+        80, 70, 200,
+
+          // top
+        70, 200, 210,
+        70, 200, 210,
+        70, 200, 210,
+        70, 200, 210,
+        70, 200, 210,
+        70, 200, 210,
+
+          // top rung right
+        200, 200, 70,
+        200, 200, 70,
+        200, 200, 70,
+        200, 200, 70,
+        200, 200, 70,
+        200, 200, 70,
+
+          // under top rung
+        210, 100, 70,
+        210, 100, 70,
+        210, 100, 70,
+        210, 100, 70,
+        210, 100, 70,
+        210, 100, 70,
+
+          // between top rung and middle
+        210, 160, 70,
+        210, 160, 70,
+        210, 160, 70,
+        210, 160, 70,
+        210, 160, 70,
+        210, 160, 70,
+
+          // top of middle rung
+        70, 180, 210,
+        70, 180, 210,
+        70, 180, 210,
+        70, 180, 210,
+        70, 180, 210,
+        70, 180, 210,
+
+          // right of middle rung
+        100, 70, 210,
+        100, 70, 210,
+        100, 70, 210,
+        100, 70, 210,
+        100, 70, 210,
+        100, 70, 210,
+
+          // bottom of middle rung.
+        76, 210, 100,
+        76, 210, 100,
+        76, 210, 100,
+        76, 210, 100,
+        76, 210, 100,
+        76, 210, 100,
+
+          // right of bottom
+        140, 210, 80,
+        140, 210, 80,
+        140, 210, 80,
+        140, 210, 80,
+        140, 210, 80,
+        140, 210, 80,
+
+          // bottom
+        90, 130, 110,
+        90, 130, 110,
+        90, 130, 110,
+        90, 130, 110,
+        90, 130, 110,
+        90, 130, 110,
+
+          // left side
+        160, 160, 220,
+        160, 160, 220,
+        160, 160, 220,
+        160, 160, 220,
+        160, 160, 220,
+        160, 160, 220,
+    ]
+</script>
