@@ -1,12 +1,174 @@
 <!DOCTYPE html>
 <html>
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta name="color-scheme" content="dark">
     <title>Procedural Nature</title>
+    <style>
+        body {
+            max-width: 80ch;
+            margin: 0 auto;
+        }
+
+        img {
+            max-width: 100%;
+        }
+
+        aside {
+            display: inline-block;
+        }
+
+        .border {
+            border: solid currentColor;
+        }
+    </style>
 </head>
+
 <body>
-    <h1>Under Construction</h1>
+    <header>
+        <h1>程序化自然：一组基于自然元素的生成式算法</h1>
+        <h3>Procedural Nature: Generative Algorithms Based on Natural Elements</h3>
+        <time datetime="2022/6/11 00:33:51">2022/6/11</time> 朱子绎
+    </header>
+
+    <article>
+        <section>
+            <h2>项目背景</h2>
+            <p>
+                本项目是基于探索物理计算和传感器设备在促进公民科学与自然探索活动当中所能提供的新的可能性所进行。
+            </p>
+            <p>
+                近年来相关技术已经为公民科学以及开展自然探索活动提供了众多新的形式。当前人们可以很轻松地基于这些技术制作与使用自己的设备和仪器，为他们自己的实验或作为更大项目的一部分收集数据。然而审视公民科学的现状，一个主要问题是如何将公民参与不仅视为一种监测活动，而是将这些技术与设备视为促进公民参与的组成部分，同时对生态意识产生积极影响，并改变人们对城市自然和自然价值的看法。
+            </p>
+        </section>
+
+        <section>
+            <h3>深层生态学</h3>
+            <p>
+                <a href="https://en.wikipedia.org/wiki/Deep_ecology">深层生态学（Deep Ecology）</a>是一种环境哲学理念，其倡导一种反“人类中心主义”的价值取向，强调一切生物具有其本质的价值，而与人类使用的工具性利益无关，并以此为基础推动社会机制的改变。该学说主张以现代资本主义为代表的基于“人类中心”的现代社会价值体系导致了现有的环境问题，并期望通过意识形态的转变来建立一种以“自然和环境中心”的价值体系。
+            </p>
+
+            <aside>
+                <blockquote>
+                    "The ideological change is mainly that of appreciating life quality…rather than adhering to an
+                    increasingly higher standard of living.…" <cite>-A.Naess</cite>
+                </blockquote>
+                <blockquote>“意识形态的转变主要是强调生活的质量而非更高的生活标准。” <cite>-A.奈斯</cite></blockquote>
+            </aside>
+
+            <aside>
+                <figure class="border">
+                    <img src="The_Earth_seen_from_Apollo_17.jpg" alt="The Blue Marble">
+                    <figcaption>The Blue Marble, taken by the Apollo 17 crew in 1972</figcaption>
+                </figure>
+            </aside>
+
+            <p>
+                其提倡通过加深个人与自然的联系，达成与自然的和谐，从而建立起“生态上的自我认同”以及一种“环境道德观念”。
+            </p>
+            <p>
+                本项目在这一语境下，以公民科学的形式为基础，期望通过某种方式使人们建立起对环境，对自然更加深层次的理解。从而对人们的生态意识，以及针对城市自然整体的生态活动提供帮助。
+            </p>
+        </section>
+    </article>
+
+    <article>
+        <section>
+            <h2>整体概念</h2>
+            <p>
+                已经习惯于现代工业化社会的我们，多数时间都处于“人造的”、以“工业化生产逻辑”被创造的环境当中。尽管在这一环境当中，自然仍然广泛地存在着，但是由于社会环境与生活方式的影响，自然常常作为背景为人们所忽略，许多自然的细节与现象也被我们所忽视，与自然的关系也因此难以建立。
+            </p>
+        </section>
+
+        <section>
+            <h3>如何感受自然</h3>
+            <aside>
+                <figure class="border">
+                    <img src="butterfly-wing-pattern.jpg" alt="butterfly wing pattern">
+                    <figcaption>
+                        At a smaller scale, the scales that make up those butterfly wing patterns are etched with
+                        parallel
+                        ridges that scramble light waves hitting them so that only certain colors are reflected.
+                        <cite>Nikola Rahme/Shutterstock.com</cite>
+                    </figcaption>
+                </figure>
+            </aside>
+
+            <aside>
+                <figure class="border">
+                    <img src="chameleon-tail.jpg" alt="chameleon tail">
+                    <figcaption>
+                        A furled chameleon tail obviously takes its shape from the rolling of a tube, but its pattern is
+                        distinct from that created by rolling an even tube, such as that of a garden hose. The gentle
+                        taper of the tail produces a logarithmic spiral—one that gets smaller, yet the small parts look
+                        like the large parts.
+                        <cite>Michal Filip Gmerek/Shutterstock.com</cite>
+                    </figcaption>
+                </figure>
+            </aside>
+
+            <aside>
+                <blockquote>
+                    兰花，蜂鸟和孔雀尾巴等生物具有抽象的设计，具有艺术家难以匹配的形式，图案和颜色之美。人们在自然界中感知到的美在不同层面上都有原因，特别是在控制哪些模式可以物理形成的数学中，以及在自然选择的影响下，在生物中，控制着模式如何演变。
+                </blockquote>
+                <blockquote>
+                    数学试图发现和解释各种抽象的模式或规律性。自然界中的视觉模式在混沌理论、分形、对数螺旋、拓扑学和其他数学模式中都有解释。例如，L系统形成了令人信服的不同树木生长模式模型。
+                </blockquote>
+                <blockquote>
+                    物理定律将数学的抽象应用于现实世界，通常就好像它是完美的一样。例如，当晶体没有位错等结构缺陷并且完全对称时，它是完美的。精确的数学完美只能接近真实的物体。自然界中的可见模式受物理定律的支配。例如，蜿蜒曲折可以用流体动力学来解释。
+                </blockquote>
+                <blockquote>
+                    在生物学中，自然选择可以导致生物模式的发展，原因有几个，包括伪装，性选择和不同类型的信号传导，包括模仿和清洁共生。在植物中，像百合花这样以昆虫授粉的花朵的形状、颜色和图案已经进化到吸引蜜蜂等昆虫。颜色和条纹的径向图案，有些仅在紫外线下可见，作为花蜜指南，可以在远处看到。
+                </blockquote>
+            </aside>
+
+            <p>
+                自然在基础层面受基本的物理与数学定律所控制，研究已经发现大多数自然界的物体在不同的尺度下常表现出不同的基本数理结构，但我们常常不是对这些知识不太熟悉就是没有消息观察。同时，也很难将这些抽象的概念与现实生活中的实体相联系。
+            </p>
+            <p>
+                然而这些结构其实十分重要，它们反映了自然界构建与运行的原理以及其在系统当中的交互方式。此项目通过使用一系列与自然相关联的算法生成与自然界物体相呼应的输出，来展现自然界其内含的结构与内在规律，作为用于开展公民科学与城市自然探索的材料与工具。
+            </p>
+        </section>
+    </article>
+
+    <article>
+        <section>
+            <h2>分形与自相似</h2>
+            <p>
+                <a href="https://en.wikipedia.org/wiki/Fractal">分形（Fractal）</a>是无限<a
+                    href="https://en.wikipedia.org/wiki/Self-similarity">自相似（self-similar）</a>的，具有分形维数的迭代数学结构。分形状图案在自然界中广泛存在，存在于云层、河流网络、地质断层线、山脉、海岸线、动物着色、雪花、晶体、血管分支、肌动蛋白细胞骨架以及波浪等多种现象中。
+            </p>
+
+            <aside>
+                <figure class="border">
+                    <img src="leaf1s.jpg" alt="leaf geometry">
+                    <figcaption>
+                        The geometric beauty of leaves. by <cite>Paul Boukle</cite>
+                    </figcaption>
+                </figure>
+            </aside>
+            <aside>
+                <figure class="border">
+                    <img src="egypt2b.jpg" alt="Egypt">
+                    <figcaption>
+                        Fractal forms found by using Google Earth. by <cite>Paul Boukle</cite>
+                    </figcaption>
+                </figure>
+            </aside>
+
+            <aside>
+                <blockquote>
+                    无限迭代在本质上是不可能的，所以所有的“分形”模式都只是近似的。例如，蕨类植物和伞形植的叶子只有自相似（羽状）到2，3或4个水平。蕨类植物和动物的生长模式发生在植物和动物中，包括苔藓动物，珊瑚，空气蕨类植物，阿根廷蜥蜴等水生动物，以及非生物，特别是放电。L系统分形可以通过改变少量参数来模拟不同的树木生长模式，包括分支角度，节点或分支点之间的距离（节点间长度）以及每个分支点的分支数量。
+                </blockquote>
+            </aside>
+
+            <p>
+                本项目使用了包括L系统，迭代函数系统，和混沌博弈在内的算法来生成不同的具有自相似性的分形图像。
+            </p>
+        </section>
+    </article>
 </body>
+
 </html>
