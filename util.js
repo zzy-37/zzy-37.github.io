@@ -3,7 +3,7 @@ Element.prototype.$attr = function (attr) {
     return this
 }
 Element.prototype.$class = function (...className) {
-    this.className.add(...className)
+    this.classList.add(...className)
     return this
 }
 Element.prototype.$style = function (style) {
@@ -19,6 +19,9 @@ function ce(name, ...children) {
 function qs(query, parent = document) {
     return parent.querySelector(query)
 }
+function createContext(width, height, mode = '2d') {
+    return ce('canvas').$attr({ width: width, height: height }).getContext(mode)
+}
 
 function slugify(str) {
     return str.trim()
@@ -26,22 +29,60 @@ function slugify(str) {
         .replace(/\s/g, '_')
 }
 
+class labeledSlider {
+    constructor(name, attr) {
+        this.slider = ce('input').$attr({ type: 'range' })
+            .$attr(attr)
+        this.slider.addEventListener('input', this.update)
+        this.name = name
+        this.update()
+    }
+
+    label = ce('label')
+    output = ce('output')
+    get el() { return ce('div', this.label, this.slider, this.output) }
+    get value() { return this.slider.value }
+    set value(val) {
+        this.slider.value = val
+        this.update()
+    }
+
+    update = () => {
+        this.label.textContent = this.name
+        this.output.textContent = this.value
+    }
+}
+
 class SliderGroup {
     constructor(container) {
         this.container = container || ce('div')
     }
+    value(name) { return this.sliders[name].value }
+    // values = {}
     sliders = {}
     attr = {}
-    value(name) { return this.sliders[name].value }
     add(name, attr) {
-        const slider = ce('input').$attr({ type: 'range' })
-            .$attr(this.attr)
-            .$attr(attr)
+        const obj = new labeledSlider(name, this.attr)
+        obj.slider.$attr(attr)
+        obj.update()
+        this.sliders[name] = obj
+        this.container.append(obj.el)
+    }
+}
 
-        const label = ce('label', name)
-        const value = ce('span', slider.value)
-        slider.addEventListener('input', () => value.textContent = slider.value)
-        this.sliders[name] = slider
-        this.container.append(label, slider, value, ce('br'))
+class ButtonSwitcher {
+    buttons = ce('div')
+    elements = {}
+    click(name) { this.elements[name].dispatchEvent(new Event('click')) }
+    add(name, el, callback) {
+        if (!this.ref) this.ref = el
+        const button = ce('button', name)
+        if (callback) button.onclick = callback
+        button.addEventListener('click', () => {
+            this.ref.replaceWith(el)
+            this.ref = el
+        })
+        this.elements[name] = button
+        this.buttons.append(button)
     }
 }
