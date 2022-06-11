@@ -1,0 +1,13 @@
+<script>
+    const audioCtx = new AudioContext()
+    const oscillator = audioCtx.createOscillator()
+    oscillator.connect(audioCtx.destination)
+    console.log(oscillator)
+    oscillator.start()
+    let isPlaying = false
+    onclick = () => {
+        isPlaying = !isPlaying
+        if (isPlaying) audioCtx.resume()
+        else audioCtx.suspend()
+    }
+</script>

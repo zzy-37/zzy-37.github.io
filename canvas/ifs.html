@@ -1,10 +1,18 @@
 <!DOCTYPE html>
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <script src="../util.js"></script>
+<script src="ifs.js"></script>
 <style>
+    input[type="range"] {
+        margin: 0 20px;
+    }
+    label {
+        display: inline-block;
+        min-width: 5ch;
+    }
     math {
         font-size: 3em;
-        display: none;
+        display: block;
     }
 </style>
 <math>
@@ -56,193 +64,226 @@
     <mi>f</mi>
 </math>
 <script>
-    class IFS {
-        constructor(coes, probs) {
-            if (coes[0].length !== 6) throw Error('A coefficients array must contain 6 elements.')
-            this.coes = coes
-            if (probs) {
-                if (coes.length !== probs.length) throw Error('Coefficients array and probablilities array is not the same length')
-                this.probs = probs
-            } else {
-                this.probs = Array.from(coes, () => 1 / coes.length)
-            }
-        }
-        update(x, y) {
-            const r = Math.random()
-            let idx = 0
-            for (let prob = 0; r > (prob += this.probs[idx]); ++idx);
-            const [a, b, c, d, e, f] = this.coes[idx]
-            const nx = a * x + b * y + e
-            const ny = c * x + d * y + f
-            return [nx, ny]
-        }
+    const preview = createContext(800, 800)
+    preview.canvas.$style({ 'max-width': '300px', 'vertical-align': 'top' })
+
+    const viewCtx = createContext(800, 800)
+    viewCtx.canvas.$style({
+        position: 'fixed',
+        top: 0, left: 0
+    })
+
+    const ctxHidden = createContext(viewCtx.canvas.width, viewCtx.canvas.height)
+
+    resizeBg()
+    onresize = resizeBg
+    function resizeBg() {
+        resizeCanvas(viewCtx.canvas)
+        resizeCanvas(ctxHidden.canvas)
     }
 
-    const barnsleysFernIfs = new IFS(
-        [
-            [0, 0, 0, 0.16, 0, 0],
-            [0.85, 0.04, -0.04, 0.85, 0, 1.60],
-            [0.20, -0.26, 0.23, 0.22, 0, 1.60],
-            [-0.15, 0.28, 0.26, 0.24, 0, 0.44]
-        ],
-        [0.01, 0.85, 0.07, 0.07]
-    )
-
-    const mapleLeafIfs = new IFS([
-        [0.1400,  0.0100,  0.0000, 0.5100, -0.0800, -1.3100],
-        [0.4300,  0.5200, -0.4500, 0.5000,  1.4900, -0.7500],
-        [0.4500, -0.4900,  0.4700, 0.4700, -1.6200, -0.7400],
-        [0.4900,  0.0000,  0.0000, 0.5100,  0.0200,  1.6200],
-    ])
-
-    const randomIFS = new IFS(Array.from({ length: 4 }, () => genSet()))
-
-    function genSet() {
-        const m = Math.random() * Math.PI * 2
-        const n = Math.random() * Math.PI * 2
-        const ra = Math.random()
-        const rb = Math.random()
-
-        const a = Math.sin(m) * ra
-        const b = Math.cos(m) * ra
-        const c = Math.sin(n) * rb
-        const d = Math.cos(n) * rb
-        const e = Math.random() * 2 - 1
-        const f = Math.random() * 2 - 1
-
-        return [a, b, c, d, e, f]
+    function resizeCanvas(cnv) {
+        cnv.width = innerWidth
+        cnv.height = innerHeight
     }
 
-    const ctx = ce('canvas')
-        .$attr({ width: 800, height: 800 })
-        .$style({ border: 'solid currentcolor', float: 'left' })
-        .getContext('2d')
-
-    const arr = Array(100000) // x, y coordinates
-    const counts = Array(ctx.canvas.width * ctx.canvas.height)
+    const ifsList = [mapleLeafIfs, barnsleysFernIfs, treeIfs, twigIfs, randomIFS]
+    let ifs = mapleLeafIfs
+    const ifsSwicher = new ButtonSwitcher
+    for (let currentIfs of ifsList) {
+        const { buttons, ref } = paramSliders(currentIfs)
+        const el = ce('div', ce('h3', currentIfs.name),  buttons, ref)
+        ifsSwicher.add(currentIfs.name, el, function () {
+            ifs = currentIfs
+            draw()
+        })
+    }
+    function nextIfs() {
+        let i = ifsList.indexOf(ifs)
+        if (++i >= ifsList.length) i = 0
+        ifsSwicher.click(ifsList[i].name)
+    }
 
     onload = main
 
-    // global variables
-    const draw = drawPixels
-    let group
-    let ifs = mapleLeafIfs
+    const previewSliders = new SliderGroup
+    previewSliders.add('iteration', { max: 300000, value: 200000, oninput: draw })
+    previewSliders.add('r', { max: 255, value: 0, oninput: drawPreview })
+    previewSliders.add('g', { max: 255, value: 0, oninput: drawPreview })
+    previewSliders.add('b', { max: 255, value: 0, oninput: drawPreview })
+
+    function randomColor() {
+        const sliders = previewSliders.sliders
+        sliders.r.value = Math.random() * 255 | 0
+        sliders.g.value = Math.random() * 255 | 0
+        sliders.b.value = Math.random() * 255 | 0
+        drawPreview()
+    }
+
+    // translate for view
+    let translateX = translateY = 0
+    let scale = 0.5
+    let rotation = 0
+
+    let move = true
+    onkeydown = e => {
+        switch (e.key) {
+            case 'c': randomColor(); break
+            case 's': onwheel = changeScale; break
+            case 'r': onwheel = changeRotation; break
+            case 'i': nextIfs(); break
+            case ' ': move = !move; break
+        }
+    }
+    onwheel = changeScale
+
+
+    function changeRotation(e) {
+        e.preventDefault()
+        rotation += e.deltaY * 0.1
+        drawView()
+    }
+    function changeScale(e) {
+        e.preventDefault()
+        scale += e.deltaY * 0.001
+        drawView()
+    }
+
+    function drawBg() {
+        ctxHidden.clearRect(0, 0, ctxHidden.canvas.width, ctxHidden.canvas.height)
+        ctxHidden.drawImage(viewCtx.canvas, 0, 0)
+    }
+
+    viewCtx.canvas.onclick = drawBg
+    viewCtx.canvas.onmousemove = e => {
+        if (move) {
+            translateX = e.offsetX
+            translateY = e.offsetY
+            drawView()
+        }
+    }
+
+    function drawView() {
+        const ctx = viewCtx
+        // const rotate = transformSliders.value('rotate')
+
+        ctx.clearRect(0, 0, ctx.canvas.width, ctx.canvas.height)
+        ctx.drawImage(ctxHidden.canvas, 0, 0)
+
+        ctx.save()
+        ctx.translate(translateX, translateY)
+        ctx.scale(scale, scale)
+        ctx.rotate(rotation / 180 * Math.PI)
+
+        ctx.translate(-ctx.canvas.width / 2, -ctx.canvas.height / 2)
+        ctx.drawImage(preview.canvas, 0, 0)
+        ctx.restore()
+    }
 
     function main() {
-        function change(nifs, sliders) {
-            ifs = nifs
-            group.replaceWith(sliders)
-            group = sliders
+        const btnRandColor = ce('button', 'RandomColor').$attr({ onclick: randomColor })
+        const btnRandProbs = ce('button', 'Random Probabilities').$attr({ onclick: () => {
+            ifs.randomProbs()
             draw()
-        }
-        const slider1 = setSliders(mapleLeafIfs)
-        const slider2 = setSliders(barnsleysFernIfs)
-        const slider3 = setSliders(randomIFS)
-        const switcher = ce('div',
-            ce('button', 'Mapleleafe').$attr({ onclick: () => change(mapleLeafIfs, slider1) }),
-            ce('button', "Barnsley's Fern").$attr({ onclick: () => change(barnsleysFernIfs, slider2) }),
-            ce('button', 'random').$attr({ onclick: () => change(randomIFS, slider3) }),
-        )
-        group = slider1
-        document.body.append(switcher, ctx.canvas, group)
+        } })
+        const control = ce('div',
+            ifsSwicher.buttons,
+            ifsSwicher.ref,
+            ce('hr'),
+            previewSliders.container,
+            btnRandColor,
+            btnRandProbs
+        ).$style({
+            display: 'inline-block',
+            'vertical-align': 'top',
+            padding: '1rem',
+        })
 
-        // setup sliders
-        if (draw === drawPoints) {
-            group = new SliderGroup
-            group.attr = { oninput: draw }
-            group.add('scale', { value: 70 })
-            group.add('iteration', { min: 100, max: 30000, value: 13000 })
-            document.body.append(group.container)
-        }
+        const over = ce('div', control, preview.canvas)
+            .$style({
+                position: 'relative',
+                width: 'max-content',
+                border: 'solid currentcolor',
+                'z-index': 10,
+            })
+
+        document.body.append(over, viewCtx.canvas,)
 
         draw()
     }
 
+    let pointsData
+    function draw() {
+        const iteration = previewSliders.sliders.iteration.value
+        pointsData = iterate(ifs, iteration)
+
+        drawPreview()
+    }
+
+    function drawPreview() {
+        const pixels = preview.getImageData(0, 0, preview.canvas.width, preview.canvas.height)
+        fillImageDataFromPointsData(pixels, pointsData)
+        preview.putImageData(pixels, 0, 0)
+
+        drawView()
+    }
+
     function map(n, a, b, x, y) { return x + (n - a) / (b - a) * (y - x) }
 
-    function drawPixels() {
+    function iterate(ifs, iteration) {
         let x = 0, y = 0
         let min = max = 0
-        for (let i = 0; i < arr.length; i += 2) {
+        const coords = []
+        for (let i = 0; i < iteration; ++i) {
             [x, y] = ifs.update(x, y)
             min = Math.min(min, x, y)
             max = Math.max(max, x, y)
-            arr[i]     = x
-            arr[i + 1] = y
+            coords.push(x, y)
         }
+        return { min, max, coords }
+    }
 
+    function fillImageDataFromPointsData(imageData, pointsData) {
+        const { min, max, coords } = pointsData
+        const width = imageData.width
+        const height = imageData.height
+        const counts = Array(width * height)
         counts.fill(0)
         let maxCount = 0
-        for (let i = 0; i < arr.length; i += 2) {
-            const x = Math.floor(map(arr[  i  ], min, max, 0, ctx.canvas.width - 1))
-            const y = Math.floor(map(arr[i + 1], min, max, 0, ctx.canvas.height - 1))
-            const idx = x + ctx.canvas.width * y
+        for (let i = 0; i < coords.length; i += 2) {
+            const x = Math.floor(map(coords[i], min, max, 0, width - 1))
+            const y = Math.floor(map(coords[i + 1], max, min, 0, height - 1))
+            const idx = x + y * width
             maxCount = Math.max(++counts[idx], maxCount)
         }
-
-        const pixels = ctx.getImageData(0, 0, ctx.canvas.width, ctx.canvas.height)
-        for (let x = 0; x < ctx.canvas.width; ++x) {
-            for (let y = 0; y < ctx.canvas.height; ++y) {
-                const i = x + y * ctx.canvas.width
+        for (let x = 0; x < width; ++x) {
+            for (let y = 0; y < height; ++y) {
+                const i = x + y * width
                 const bri = Math.log1p(counts[i]) / Math.log1p(maxCount) * 255 | 0
-                pixels.data[i * 4]     = 0
-                pixels.data[i * 4 + 1] = 0
-                pixels.data[i * 4 + 2] = 0
-                pixels.data[i * 4 + 3] = bri
+                imageData.data[i * 4]     = previewSliders.sliders.r.value
+                imageData.data[i * 4 + 1] = previewSliders.sliders.g.value
+                imageData.data[i * 4 + 2] = previewSliders.sliders.b.value
+                imageData.data[i * 4 + 3] = bri
             }
         }
-        ctx.putImageData(pixels, 0, 0)
+        return imageData
     }
 
-    function drawPoints() {
-        ctx.clearRect(0, 0, ctx.canvas.width, ctx.canvas.height)
-        ctx.save()
-
-        {
-            ctx.translate(ctx.canvas.width / 2, ctx.canvas.height / 2)
-            ctx.scale(1, -1)
-
-            const scale = group.value('scale')
-            const iteration = group.value('iteration')
-
-            ctx.fillStyle = 'rgba(0, 0, 0, 0.2)'
-            let x = 0, y = 0
-            for (let i = 0; i < iteration; ++i) {
-                [x, y] = ifs.update(x, y)
-                ctx.fillRect(x * scale, y * scale, 1, 1)
-            }
-        }
-
-        ctx.restore()
-    }
-
-    function setSliders(ifs) {
-        const names = ['a', 'b', 'c', 'd', 'e', 'f']
-        const buttons = ce('div')
-        const ele = ce('div', 'Parameter sets', buttons).$style({
-            border: 'solid currentcolor',
-            'max-width': 'max-content',
-            padding: '1rem',
-            float: 'left'
-        })
-        let currentSet
+    function paramSliders(ifs) {
+        const vars = ['a', 'b', 'c', 'd', 'e', 'f']
+        const result = new ButtonSwitcher
         for (let j = 0; j < ifs.coes.length; ++j) {
             const set = ifs.coes[j]
             const group = new SliderGroup
             group.attr = { min: -2, max: 2, step: 0.01 }
-            group.container.append(`Set ${j}`, ce('br'))
-            if (j === 0) {
-                currentSet = group.container
-                ele.append(currentSet)
+            for (let i = 0; i < 4; ++i) {
+                group.add(vars[i], { value: set[i], oninput: function() {
+                    set[i] = this.value // update ifs coefficients
+                    draw()
+                } })
             }
-            buttons.append(ce('button', `Set ${j}`).$attr({ onclick: function() {
-                currentSet.replaceWith(group.container)
-                currentSet = group.container
-            } }))
-            for (let i = 0; i < 4; ++i)
-                group.add(names[i], { value: set[i], oninput: function() { set[i] = this.value; draw() } })
+            result.add('Set ' + j, ce('div', ce('b', 'Set ' + j),  group.container))
         }
-
-        return ele
+        return result
     }
 </script>

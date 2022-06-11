@@ -10,49 +10,136 @@
 </script>
 <script id="fs" type="text/plain">
     precision highp float;
+    const int PT_NUM = 20;
     uniform vec2 u_resolution;
     uniform float u_time;
-    uniform float u_start_time;
+    uniform float u_start_time[PT_NUM];
     uniform float u_lifetime;
     uniform float u_scale_x;
     uniform float u_scale_y;
     uniform vec2 u_mouse_pos;
+    uniform vec2 u_pos[PT_NUM];
 
     float ripple(vec2 pos, float start_time) {
         vec2 cpos = gl_FragCoord.xy - pos;
         float cLength = length(cpos) * u_scale_x;
         float dt = u_time - start_time;
         float pow = (dt > u_lifetime) ? 0.0 : (u_lifetime - dt) / u_lifetime * u_scale_y;
-        float result = cos(cLength - u_time) / cLength * pow;
+        float result = sin(cLength - u_time) / cLength * pow;
         return result;
     }
 
     void main() {
-        float bri = 0.5 + ripple(u_resolution / 2.0, u_time);
-        bri += ripple(u_mouse_pos, u_start_time);
-        gl_FragColor = vec4(vec3(bri), 1.0);
+        float bri = 0.5;
+        for (int i = 0; i < PT_NUM; ++i) {
+            bri += ripple(u_pos[i], u_start_time[i]);
+        }
+        gl_FragColor = vec4(0.0, 0.0, 1.0, bri);
     }
 </script>
+<style>
+    math {
+        display: block;
+        margin: .5rem 0;
+        font-size: 3rem;
+    }
+</style>
+<math>
+    <mi>dist</mi>
+    <mo>=</mo>
+    <mo>|</mo>
+    <mrow>
+        <mi>x</mi>
+        <mo>-</mo>
+        <mi>orig</mi>
+    </mrow>
+    <mo>|</mo>
+</math>
+<math>
+    <mi>dt</mi>
+    <mo>=</mo>
+    <mi>time</mi>
+    <mo>-</mo>
+    <mi>st</mi>
+</math>
+<math>
+    <mi>scaler</mi>
+    <mo>=</mo>
+    <mrow>
+    <mo>{</mo>
+        <mtable>
+            <mtr>
+                <mtd>
+                    <mn>0</mn>
+                    <mo>,</mo>
+                </mtd>
+                <mtd>
+                    <mi>dt</mi>
+                    <mo>></mo>
+                    <mi>lifetime</mi>
+                </mtd>
+            </mtr>
+            <mtr>
+                <mtd>
+                    <mfrac>
+                        <mrow>
+                            <mi>lifetime</mi>
+                            <mo>-</mo>
+                            <mi>dt</mi>
+                        </mrow>
+                        <mi>lifetime</mi>
+                    </mfrac>
+                    <mo>&times;</mo>
+                    <mi>pow</mi>
+                    <mo>,</mo>
+                </mtd>
+                <mtd>
+                    <mi>dt</mi>
+                    <mo>&le;</mo>
+                    <mi>lifetime</mi>
+                </mtd>
+            </mtr>
+        </mtable>
+    </mrow>
+</math>
+<math>
+    <mi>f</mi>
+    <mo>(</mo>
+    <mi>x</mi>
+    <mo>)</mo>
+    <mo>=</mo>
+    <mfrac>
+        <mrow>
+            <mi>sin</mi>
+            <mo>(</mo>
+            <mi>dist</mi>
+            <mo>-</mo>
+            <mi>time</mi>
+            <mo>)</mo>
+        </mrow>
+        <mi>dist</mi>
+    </mfrac>
+    <mo>&times;</mo>
+    <mi>scaler</mi>
+</math>
 <script>
-    const ctx = ce('canvas').$attr({
-        width: 800, height: 800
-    }).getContext('2d')
+    const POINTS_NUM = 20
 
-    const gl = ce('canvas').$attr({
-        width: 800, height: 800
-    }).getContext('webgl2')
+    const ctx = createContext(1400, 100)
+    const gl = createContext(1400, 800, 'webgl2')
+
+    const graphCtx = createContext(400, 400)
+    const graphGl = createContext(400, 400, 'webgl2')
 
     const program = initShaderProgram(gl, vs.textContent, fs.textContent)
+    const program2 = initShaderProgram(graphGl, vs.textContent, fs.textContent)
 
     const startts = performance.now()
-
-    let setup = setupGL
-    let draw
 
     // parameters
     let dt
     let speed = 10
-    let scaleX = 0.05
+    let scaleX = 0.1
     let scaleY = 1
     let lifetime = 10
     const group = new SliderGroup
@@ -61,34 +148,90 @@
     group.add('scaleY', { min: 0.01, max: 2, step: 0.01, value: scaleY, oninput: function () { scaleY = this.value } })
     group.add('lifetime', { value: lifetime, oninput: function () { lifetime = this.value } })
 
-    const mouse = { x: 0, y: 0 }
-    gl.canvas.onmousemove = e => {
-        mouse.x = e.offsetX
-        mouse.y = gl.canvas.height - e.offsetY
+    const mouse = { x: 0, y: 0, down: false }
+
+    {
+        let i = 0
+        function addRipple() {
+            times[i] = dt
+            positions[i * 2] = mouse.x
+            positions[i * 2 + 1] = mouse.y
+            if (++i >= POINTS_NUM) i = 0
+        }
+
+        const positions = Array(POINTS_NUM * 2)
+        positions.fill(0)
+        const times = Array(POINTS_NUM)
+        times.fill(0)
+        function drawGL() {
+            gl.clearColor(0, 0, 0, 0)
+            gl.clear(gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT)
+
+            // program.setUniform('u_resolution', gl.canvas.width, gl.canvas.height)
+            program.setUniform('u_time', dt)
+            program.setUniform('u_scale_x', scaleX)
+            program.setUniform('u_scale_y', scaleY)
+            program.setUniform('u_lifetime', lifetime)
+            program.setUniform('u_start_time', times)
+            program.setUniform('u_pos', positions)
+
+            gl.drawArrays(gl.TRIANGLE_STRIP, 0, 4)
+        }
+        function draw2d() {
+            ctx.clearRect(0, 0, ctx.canvas.width, ctx.canvas.height)
+
+            ctx.beginPath()
+            for (let x = 0; x < ctx.canvas.width; ++x) {
+                let r = ctx.canvas.height / 2
+                for (let i = 0; i < POINTS_NUM; ++i) {
+                    r += calc(x, positions[i * 2], times[i]) * 5
+                }
+                if (x === 0) ctx.moveTo(x, r)
+                else ctx.lineTo(x, r)
+            }
+            ctx.stroke()
+        }
     }
 
-    gl.canvas.onclick = e => {
-        program.setUniform('u_start_time', dt)
-        program.setUniform('u_mouse_pos', mouse.x, mouse.y)
+    gl.canvas.onmousemove = e => {
+        const dx = e.movementX
+        const dy = e.movementY
+        const dist = Math.sqrt(dx * dx + dy * dy)
+        mouse.x = e.offsetX
+        mouse.y = gl.canvas.height - e.offsetY
+        if (mouse.down && dist > 40) addRipple()
     }
+    gl.canvas.onmousedown = e => { mouse.down = true; addRipple() }
+    gl.canvas.onmouseup = e => { mouse.down = false }
 
     onload = main
 
     function main() {
-        document.body.append(group.container, ce('h2', 'Click to emit new ripple.'))
+        document.body.append(
+            group.container,
+            ce('h2', 'Click to emit new ripple.'),
+            graphCtx.canvas,
+            graphGl.canvas,
+            ctx.canvas,
+            gl.canvas,
+        )
 
-        setup()
+        setupGL()
         loop()
     }
 
+    function draw() {
+        drawGraph()
+        drawGraphGl()
+        draw2d()
+        drawGL()
+    }
+
     function setupGL() {
-        draw = drawGL
-        document.body.append(gl.canvas)
-
         newAttributeBuffer(gl, program, 'a_position', [-1, -1, 1, -1, -1, 1, 1, 1], 2)
-
+        newAttributeBuffer(graphGl, program2, 'a_position', [-1, -1, 1, -1, -1, 1, 1, 1], 2)
         gl.useProgram(program)
-        program.setUniform('u_resolution', gl.canvas.width, gl.canvas.height)
+        graphGl.useProgram(program2)
     }
 
     function loop(ts) {
@@ -97,27 +240,49 @@
         requestAnimationFrame(loop)
     }
 
-    function draw2d() {
+    function calc(x, pos, start_time) {
+        const dist = Math.abs(x - pos) * scaleX
+        const t = dt - start_time;
+        const pow = (t > lifetime) ? 0.0 : (lifetime - t) / lifetime * scaleY;
+        const r = Math.cos(dist - dt) / dist * pow
+        return r
+    }
+
+    function drawGraph() {
+        const ctx = graphCtx
         ctx.clearRect(0, 0, ctx.canvas.width, ctx.canvas.height)
 
         ctx.beginPath()
         for (let x = 0; x < ctx.canvas.width; ++x) {
-            const dist = Math.abs(x - ctx.canvas.width / 2) * scaleX
-            const r = Math.cos(dist - dt) / dist * ctx.canvas.height / 2 * scaleY
-            if (x === 0) ctx.moveTo(x, ctx.canvas.height / 2 - r)
-            else ctx.lineTo(x, ctx.canvas.height / 2 - r)
+            let r = ctx.canvas.height / 2
+            r += calc(x, ctx.canvas.width / 2, dt) * 15
+            if (x === 0) ctx.moveTo(x, r)
+            else ctx.lineTo(x, r)
         }
         ctx.stroke()
     }
 
-    function drawGL() {
-        gl.clearColor(0, 1, 0, 1)
+    const positions2 = Array(POINTS_NUM * 2)
+    positions2.fill(0)
+    positions2[0] = graphGl.canvas.width / 2
+    positions2[1] = graphGl.canvas.height / 2
+    const times2 = Array(POINTS_NUM)
+    times2.fill(0)
+    function drawGraphGl() {
+        const gl = graphGl
+        const program = program2
+        gl.clearColor(0, 0, 0, 0)
         gl.clear(gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT)
 
+        // program.setUniform('u_resolution', gl.canvas.width, gl.canvas.height)
         program.setUniform('u_time', dt)
         program.setUniform('u_scale_x', scaleX)
         program.setUniform('u_scale_y', scaleY)
         program.setUniform('u_lifetime', lifetime)
+
+        times2[0] = dt
+        program.setUniform('u_start_time', times2)
+        program.setUniform('u_pos', positions2)
 
         gl.drawArrays(gl.TRIANGLE_STRIP, 0, 4)
     }

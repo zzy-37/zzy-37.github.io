@@ -52,6 +52,7 @@ function initShaderProgram(gl, vs, fs) {
     // closure, set uniform using the infomation loaded above
     program.setUniform = function (name, ...data) {
         const u = uniforms[name]
+        if (!u) return console.warn(`Uniform: ${name} is not used.`)
         data = data.flat()
         switch (u.type) {
             case gl.BOOL: gl.uniform1i(u.location, (data[0] === true) ? 1 : 0); break
