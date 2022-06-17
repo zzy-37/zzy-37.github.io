@@ -40,14 +40,13 @@ let scale = 0.5
 let rotation = 0
 
 let move = true
-ifsview.canvas.onkeydown = e => {
-    e.preventDefault()
+document.onkeydown = e => {
     switch (e.key) {
         case 'c': randomColor(); break
         case 's': ifsview.canvas.onwheel = changeScale; break
         case 'r': ifsview.canvas.onwheel = changeRotation; break
         case 'i': nextIfs(); break
-        case ' ': move = !move; break
+        case ' ': e.preventDefault(); move = !move; break
     }
 }
 ifsview.canvas.onwheel = changeScale

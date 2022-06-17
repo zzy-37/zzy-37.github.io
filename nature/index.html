@@ -46,12 +46,15 @@
     <script src="ifs.js"></script>
     <script src="nature.js"></script>
     <style>
+        * {
+            box-sizing: border-box;
+        }
         body {
             max-width: 80ch;
             margin: 0 auto;
         }
 
-        img {
+        img, canvas {
             max-width: 100%;
         }
 
@@ -75,6 +78,9 @@
 
         #affineContainer {
             display: flex;
+        }
+        #affineContainer > * {
+            width: 50%;
         }
     </style>
 </head>
