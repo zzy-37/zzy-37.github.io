@@ -1,0 +1,603 @@
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<!-- https://www.figma.com/file/SxFK3n3bpf033pl6qo0RJF/%E5%AE%A0%E7%89%A9%E7%95%8C%E9%9D%A2%E5%BC%80%E5%8F%91?node-id=0%3A1 -->
+
+<style>
+    :root {
+        --color-bg: #F1F1F3;
+        --color-gray1: #9799A6;
+        --color-gray2: #494A52;
+        --color-blue: #B6CAE0;
+        --color-red: #E17967;
+    }
+
+    * {
+        box-sizing: border-box;
+    }
+
+    body {
+        background-color: var(--color-bg);
+        margin: 1em;
+    }
+
+    header {
+        color: var(--color-gray2);
+    }
+
+    header b {
+        font-size: x-large;
+    }
+
+    summary {
+        cursor: pointer;
+    }
+
+    .wrapper {
+        padding: 1em;
+    }
+
+    .card {
+        margin: 1em 0;
+    }
+
+    details.card[open] {
+        border-radius: 1em;
+        background-color: var(--color-gray1);
+    }
+
+    div.card,
+    details.card summary {
+        background-color: white;
+        border-radius: 1em;
+        display: flex;
+        gap: 1em;
+    }
+
+    .card-content {
+        min-width: 0;
+        flex: 1;
+        color: var(--color-gray1);
+    }
+
+    .card-content b {
+        color: var(--color-gray2);
+    }
+
+    .card-heading {
+        display: flex;
+        flex-direction: column;
+        color: var(--color-gray2);
+    }
+
+    .card-heading h3 {
+        margin: 0;
+        text-align: end;
+    }
+
+    details.card .card-heading::after {
+        content: '﹀';
+        text-align: end;
+        margin-top: auto;
+        color: var(--color-gray1);
+    }
+
+    details.card[open] .card-heading::after {
+        content: '︿';
+    }
+
+    .temp-widgit {
+        display: flex;
+    }
+
+    #el-temp-val {
+        font-size: xx-large;
+    }
+
+    .temp-widgit-right {
+        font-size: small;
+        margin: auto 0;
+    }
+
+    canvas {
+        width: 100%;
+    }
+
+    #cnv1 {
+        max-height: 6em;
+    }
+
+    #cnv2 {
+        aspect-ratio: 3/2;
+    }
+
+    .card-heading .icon {
+        fill: var(--color-gray2);
+        margin: .5em auto;
+    }
+
+    #talk-button {
+        border-radius: 1em;
+        padding: .5em;
+        background-color: var(--color-red);
+        width: fit-content;
+    }
+
+    #talk-button svg {
+        fill: white;
+    }
+
+    #audio-widget {
+        display: flex;
+        flex-direction: column;
+        gap: 1em;
+    }
+
+    #file_select {
+        overflow: auto;
+    }
+
+    @media (min-width: 750px) {
+        main {
+            display: flex;
+            gap: 1em;
+        }
+
+        main> :first-child {
+            flex: 1;
+            height: fit-content;
+        }
+
+        main aside {
+            flex-basis: 40%;
+        }
+
+    }
+</style>
+
+<header>
+    <b>Your Pet</b> in flight - the cargo hold
+</header>
+
+<main>
+    <details class="card" open>
+        <summary class="wrapper">
+            <div class="card-content">
+                <canvas id="cnv1"></canvas>
+            </div>
+            <div class="card-heading">
+                <h3>Body Temp</h3>
+                <div class="temp-widgit">
+                    <b id="el-temp-val">----</b>
+                    <div class="temp-widgit-right">
+                        <div>&#8451;</div>
+                        <div id="el-temp-range"></div>
+                    </div>
+                </div>
+            </div>
+        </summary>
+
+        <div class="wrapper">
+            <canvas id="cnv2"></canvas>
+        </div>
+    </details>
+
+    <aside>
+        <div class="card wrapper">
+            <div class="card-content">
+                <div><b>Animal Name:</b> <span id="el-animal-name">James</span></div>
+                <div><b>Species:</b> <span id="el-species">CAT</span></div>
+                <div><b>Weight:</b> <span id="el-weight">12 KG</span></div>
+                <div><b>Microchip No.:</b> <span id="el-microchip-no">156000034039487</span></div>
+            </div>
+            <div class="card-heading">
+                <h3>Animal Info</h3>
+            </div>
+        </div>
+
+        <div class="card wrapper">
+            <div class="card-content">
+                <p> When it lights up, the abnormal situation <b>has been fed back</b> to the flight attendant, they
+                    will adjust the pet's environment <b>within 3 minutes</b> and get in touch with you . (If not,
+                    please call attendant)</p>
+            </div>
+            <div class="card-heading">
+                <h3>Reminder</h3>
+                <svg class="icon" xmlns="http://www.w3.org/2000/svg" height="48" width="48">
+                    <path
+                        d="M8 38v-3h4.2V19.7q0-4.2 2.475-7.475Q17.15 8.95 21.2 8.1V6.65q0-1.15.825-1.9T24 4q1.15 0 1.975.75.825.75.825 1.9V8.1q4.05.85 6.55 4.125t2.5 7.475V35H40v3Zm16-14.75ZM24 44q-1.6 0-2.8-1.175Q20 41.65 20 40h8q0 1.65-1.175 2.825Q25.65 44 24 44Zm-8.8-9h17.65V19.7q0-3.7-2.55-6.3-2.55-2.6-6.25-2.6t-6.275 2.6Q15.2 16 15.2 19.7Z" />
+                </svg>
+            </div>
+        </div>
+
+        <details id="card_audio" class="card">
+            <summary class="wrapper">
+                <div class="card-content">
+                    <p>You can <b>Press the Right Button</b> to connect with your pet.</p>
+                </div>
+                <div class="card-heading">
+                    <h3>Talk - Listen</h3>
+                    <div id="talk-button" class="icon">
+                        <svg xmlns="http://www.w3.org/2000/svg" height="48" width="48">
+                            <path
+                                d="M24 26.85q-2.15 0-3.6-1.55-1.45-1.55-1.45-3.75V9q0-2.1 1.475-3.55Q21.9 4 24 4t3.575 1.45Q29.05 6.9 29.05 9v12.55q0 2.2-1.45 3.75-1.45 1.55-3.6 1.55Zm0-11.4ZM22.5 42v-6.8q-5.3-.55-8.9-4.45-3.6-3.9-3.6-9.2h3q0 4.55 3.225 7.65Q19.45 32.3 24 32.3q4.55 0 7.775-3.1Q35 26.1 35 21.55h3q0 5.3-3.6 9.2-3.6 3.9-8.9 4.45V42ZM24 23.85q.9 0 1.475-.675.575-.675.575-1.625V9q0-.85-.6-1.425Q24.85 7 24 7t-1.45.575q-.6.575-.6 1.425v12.55q0 .95.575 1.625T24 23.85Z" />
+                        </svg>
+                    </div>
+                </div>
+            </summary>
+
+            <div id="audio-widget" class="wrapper">
+                <div>
+                    <button><label for="file_input">Upload Audio File</label></button>
+                    <input id="file_input" type="file" accept="audio/*" multiple hidden>
+                    <button><label for="record_input">Record</label></button>
+                    <input id="record_input" type="file" accept="audio/*" capture hidden>
+                </div>
+                <select id="file_select" size="2"></select>
+                <div><audio id="audio" controls></audio></div>
+                <ul hidden>
+                    <li>Name: <span id="el-file-name"></span></li>
+                    <li>Size: <span id="el-file-size"></span></li>
+                    <li>Mime Type: <span id="el-file-type"></span></li>
+                </ul>
+
+                <div>Audio: <span id="el-connection-state"></span></div>
+            </div>
+        </details>
+    </aside>
+</main>
+
+<script>
+    const audio_files = new Map()
+
+
+    audio.onloadedmetadata = init_sampler
+
+    function init_sampler() {
+        if (!window.context) {
+            context = new AudioContext({ sampleRate: 8000 })
+            analyser = new AnalyserNode(context)
+
+            const source = context.createMediaElementSource(audio)
+            source.connect(analyser).connect(context.destination)
+
+            function start_sampling() {
+                timeoutID = setTimeout(start_sampling, 1000 * analyser.fftSize / context.sampleRate)
+                on_sample()
+            }
+
+            audio.onplay = start_sampling
+            audio.onpause = function () {
+                clearTimeout(timeoutID)
+            }
+
+            // sample_rate_container.textContent = `Sample Rate: ${context.sampleRate}`
+            // buffer_len_container.textContent = `Buffer Len: ${analyser.fftSize}`
+        }
+    }
+
+    function on_sample() {
+        const data = new Uint8Array(analyser.fftSize)
+        analyser.getByteTimeDomainData(data)
+
+        if (window.connection) connection.send(data)
+
+        // ctx.clearRect(0, 0, cnv.width, cnv.height)
+        // ctx.strokeStyle = 'white'
+        // ctx.beginPath()
+        // data.forEach((v, i) => {
+        //     const x = i * cnv.width / data.length
+        //     const y = v * cnv.height / 255
+        //     if (i == 0) ctx.moveTo(x, y)
+        //     else ctx.lineTo(x, y)
+        // });
+        // ctx.stroke()
+    }
+
+    file_select.onchange = function () {
+        audio.src = audio_files.get(this.value).url
+        audio.load()
+
+        const file = audio_files.get(this.value).file
+        window['el-file-name'].textContent = file.name
+        window['el-file-size'].textContent = file.size
+        window['el-file-type'].textContent = file.type
+    }
+
+    record_input.onchange =
+        file_input.onchange = function () {
+            for (const file of this.files)
+                audio_files.set(file.name, { file: file, url: URL.createObjectURL(file) })
+
+            file_select.size = audio_files.size > 1 ? audio_files.size : 2
+            file_select.replaceChildren(
+                ...[...audio_files.keys()].map(name => Object.assign(
+                    document.createElement('option'), {
+                    textContent: name,
+                    value: name
+                }))
+            )
+
+            if (file_select.value === '') {
+                const [filename] = audio_files.keys()
+                file_select.value = filename
+                file_select.onchange()
+            }
+        }
+</script>
+
+<script>
+    update_canvas_size()
+    onresize = update_canvas_size
+
+    const css_var = name => getComputedStyle(document.documentElement).getPropertyValue(name)
+
+    // const get_temp = async function () {
+    //     const data = await fetch(location.origin + '/temp')
+    //     return Number(await data.text())
+    // }
+
+    const get_temp = (function () {
+        let temp = 39
+        return function () {
+            temp += (Math.random() - 0.5) * 0.2
+            return temp
+        }
+    })()
+
+    start_logging()
+
+    function update_canvas_size() {
+        cnv1.width = cnv1.clientWidth
+        cnv1.height = cnv1.clientHeight
+
+        cnv2.width = cnv2.clientWidth
+        cnv2.height = cnv2.clientHeight
+    }
+
+    function start_logging() {
+        const temp_values = []
+        const start_time = performance.now()
+
+        let temp
+        let temp_min, temp_max
+        let timeoutID
+
+        update_temp()
+        requestAnimationFrame(draw)
+
+        async function update_temp() {
+            temp = await get_temp()
+
+            if (!temp_min) temp_min = temp_max = temp
+            if (temp > temp_max) temp_max = temp
+            if (temp < temp_min) temp_min = temp
+
+            window['el-temp-val'].textContent = temp.toFixed(1)
+            window['el-temp-range'].textContent = `/${temp_min.toFixed(1)}-${temp_max.toFixed(1)}`
+
+            temp_values.push({
+                time: (performance.now() - start_time) / 1000,
+                value: temp
+            })
+
+            timeoutID = setTimeout(update_temp, 1000)
+        }
+
+        const min_temp = 37
+        const max_temp = 41
+        const temp_high = 40
+        const temp_low = 38.5
+
+        const x_start = 10
+        const font_size1 = 12
+        const font_name = 'sans-serif'
+        const label_height = font_size1 + 3
+
+        const ctx1 = cnv1.getContext('2d')
+        const ctx2 = cnv2.getContext('2d')
+
+        const font_size = size => `${size}px ${font_name}`
+
+        let requestID
+
+        function draw(ts) {
+            // update_canvas_size()
+            const dt = (ts - start_time) / 1000
+
+            const time_interval =
+                dt < 5 * 60 ? 1
+                    : dt < 30 * 60 ? 5
+                        : 30
+
+            const window_len =
+                dt < 10 * 60 ? 2 * 60
+                    : dt < 30 * 60 ? 10 * 60
+                        : dt < 120 * 60 ? 30 * 60
+                            : 60 * 60
+
+            const window_end = dt + window_len * 0.2
+            const window_start = window_end - window_len
+
+            // draw_graph1(ctx1, dt, time_interval)
+
+            draw_graph(ctx1, dt, window_start, window_end, 1, 16)
+            draw_graph(ctx2, dt, window_start, window_end, 2, 20, true)
+
+            requestID = requestAnimationFrame(draw)
+        }
+
+        function draw_graph(ctx, dt, window_start, window_end, line_width, text_size, large = false) {
+            const values = !large ? temp_values : temp_values.filter(({ time }) => time >= window_start && time <= window_end)
+            if (values.length == 0) return
+
+            const { canvas } = ctx
+            const { width, height } = canvas
+
+            const max_time = dt * 1.2
+            if (window_start < 0) window_start = 0
+            if (window_end > max_time) window_end = max_time
+
+            const time2x = time =>
+                map(time,
+                    large ? window_start : 0,
+                    large ? window_end : max_time,
+                    x_start,
+                    width - 40)
+
+            const temp2y = temp =>
+                map(temp,
+                    min_temp < temp_min ? min_temp : temp_min,
+                    max_temp > temp_max ? max_temp : temp_max,
+                    height - label_height,
+                    0)
+
+            const first = values[0]
+            const last = values[values.length - 1]
+
+            ctx_clear(ctx)
+
+            if (!large) {
+                ctx.fillStyle = `${css_var('--color-gray1')}4d`
+                const x = time2x(window_start)
+                const y = label_height / 2
+                const w = time2x(window_end) - x
+                const h = height - 2 * label_height
+                ctx.fillRect(x, y, w, h)
+
+                const time_interval =
+                    dt < 5 * 60 ? 1
+                        : dt < 30 * 60 ? 5
+                            : 30
+
+                ctx.strokeStyle = ctx.fillStyle = css_var('--color-gray1')
+                ctx.font = `12px ${font_name}`
+                ctx.textBaseline = 'bottom'
+                ctx.textAlign = 'center'
+                ctx.beginPath()
+                for (let time = 0; time < max_time / 60; time += time_interval) {
+                    const x = time2x(time * 60)
+                    ctx.moveTo(x, 0)
+                    ctx.lineTo(x, height - label_height)
+                    ctx.fillText((time_interval == 30 ? time / 60 : time).toFixed(1), x, height)
+                }
+                ctx.stroke()
+                ctx.textAlign = 'right'
+                ctx.fillText(time_interval == 30 ? '/h' : '/min', width, height)
+            }
+
+            ctx.lineWidth = line_width
+
+            ctx.font = `${text_size}px ${font_name}`
+            ctx.textBaseline = 'bottom'
+            ctx.textAlign = 'right'
+
+            {
+                ctx.fillStyle = ctx.strokeStyle = css_var('--color-red')
+                ctx.beginPath()
+                const y = temp2y(temp_high)
+                ctx.moveTo(x_start, y)
+                ctx.lineTo(width, y)
+                ctx.stroke()
+                ctx.fillText(temp_high.toFixed(1), width, y)
+            }
+
+            {
+                ctx.fillStyle = ctx.strokeStyle = css_var('--color-blue')
+                ctx.beginPath()
+                const y = temp2y(temp_low)
+                ctx.moveTo(x_start, y)
+                ctx.lineTo(width, y)
+                ctx.stroke()
+                ctx.fillText(temp_low.toFixed(1), width, y)
+            }
+
+            ctx.strokeStyle = css_var('--color-gray2')
+            ctx.beginPath()
+            ctx.moveTo(time2x(first.time), temp2y(first.value))
+            values.forEach(({ time, value }) => {
+                const x = time2x(time)
+                const y = temp2y(value)
+                ctx.lineTo(x, y)
+            })
+
+            if (dt < max_time) {
+                const current_x = time2x(dt)
+                ctx.lineTo(current_x, temp2y(temp))
+                ctx.moveTo(current_x, 0)
+                ctx.lineTo(current_x, height - label_height)
+                ctx.stroke()
+
+                ctx.fillStyle = css_var(large ? '--color-gray1' : '--color-gray2')
+                ctx.beginPath()
+                ctx.arc(current_x, large ? temp2y(temp) : height - label_height, large ? 6 : 3, 0, Math.PI * 2)
+                ctx.fill()
+                ctx.stroke()
+
+                if (large) {
+                    ctx.fillStyle = css_var('--color-gray2')
+                    ctx.font = `bold ${text_size}px ${font_name}`
+                    ctx.textAlign = 'left'
+                    ctx.textBaseline = 'middle'
+                    ctx.fillText(temp.toFixed(1), current_x + 10, temp2y(temp))
+                }
+            }
+        }
+
+        function draw_graph1(ctx, dt, time_interval) {
+            const { canvas } = ctx
+            const { width, height } = canvas
+            const { time, value } = temp_values[temp_values.length - 1]
+
+            const min_time = 0
+            const max_time = dt * 1.2
+
+            const time2x = time => map(time, min_time, max_time, 10, width - 30)
+            const temp2y = temp =>
+                map(temp,
+                    min_temp < temp_min ? min_temp : temp_min,
+                    max_temp > temp_max ? max_temp : temp_max,
+                    height - label_height,
+                    0)
+
+            ctx_clear(ctx)
+
+            ctx.strokeStyle = ctx.fillStyle = css_var('--color-gray1')
+            ctx.font = font_size(font_size1)
+            ctx.textBaseline = 'bottom'
+            ctx.textAlign = 'center'
+            for (let time = 0; time < max_time; time += time_interval * 60) {
+                const x = time2x(time)
+                ctx_line(ctx, x, 0, x, height - label_height)
+                ctx.fillText((time_interval == 30 ? time / 60 / 60 : time / 60).toFixed(1), x, height)
+            }
+            ctx.textAlign = 'right'
+            ctx.fillText(time_interval == 30 ? '/h' : '/min', width, height)
+
+            ctx.fillStyle = css_var('--color-gray2')
+            // ctx_fill_circle(ctx, time2x(dt), height - label_height, 3)
+            draw_graph(ctx, dt, 0, max_time, 1, 16)
+        }
+    }
+
+    function map(x, a, b, c, d) {
+        return c + (x - a) / (b - a) * (d - c)
+    }
+
+    function ctx_clear(ctx) {
+        ctx.clearRect(0, 0, ctx.canvas.width, ctx.canvas.height)
+    }
+
+    function ctx_fill_circle(ctx, x, y, r) {
+        ctx.beginPath()
+        ctx.arc(x, y, r, 0, Math.PI * 2)
+        ctx.fill()
+    }
+
+    function ctx_line(ctx, x1, y1, x2, y2) {
+        ctx.beginPath()
+        ctx.moveTo(x1, y1)
+        ctx.lineTo(x2, y2)
+        ctx.stroke()
+    }
+</script>
