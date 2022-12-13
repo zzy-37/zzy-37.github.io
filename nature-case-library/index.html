@@ -1,0 +1,64 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+    <script src="cells.js"></script>
+
+    <style>
+        .table-head {
+            display: flex;
+            overflow: auto;
+        }
+
+        .table-head>div {
+            flex-shrink: 0;
+            border: solid currentColor;
+        }
+
+        .projects summary {
+            cursor: pointer;
+        }
+
+        .projects summary>h3 {
+            display: inline-block;
+        }
+    </style>
+
+    <script>
+        [
+            'div', 'p', 'span', 'h1', 'h2', 'h3', 'h4', 'h5', 'h6',
+            'a', 'ul', 'li', 'details', 'summary'
+        ].forEach(name =>
+            window[name] = (...children) => {
+                const el = document.createElement(name)
+                el.append(...children)
+                return el
+            })
+    </script>
+</head>
+
+<body>
+    <script>
+        const rows = cells.values
+
+        const projs = div(
+            ...rows.slice(2).map(([name, place, authors, year, link, description]) =>
+                details(
+                    summary(h3(name)),
+                    div(`Place: ${place}`),
+                    div(`Authors: ${authors}`),
+                    div(`Year: ${year}`),
+                    div('Link: ', Object.assign(a(link), { href: link }))
+                ))
+        )
+
+        projs.classList.add('projects')
+
+        document.body.append(projs)
+    </script>
+</body>
+
+</html>
