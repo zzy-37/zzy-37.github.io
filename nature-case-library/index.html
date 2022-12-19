@@ -4,33 +4,76 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Document</title>
+    <title>Case Library | Ecology and Culture Lab</title>
+
     <script src="cells.js"></script>
 
     <style>
-        .table-head {
-            display: flex;
-            overflow: auto;
+        body {
+            font-family: AvenirNext;
         }
 
-        .table-head>div {
-            flex-shrink: 0;
+        a {
+            word-break: break-all;
+        }
+
+        .topics,
+        header nav {
+            padding: .2rem;
+        }
+
+        .topics button,
+        header nav button {
+            margin: .2rem;
+        }
+
+        .topics button:first-of-type {
+            background-color: lightcoral;
+        }
+
+        .topics button.selected {
+            background-color: lightblue;
+        }
+
+        .projects details {
+            margin: .5rem 0;
+        }
+
+        .projects>div h3 {
+            margin-top: 0;
+        }
+
+        .projects>div {
+            margin: .5rem 0;
+            padding: .5rem;
             border: solid currentColor;
         }
 
-        .projects summary {
+        button,
+        summary {
             cursor: pointer;
         }
 
-        .projects summary>h3 {
-            display: inline-block;
+        summary>h3 {
+            display: inline;
+        }
+
+        @font-face {
+            font-family: AvenirNext;
+            src: url("avenir-next/AvenirNextLTPro-Regular.otf") format("opentype");
+        }
+
+        @font-face {
+            font-family: AvenirNext;
+            font-weight: bold;
+            src: url("avenir-next/AvenirNextLTPro-Bold.otf") format("opentype");
         }
     </style>
 
     <script>
-        [
-            'div', 'p', 'span', 'h1', 'h2', 'h3', 'h4', 'h5', 'h6',
-            'a', 'ul', 'li', 'details', 'summary'
+        ['div', 'p', 'span', 'h1', 'h2', 'h3', 'h4', 'h5', 'h6',
+            'a', 'ul', 'li', 'details', 'summary', 'nav', 'header',
+            'button', 'blockquote'
         ].forEach(name =>
             window[name] = (...children) => {
                 const el = document.createElement(name)
@@ -43,21 +86,101 @@
 <body>
     <script>
         const rows = cells.values
+        const headers = rows[0]
+        const entries = rows.slice(2)
 
-        const projs = div(
-            ...rows.slice(2).map(([name, place, authors, year, link, description]) =>
-                details(
-                    summary(h3(name)),
-                    div(`Place: ${place}`),
-                    div(`Authors: ${authors}`),
-                    div(`Year: ${year}`),
-                    div('Link: ', Object.assign(a(link), { href: link }))
-                ))
+        const i1 = headers.indexOf('Is it a Citizen Science project?')
+        const citizen_science = entries.filter(row => row[i1] === 'Y')
+
+        const get_topics = row => row[i1 + 1]?.toLowerCase().split(',').map(str => str.trim())
+        const nature_topics = [...new Set(entries.map(get_topics).flat())].filter(t => t)
+
+        const selected_topics = new Set()
+
+        const topics = details(
+            summary(h3('Nature Topics')),
+            Object.assign(button('Clear'), {
+                onclick() {
+                    selected_topics.clear()
+                    topics.querySelectorAll('.selected').forEach(el => el.classList.remove('selected'))
+                    show_topic()
+                }
+            }),
+            ...nature_topics.map(topic =>
+                Object.assign(button(topic), {
+                    onclick() {
+                        if (selected_topics.has(topic)) {
+                            selected_topics.delete(topic)
+                            this.classList.remove('selected')
+                        }
+                        else {
+                            selected_topics.add(topic)
+                            this.classList.add('selected')
+                        }
+
+                        show_topic()
+                    }
+                }))
         )
 
+        topics.setAttribute('open', true)
+        topics.classList.add('topics')
+
+        function show_topic() {
+            const items = entries.filter(row => {
+                for (const topic of selected_topics.keys())
+                    if (get_topics(row)?.includes(topic)) return true
+                return false
+            })
+            current_filter.textContent = `Showing: Nature Topic${selected_topics.size > 1 ? 's' : ''}: ${[...selected_topics].join(', ')}`
+            show_entries(items)
+        }
+
+        const head = header(
+            nav(
+                Object.assign(button('All'), {
+                    onclick() {
+                        current_filter.textContent = `Showing: All Projects`
+                        show_entries(entries)
+                    }
+                }),
+                Object.assign(button('Citizen Science'), {
+                    onclick() {
+                        current_filter.textContent = `Showing: Citizen Science Projects`
+                        show_entries(citizen_science)
+                    }
+                }),
+                Object.assign(button('Nature Topics'), {
+                    onclick() {
+                        show_topic()
+                    }
+                }),
+            ),
+            topics
+        )
+
+        function show_entries(list) {
+            projs.replaceChildren(
+                ...list.map(([name, place, authors, year, link, description]) =>
+                    div(
+                        h3(name),
+                        div(`Place: ${place}`),
+                        div(`Authors: ${authors}`),
+                        div(`Year: ${year}`),
+                        div('Link: ', Object.assign(a(link), { href: link })),
+                        blockquote(description),
+                    ))
+            )
+        }
+
+        const current_filter = h2()
+        const projs = div()
         projs.classList.add('projects')
 
-        document.body.append(projs)
+        document.body.append(
+            head,
+            current_filter,
+            projs)
     </script>
 </body>
 
