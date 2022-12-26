@@ -9,29 +9,45 @@
     <script src="cells.js"></script>
 
     <style>
+        * {
+            box-sizing: border-box;
+        }
+
         body {
             font-family: AvenirNext;
+        }
+
+        img {
+            max-width: 100%;
         }
 
         a {
             word-break: break-all;
         }
 
-        .topics,
+        button {
+            font-size: large;
+        }
+
+        header img {
+            max-width: 20rem;
+        }
+
+        .tag-selector,
         header nav {
             padding: .2rem;
         }
 
-        .topics button,
+        .tag-selector button,
         header nav button {
             margin: .2rem;
         }
 
-        .topics button:first-of-type {
+        .tag-selector button:first-of-type {
             background-color: lightcoral;
         }
 
-        .topics button.selected {
+        .tag-selector button.selected {
             background-color: lightblue;
         }
 
@@ -68,6 +84,12 @@
             font-weight: bold;
             src: url("avenir-next/AvenirNextLTPro-Bold.otf") format("opentype");
         }
+
+        @font-face {
+            font-family: AvenirNext;
+            font-style: italic;
+            src: url("avenir-next/AvenirNextLTPro-It.otf") format("opentype");
+        }
     </style>
 
     <script>
@@ -80,6 +102,9 @@
                 el.append(...children)
                 return el
             })
+
+        const { assign } = Object
+        const img = filename => assign(document.createElement('img'), { src: filename })
     </script>
 </head>
 
@@ -89,89 +114,67 @@
         const headers = rows[0]
         const entries = rows.slice(2)
 
-        const i1 = headers.indexOf('Is it a Citizen Science project?')
-        const citizen_science = entries.filter(row => row[i1] === 'Y')
+        const i_ubran_context = headers.indexOf('Does this project has to do with urban context? Y/N')
+        const i_citizen_science = i_ubran_context + 1
+        const i_nature_topics   = i_ubran_context + 2
+        const i_technoloies     = i_ubran_context + 3
+        const i_other_keywords  = i_ubran_context + 4
+        const i_implimentation  = i_ubran_context + 5
 
-        const get_topics = row => row[i1 + 1]?.toLowerCase().split(',').map(str => str.trim())
-        const nature_topics = [...new Set(entries.map(get_topics).flat())].filter(t => t)
+        const normalize_tags = str => str ? str.toLowerCase().split(',').map(s => s.trim()) : []
 
-        const selected_topics = new Set()
-
-        const topics = details(
-            summary(h3('Nature Topics')),
-            Object.assign(button('Clear'), {
-                onclick() {
-                    selected_topics.clear()
-                    topics.querySelectorAll('.selected').forEach(el => el.classList.remove('selected'))
-                    show_topic()
-                }
-            }),
-            ...nature_topics.map(topic =>
-                Object.assign(button(topic), {
-                    onclick() {
-                        if (selected_topics.has(topic)) {
-                            selected_topics.delete(topic)
-                            this.classList.remove('selected')
-                        }
-                        else {
-                            selected_topics.add(topic)
-                            this.classList.add('selected')
-                        }
-
-                        show_topic()
-                    }
-                }))
-        )
-
-        topics.setAttribute('open', true)
-        topics.classList.add('topics')
-
-        function show_topic() {
-            const items = entries.filter(row => {
-                for (const topic of selected_topics.keys())
-                    if (get_topics(row)?.includes(topic)) return true
-                return false
-            })
-            current_filter.textContent = `Showing: Nature Topic${selected_topics.size > 1 ? 's' : ''}: ${[...selected_topics].join(', ')}`
-            show_entries(items)
-        }
+        const [topics, show_topics]      = gen_tag_selector('Nature Topics', i_nature_topics, plural => `Nature Topic${plural ? 's' : ''}`)
+        const [techs, show_techs]        = gen_tag_selector('Technologies', i_technoloies, plural => `Technolog${plural ? 'ies' : 'y'}`)
+        const [keywords, show_keywords]  = gen_tag_selector('Keywords', i_other_keywords, plural => `Keyword${plural ? 's' : ''}`)
+        const [impls, show_impls]        = gen_tag_selector('Implementations', i_implimentation, plural => `Implementation${plural ? 's' : ''}`)
 
         const head = header(
+            img('./EAD.png'),
+            h1('Welcome to the Ecology and Culture Lab'),
             nav(
-                Object.assign(button('All'), {
+                assign(button('All'), {
                     onclick() {
-                        current_filter.textContent = `Showing: All Projects`
-                        show_entries(entries)
+                        show_all()
                     }
                 }),
-                Object.assign(button('Citizen Science'), {
+                assign(button('Urban Context'), {
+                    onclick() {
+                        current_filter.textContent = `Showing: Urban Context Projects`
+                        show_entries(entries.filter(row => row[i_ubran_context] === 'Y'))
+                    }
+                }),
+                assign(button('Citizen Science'), {
                     onclick() {
                         current_filter.textContent = `Showing: Citizen Science Projects`
-                        show_entries(citizen_science)
+                        show_entries(entries.filter(row => row[i_citizen_science] === 'Y'))
                     }
                 }),
-                Object.assign(button('Nature Topics'), {
+                assign(button('Nature Topics'), {
                     onclick() {
-                        show_topic()
+                        show_topics()
+                    }
+                }),
+                assign(button('Technologies'), {
+                    onclick() {
+                        show_techs()
+                    }
+                }),
+                assign(button('Keywords'), {
+                    onclick() {
+                        show_keywords()
+                    }
+                }),
+                assign(button('Implementations'), {
+                    onclick() {
+                        show_impls()
                     }
                 }),
             ),
-            topics
+            topics,
+            techs,
+            keywords,
+            impls,
         )
-
-        function show_entries(list) {
-            projs.replaceChildren(
-                ...list.map(([name, place, authors, year, link, description]) =>
-                    div(
-                        h3(name),
-                        div(`Place: ${place}`),
-                        div(`Authors: ${authors}`),
-                        div(`Year: ${year}`),
-                        div('Link: ', Object.assign(a(link), { href: link })),
-                        blockquote(description),
-                    ))
-            )
-        }
 
         const current_filter = h2()
         const projs = div()
@@ -181,6 +184,72 @@
             head,
             current_filter,
             projs)
+        
+        show_all()
+
+        function show_all() {
+            current_filter.textContent = `Showing: All Projects`
+            show_entries(entries)
+        }
+
+        function show_entries(list) {
+            projs.replaceChildren(
+                ...list.map(([name, place, authors, year, link, description]) =>
+                    div(
+                        h3(name),
+                        div(`Place: ${place}`),
+                        div(`Authors: ${authors}`),
+                        div(`Year: ${year}`),
+                        div('Link: ', assign(a(link), { href: link })),
+                        blockquote(description ? description : ""),
+                    ))
+            )
+        }
+
+        function gen_tag_selector(heading, col_index, filter_str) {
+            const tags = [...new Set(entries.map(row => normalize_tags(row[col_index])).flat().filter(t => t))]
+            const selected = new Set()
+
+            const elem = details(
+                summary(h3(heading)),
+                assign(button('Clear'), {
+                    onclick() {
+                        selected.clear()
+                        elem.querySelectorAll('.selected').forEach(el => el.classList.remove('selected'))
+                        show_function()
+                    }
+                }),
+                ...tags.map(tag =>
+                    assign(button(tag), {
+                        onclick() {
+                            if (selected.has(tag)) {
+                                selected.delete(tag)
+                                this.classList.remove('selected')
+                            }
+                            else {
+                                selected.add(tag)
+                                this.classList.add('selected')
+                            }
+                            show_function()
+                        }
+                    })
+                )
+            )
+            elem.classList.add('tag-selector')
+
+            function show_function() {
+                const items = entries.filter(row => {
+                    const row_tags = normalize_tags(row[col_index])
+                    for (const tag of selected.keys())
+                        if (row_tags?.includes(tag)) return true
+                    return false
+                })
+                current_filter.textContent = `Showing: ${filter_str(selected.size > 1)}: ${[...selected].join(', ')}`
+                show_entries(items)
+            }
+
+            return [elem, show_function]
+        }
     </script>
 </body>
 
