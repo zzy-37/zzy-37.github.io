@@ -9,6 +9,7 @@
     <style>
         :root {
             --border-style: 1px solid currentColor;
+            --padding-val: 0.5rem;
         }
 
         * {
@@ -17,6 +18,7 @@
 
         body {
             font-family: AvenirNext;
+            margin: 0;
         }
 
         img {
@@ -27,48 +29,9 @@
             word-break: break-all;
         }
 
-        button {
-            font-size: large;
-        }
-
-        header img {
-            max-width: 20rem;
-        }
-
-        .tag-selector,
-        nav {
-            padding: .2rem;
-        }
-
-        .tag-selector button,
-        nav button {
-            margin: .2rem;
-        }
-
-        .tag-selector button:first-of-type {
-            background-color: lightcoral;
-        }
-
-        .tag-selector button.selected {
-            background-color: lightblue;
-        }
-
-        .projects details {
-            margin: .5rem 0;
-        }
-
-        .projects>div h3 {
-            margin-top: 0;
-        }
-
-
         button,
         summary {
             cursor: pointer;
-        }
-
-        summary>h3 {
-            display: inline;
         }
 
         @font-face {
@@ -90,7 +53,14 @@
     </style>
 
     <style>
-        /* test css */
+        header img {
+            max-width: 20rem;
+        }
+
+        header p {
+            max-width: 80ch;
+        }
+
         .filter-selector {
             display: flex;
             flex-direction: column;
@@ -98,7 +68,7 @@
         }
 
         .filter-selector>* {
-            margin-bottom: 0.5rem;
+            margin-bottom: var(--padding-val);
         }
 
         .filter-selector summary {
@@ -111,17 +81,11 @@
 
         .filter-selector details ul {
             list-style-type: none;
-            padding-left: 0.5rem;
-            margin: 0.5rem;
-        }
-
-        .filter-line {
-            padding: 0 0.5rem;
+            padding-left: var(--padding-val);
+            margin: var(--padding-val) 0;
         }
 
         .projects>div {
-            margin: 0 0.5rem;
-            padding-top: 1rem;
             border-bottom: var(--border-style);
         }
 
@@ -133,14 +97,23 @@
         .filter-line {
             position: sticky;
             top: 0;
-            padding-top: 0.5rem;
+            padding-top: var(--padding-val);
+            padding-bottom: var(--padding-val);
         }
 
         .filter-line {
             background-color: white;
             font-weight: bold;
             border-bottom: var(--border-style);
-            padding-bottom: 0.5rem;
+        }
+
+        .wrapper {
+            padding-left: var(--padding-val);
+            padding-right: var(--padding-val);
+        }
+
+        header {
+            padding-top: var(--padding-val);
         }
 
         @media (min-width: 600px) {
@@ -206,6 +179,17 @@
         const headers = rows[0]
         const entries = rows.slice(3)
 
+        const technology_catagories = [
+            'AI',
+            'Data',
+            'Fabrication',
+            'Digital Fabrication',
+            'Sensor',
+            'Sampling',
+            'Coding',
+            'Biomedia',
+        ]
+
         const i_ubran_context = headers.indexOf('Does this project has to do with urban context? Y/N')
         const i_citizen_science = i_ubran_context + 1
         const i_nature_topics = i_ubran_context + 2
@@ -226,55 +210,8 @@
             p('This page is an open dataset of classified cases about currnet tech applications of AI, data science and digital fabrication that are already in place to serve nature and human re-connection within the city.'),
         )
 
-        /*
-        const filter_selector = nav(
-            assign(button('All'), {
-                onclick() {
-                    show_all()
-                }
-            }),
-            assign(button('Urban Context'), {
-                onclick() {
-                    current_filter.textContent = `Showing: Urban Context Projects`
-                    show_entries(entries.filter(row => row[i_ubran_context] === 'Y'))
-                }
-            }),
-            assign(button('Citizen Science'), {
-                onclick() {
-                    current_filter.textContent = `Showing: Citizen Science Projects`
-                    show_entries(entries.filter(row => row[i_citizen_science] === 'Y'))
-                }
-            }),
-            assign(button('Nature Topics'), {
-                onclick() {
-                    show_topics()
-                }
-            }),
-            assign(button('Technologies'), {
-                onclick() {
-                    show_techs()
-                }
-            }),
-            assign(button('Keywords'), {
-                onclick() {
-                    show_keywords()
-                }
-            }),
-            assign(button('Implementations'), {
-                onclick() {
-                    show_impls()
-                }
-            }),
-            topics,
-            techs,
-            keywords,
-            impls,
-        )
-        */
-
         const current_filter = h2()
         const projs = div()
-        projs.classList.add('projects')
 
         const filter_selector = div(
             b('Filter'),
@@ -284,10 +221,8 @@
 
             details(
                 summary('Technology'),
-                ul(
-                    li(label(input('checkbox'), 'AI')),
-                    li(label(input('checkbox'), 'Digital Fabrication')),
-                )
+                ul(...technology_catagories.map(catagroy_name =>
+                    li(label(input('checkbox'), catagroy_name))))
             ),
 
             details(
@@ -303,33 +238,34 @@
                 ul(
                     li(label(input('checkbox'), 'Complete')),
                     li(label(input('checkbox'), 'Prototype')),
-                    li(label(input('checkbox'), 'speculative')),
+                    li(label(input('checkbox'), 'Speculative')),
                 )
             ),
         )
-        filter_selector.classList.add('filter-selector')
 
-
-        const filter_line = div(
-            'Showing: All projects',
-        )
-        filter_line.classList.add('filter-line')
+        const filter_line = div('Showing: All projects')
 
         const main_container = main(
-            aside(
-                filter_selector
-            ),
+            aside(filter_selector),
             div(
                 filter_line,
                 projs,
             )
         )
-        qsa('details', main_container).forEach(e => e.setAttribute('open', ''))
+        qsa('details', main_container)
+            .forEach(e => e.setAttribute('open', ''))
+
+        projs.classList.add('projects')
+        filter_selector.classList.add('filter-selector')
+        filter_line.classList.add('filter-line')
+
+        head.classList.add('wrapper')
+        projs.classList.add('wrapper')
+        filter_selector.classList.add('wrapper')
+        filter_line.classList.add('wrapper')
 
         document.body.append(
             head,
-            // div_tech,
-            // current_filter,
             main_container,
         )
 
@@ -349,9 +285,9 @@
                         div(b('Authors '), authors),
                         div(b('Year '), year),
                         div(b('Link '), assign(a(link), { href: link }),
-                        blockquote(description ? description : ""),
-                    ))
-            ))
+                            blockquote(description ? description : ""),
+                        ))
+                ))
         }
 
         function gen_tag_selector(heading, col_index, filter_str) {
