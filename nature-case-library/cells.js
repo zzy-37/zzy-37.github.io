@@ -33,6 +33,9 @@ const cells = {
       "speculative / prototype / in production"
     ],
     [
+      "add NTFS cases"
+    ],
+    [
       "Popsicles of Pollution",
       "Taiwan",
       "Hung Yi-Chen, Guo Yi-hui and Cheng Yu-Ti",
@@ -526,7 +529,7 @@ const cells = {
       "N",
       "N",
       "Plant, non-human, colonisation",
-      "coding, digital construction",
+      "coding, digital fabrication",
       "",
       "complete"
     ],
@@ -540,7 +543,7 @@ const cells = {
       "N",
       "N",
       "Species, extinction, ",
-      "AI, virtual reality, digital construction",
+      "AI, virtual reality, digital fabrication",
       "",
       "complete"
     ],
@@ -554,7 +557,7 @@ const cells = {
       "N",
       "N",
       "Species, extinction",
-      "Synthetic Biological/chemichal tech, digital construction",
+      "Synthetic Biological/chemichal tech, digital fabrication",
       "",
       "complete"
     ],
@@ -810,7 +813,7 @@ const cells = {
       "Y",
       "N",
       "seawater, ",
-      "sensors, fabrication, ",
+      "sensor, fabrication, ",
       "urban farming, installation",
       "speculative"
     ],
@@ -992,7 +995,7 @@ const cells = {
       "N",
       "N",
       "bacteria",
-      "snesor, algorithm, biomedia",
+      "sensor, algorithm, biomedia",
       "sound",
       "complete"
     ],
@@ -1090,7 +1093,7 @@ const cells = {
       "N",
       "N",
       "species",
-      "biomedia, fabricaiton",
+      "biomedia, fabrication",
       "sclupture, art work, aesthetic",
       "complete"
     ],
@@ -1104,7 +1107,7 @@ const cells = {
       "N",
       "N",
       "species, beehive",
-      "biomedia, fabricaiton",
+      "biomedia, fabrication",
       "sclupture, art work, aesthetic",
       "complete"
     ],
@@ -1216,7 +1219,7 @@ const cells = {
       "N",
       "N",
       "Species, protection",
-      "AI, sensor, (digital) fabrication",
+      "AI, sensor, digital fabrication",
       "slamon, invasive species",
       "complete"
     ],
@@ -1552,7 +1555,7 @@ const cells = {
       "Y",
       "N",
       "Microorganisms",
-      "fabricatoin",
+      "fabrication",
       "lighting structure",
       "prototype"
     ],
@@ -1748,7 +1751,7 @@ const cells = {
       "N",
       "N",
       "alcohol",
-      "biosensor, biomeda, fabrication",
+      "biosensor, biomedia, fabrication",
       "",
       "prototype"
     ],
@@ -1891,20 +1894,6 @@ const cells = {
       "biomedia, biotech, fabrication",
       "bioluminescence, children",
       "prototype"
-    ],
-    [
-      "Nurture",
-      "Edinburgh, UK",
-      "MARK WILLIAMS, TARA WIGHT, YINGRUI MA, SAFA AJJAN",
-      "2018",
-      "https://biodesign.eca.ed.ac.uk/edible-architecture-growing-meals-at-home/",
-      "The state of global food production is changing rapidly. The Nurture team is attempting to envision how the state of our food may look in 10 – 20 years time and discovering the problems we may face.\n\nNurture takes a new approach to eating and food preparation. Currently we are building a modular unit to contain our hydroponic and Spirulina growth systems, and we are also creating recipes for how people would be able to cook with this new ingredient, which we are putting in a cook book.",
-      "Y",
-      "N",
-      "Food, spirulina",
-      "biomedia/biotech, fabrication, ",
-      "home-grow/agriculture, ",
-      "speculative"
     ]
   ]
 }

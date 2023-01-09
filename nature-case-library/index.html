@@ -6,8 +6,6 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Case Library | Ecology and Culture Lab</title>
 
-    <script src="cells.js"></script>
-
     <style>
         * {
             box-sizing: border-box;
@@ -34,12 +32,12 @@
         }
 
         .tag-selector,
-        header nav {
+        nav {
             padding: .2rem;
         }
 
         .tag-selector button,
-        header nav button {
+        nav button {
             margin: .2rem;
         }
 
@@ -63,6 +61,17 @@
             margin: .5rem 0;
             padding: .5rem;
             border: solid currentColor;
+        }
+
+        .techs>h2 {
+            background-color: black;
+            color: white;
+            padding: 1rem;
+        }
+
+        .techs>div {
+            display: flex;
+            gap: 1rem;
         }
 
         button,
@@ -92,6 +101,8 @@
         }
     </style>
 
+    <script src="cells.js"></script>
+
     <script>
         ['div', 'p', 'span', 'h1', 'h2', 'h3', 'h4', 'h5', 'h6',
             'a', 'ul', 'li', 'details', 'summary', 'nav', 'header',
@@ -110,66 +121,90 @@
 
 <body>
     <script>
+        'use strict'
+
+        /*
+        sheet headers
+        [
+            "Project Name",
+            "Place",
+            "Authors",
+            "Year",
+            "Link",
+            "Description ",
+            "Does this project has to do with urban context? Y/N",
+            "Is it a Citizen Science project?",
+            "Nature topic",
+            "Technology ",
+            "Other Keywords",
+            "Implementation",
+            "student name",
+            "Why is related/relevant to our ecology conversation / / why this inspre you?"
+        ]
+        */
+
         const rows = cells.values
         const headers = rows[0]
         const entries = rows.slice(2)
 
         const i_ubran_context = headers.indexOf('Does this project has to do with urban context? Y/N')
         const i_citizen_science = i_ubran_context + 1
-        const i_nature_topics   = i_ubran_context + 2
-        const i_technoloies     = i_ubran_context + 3
-        const i_other_keywords  = i_ubran_context + 4
-        const i_implimentation  = i_ubran_context + 5
+        const i_nature_topics = i_ubran_context + 2
+        const i_technoloies = i_ubran_context + 3
+        const i_other_keywords = i_ubran_context + 4
+        const i_implimentation = i_ubran_context + 5
 
         const normalize_tags = str => str ? str.toLowerCase().split(',').map(s => s.trim()) : []
 
-        const [topics, show_topics]      = gen_tag_selector('Nature Topics', i_nature_topics, plural => `Nature Topic${plural ? 's' : ''}`)
-        const [techs, show_techs]        = gen_tag_selector('Technologies', i_technoloies, plural => `Technolog${plural ? 'ies' : 'y'}`)
-        const [keywords, show_keywords]  = gen_tag_selector('Keywords', i_other_keywords, plural => `Keyword${plural ? 's' : ''}`)
-        const [impls, show_impls]        = gen_tag_selector('Implementations', i_implimentation, plural => `Implementation${plural ? 's' : ''}`)
+        const [topics, show_topics] = gen_tag_selector('Nature Topics', i_nature_topics, plural => `Nature Topic${plural ? 's' : ''}`)
+        const [techs, show_techs] = gen_tag_selector('Technologies', i_technoloies, plural => `Technolog${plural ? 'ies' : 'y'}`)
+        const [keywords, show_keywords] = gen_tag_selector('Keywords', i_other_keywords, plural => `Keyword${plural ? 's' : ''}`)
+        const [impls, show_impls] = gen_tag_selector('Implementations', i_implimentation, plural => `Implementation${plural ? 's' : ''}`)
 
         const head = header(
             img('./EAD.png'),
             h1('Welcome to the Ecology and Culture Lab'),
-            nav(
-                assign(button('All'), {
-                    onclick() {
-                        show_all()
-                    }
-                }),
-                assign(button('Urban Context'), {
-                    onclick() {
-                        current_filter.textContent = `Showing: Urban Context Projects`
-                        show_entries(entries.filter(row => row[i_ubran_context] === 'Y'))
-                    }
-                }),
-                assign(button('Citizen Science'), {
-                    onclick() {
-                        current_filter.textContent = `Showing: Citizen Science Projects`
-                        show_entries(entries.filter(row => row[i_citizen_science] === 'Y'))
-                    }
-                }),
-                assign(button('Nature Topics'), {
-                    onclick() {
-                        show_topics()
-                    }
-                }),
-                assign(button('Technologies'), {
-                    onclick() {
-                        show_techs()
-                    }
-                }),
-                assign(button('Keywords'), {
-                    onclick() {
-                        show_keywords()
-                    }
-                }),
-                assign(button('Implementations'), {
-                    onclick() {
-                        show_impls()
-                    }
-                }),
-            ),
+            p('This page is an open dataset of classified cases about currnet tech applications of AI, data science and digital fabrication that are already in place to serve nature and human re-connection within the city.'),
+        )
+
+        const filter_selector = nav(
+            assign(button('All'), {
+                onclick() {
+                    show_all()
+                }
+            }),
+            assign(button('Urban Context'), {
+                onclick() {
+                    current_filter.textContent = `Showing: Urban Context Projects`
+                    show_entries(entries.filter(row => row[i_ubran_context] === 'Y'))
+                }
+            }),
+            assign(button('Citizen Science'), {
+                onclick() {
+                    current_filter.textContent = `Showing: Citizen Science Projects`
+                    show_entries(entries.filter(row => row[i_citizen_science] === 'Y'))
+                }
+            }),
+            assign(button('Nature Topics'), {
+                onclick() {
+                    show_topics()
+                }
+            }),
+            assign(button('Technologies'), {
+                onclick() {
+                    show_techs()
+                }
+            }),
+            assign(button('Keywords'), {
+                onclick() {
+                    show_keywords()
+                }
+            }),
+            assign(button('Implementations'), {
+                onclick() {
+                    show_impls()
+                }
+            }),
             topics,
             techs,
             keywords,
@@ -180,11 +215,29 @@
         const projs = div()
         projs.classList.add('projects')
 
+        const div_tech = div(
+            h2('Technologies'),
+            div(
+                h3('AI'),
+                h3('Data'),
+                h3('Fabrication'),
+                h3('Digital fabrication'),
+                h3('Sensor'),
+                h3('Sampling'),
+                h3('Coding'),
+                h3('Biomedia'),
+            ),
+        )
+        div_tech.classList.add('techs')
+
         document.body.append(
             head,
+            filter_selector,
+            // div_tech,
             current_filter,
-            projs)
-        
+            projs,
+        )
+
         show_all()
 
         function show_all() {
