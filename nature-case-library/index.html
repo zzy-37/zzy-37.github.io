@@ -7,6 +7,10 @@
     <title>Case Library | Ecology and Culture Lab</title>
 
     <style>
+        :root {
+            --border-style: 1px solid currentColor;
+        }
+
         * {
             box-sizing: border-box;
         }
@@ -57,22 +61,6 @@
             margin-top: 0;
         }
 
-        .projects>div {
-            margin: .5rem 0;
-            padding: .5rem;
-            border: solid currentColor;
-        }
-
-        .techs>h2 {
-            background-color: black;
-            color: white;
-            padding: 1rem;
-        }
-
-        .techs>div {
-            display: flex;
-            gap: 1rem;
-        }
 
         button,
         summary {
@@ -101,21 +89,92 @@
         }
     </style>
 
+    <style>
+        /* test css */
+        .filter-selector {
+            display: flex;
+            flex-direction: column;
+            border-right: var(--border-style);
+        }
+
+        .filter-selector>* {
+            margin-bottom: 0.5rem;
+        }
+
+        .filter-selector summary {
+            font-weight: bold;
+        }
+
+        .filter-selector label {
+            cursor: pointer;
+        }
+
+        .filter-selector details ul {
+            list-style-type: none;
+            padding-left: 0.5rem;
+            margin: 0.5rem;
+        }
+
+        .filter-line {
+            padding: 0 0.5rem;
+        }
+
+        .projects>div {
+            margin: 0 0.5rem;
+            padding-top: 1rem;
+            border-bottom: var(--border-style);
+        }
+
+        main {
+            position: relative;
+        }
+
+        .filter-selector,
+        .filter-line {
+            position: sticky;
+            top: 0;
+            padding-top: 0.5rem;
+        }
+
+        .filter-line {
+            background-color: white;
+            font-weight: bold;
+            border-bottom: var(--border-style);
+            padding-bottom: 0.5rem;
+        }
+
+        @media (min-width: 600px) {
+            main {
+                display: flex;
+            }
+
+            main aside {
+                flex-shrink: 0;
+                flex-basis: 25ch;
+            }
+        }
+    </style>
+
     <script src="cells.js"></script>
 
     <script>
+        const ce = name => document.createElement(name);
+        const qs = (query, parent = document) => parent.querySelector(query);
+        const qsa = (query, parent = document) => parent.querySelectorAll(query);
+
         ['div', 'p', 'span', 'h1', 'h2', 'h3', 'h4', 'h5', 'h6',
             'a', 'ul', 'li', 'details', 'summary', 'nav', 'header',
-            'button', 'blockquote'
+            'button', 'blockquote', 'main', 'aside', 'label', 'b'
         ].forEach(name =>
             window[name] = (...children) => {
-                const el = document.createElement(name)
+                const el = ce(name)
                 el.append(...children)
                 return el
             })
 
         const { assign } = Object
-        const img = filename => assign(document.createElement('img'), { src: filename })
+        const img = filename => assign(ce('img'), { src: filename })
+        const input = type => assign(ce('input'), { type: type })
     </script>
 </head>
 
@@ -145,7 +204,7 @@
 
         const rows = cells.values
         const headers = rows[0]
-        const entries = rows.slice(2)
+        const entries = rows.slice(3)
 
         const i_ubran_context = headers.indexOf('Does this project has to do with urban context? Y/N')
         const i_citizen_science = i_ubran_context + 1
@@ -167,6 +226,7 @@
             p('This page is an open dataset of classified cases about currnet tech applications of AI, data science and digital fabrication that are already in place to serve nature and human re-connection within the city.'),
         )
 
+        /*
         const filter_selector = nav(
             assign(button('All'), {
                 onclick() {
@@ -210,32 +270,67 @@
             keywords,
             impls,
         )
+        */
 
         const current_filter = h2()
         const projs = div()
         projs.classList.add('projects')
 
-        const div_tech = div(
-            h2('Technologies'),
-            div(
-                h3('AI'),
-                h3('Data'),
-                h3('Fabrication'),
-                h3('Digital fabrication'),
-                h3('Sensor'),
-                h3('Sampling'),
-                h3('Coding'),
-                h3('Biomedia'),
+        const filter_selector = div(
+            b('Filter'),
+
+            label(input('checkbox'), 'Urban Context'),
+            label(input('checkbox'), 'Citizen Science'),
+
+            details(
+                summary('Technology'),
+                ul(
+                    li(label(input('checkbox'), 'AI')),
+                    li(label(input('checkbox'), 'Digital Fabrication')),
+                )
+            ),
+
+            details(
+                summary('Nature Topic'),
+                ul(
+                    li(label(input('checkbox'), 'Biodiversity')),
+                    li(label(input('checkbox'), 'Five Elements')),
+                )
+            ),
+
+            details(
+                summary('Implementation'),
+                ul(
+                    li(label(input('checkbox'), 'Complete')),
+                    li(label(input('checkbox'), 'Prototype')),
+                    li(label(input('checkbox'), 'speculative')),
+                )
             ),
         )
-        div_tech.classList.add('techs')
+        filter_selector.classList.add('filter-selector')
+
+
+        const filter_line = div(
+            'Showing: All projects',
+        )
+        filter_line.classList.add('filter-line')
+
+        const main_container = main(
+            aside(
+                filter_selector
+            ),
+            div(
+                filter_line,
+                projs,
+            )
+        )
+        qsa('details', main_container).forEach(e => e.setAttribute('open', ''))
 
         document.body.append(
             head,
-            filter_selector,
             // div_tech,
-            current_filter,
-            projs,
+            // current_filter,
+            main_container,
         )
 
         show_all()
@@ -250,13 +345,13 @@
                 ...list.map(([name, place, authors, year, link, description]) =>
                     div(
                         h3(name),
-                        div(`Place: ${place}`),
-                        div(`Authors: ${authors}`),
-                        div(`Year: ${year}`),
-                        div('Link: ', assign(a(link), { href: link })),
+                        div(b('Place '), place),
+                        div(b('Authors '), authors),
+                        div(b('Year '), year),
+                        div(b('Link '), assign(a(link), { href: link }),
                         blockquote(description ? description : ""),
                     ))
-            )
+            ))
         }
 
         function gen_tag_selector(heading, col_index, filter_str) {
