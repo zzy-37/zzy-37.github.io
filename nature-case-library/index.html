@@ -62,13 +62,18 @@
         }
 
         .filter-selector {
-            display: flex;
-            flex-direction: column;
             border-right: var(--border-style);
         }
 
-        .filter-selector>* {
-            margin-bottom: var(--padding-val);
+        .filter-selector,
+        .filter-selector details {
+            display: flex;
+            flex-direction: column;
+        }
+
+        .filter-selector label,
+        .filter-selector summary {
+            margin-top: var(--padding-val);
         }
 
         .filter-selector summary {
@@ -77,12 +82,6 @@
 
         .filter-selector label {
             cursor: pointer;
-        }
-
-        .filter-selector details ul {
-            list-style-type: none;
-            padding-left: var(--padding-val);
-            margin: var(--padding-val) 0;
         }
 
         .projects>div {
@@ -221,25 +220,21 @@
 
             details(
                 summary('Technology'),
-                ul(...technology_catagories.map(catagroy_name =>
-                    li(label(input('checkbox'), catagroy_name))))
+                ...technology_catagories.map(catagroy_name =>
+                    label(input('checkbox'), catagroy_name))
             ),
 
             details(
                 summary('Nature Topic'),
-                ul(
-                    li(label(input('checkbox'), 'Biodiversity')),
-                    li(label(input('checkbox'), 'Five Elements')),
-                )
+                label(input('checkbox'), 'Biodiversity'),
+                label(input('checkbox'), 'Five Elements'),
             ),
 
             details(
                 summary('Implementation'),
-                ul(
-                    li(label(input('checkbox'), 'Complete')),
-                    li(label(input('checkbox'), 'Prototype')),
-                    li(label(input('checkbox'), 'Speculative')),
-                )
+                label(input('checkbox'), 'Complete'),
+                label(input('checkbox'), 'Prototype'),
+                label(input('checkbox'), 'Speculative'),
             ),
         )
 
