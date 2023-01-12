@@ -4,11 +4,29 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <!-- <meta name="color-scheme" content="dark"> -->
     <title>Case Library | Ecology and Culture Lab</title>
 
     <style>
+        @font-face {
+            font-family: AvenirNext;
+            src: url("avenir-next/AvenirNextLTPro-Regular.otf") format("opentype");
+        }
+
+        @font-face {
+            font-family: AvenirNext;
+            font-weight: bold;
+            src: url("avenir-next/AvenirNextLTPro-Bold.otf") format("opentype");
+        }
+
+        @font-face {
+            font-family: AvenirNext;
+            font-style: italic;
+            src: url("avenir-next/AvenirNextLTPro-It.otf") format("opentype");
+        }
+
         :root {
-            --border-style: 1px solid currentColor;
+            --border-style: 1px solid var(--color-foreground);
             --padding-val: 0.5rem;
         }
 
@@ -27,42 +45,74 @@
 
         a {
             word-break: break-all;
+            /* color: var(--color-accent); */
         }
+
+        /* a:link {
+        } */
 
         button,
         summary {
             cursor: pointer;
         }
 
-        @font-face {
-            font-family: AvenirNext;
-            src: url("avenir-next/AvenirNextLTPro-Regular.otf") format("opentype");
+        button {
+            border: var(--border-style);
+            background-color: var(--color-background);
         }
 
-        @font-face {
-            font-family: AvenirNext;
-            font-weight: bold;
-            src: url("avenir-next/AvenirNextLTPro-Bold.otf") format("opentype");
+        button:hover {
+            background-color: var(--color-foreground);
+            color: var(--color-background);
+        }
+    </style>
+
+    <style>
+        :root {
+            --color-background: white;
+            --color-foreground: black;
         }
 
-        @font-face {
-            font-family: AvenirNext;
-            font-style: italic;
-            src: url("avenir-next/AvenirNextLTPro-It.otf") format("opentype");
+        .dark:root {
+            --color-background: #24283b;
+            --color-background-dark: #1a1b26;
+            --color-background-light: #414868;
+            --color-foreground: #a9b1d6;
+            --color-foreground-light: #c0caf5;
+            --color-accent: #e0af68;
+        }
+
+        body {
+            background-color: var(--color-background);
+            color: var(--color-foreground);
+            accent-color: var(--color-accent);
+        }
+
+        .filter-selector {
+            background-color: var(--color-background-light);
+        }
+
+        .filter-selector b {
+            color: var(--color-foreground-light);
+        }
+
+        .filter-selector label:hover {
+            color: var(--color-foreground-light);
+        }
+
+        .filter-selector summary {
+            /* font-weight: bold; */
+            color: var(--color-foreground-light);
+        }
+
+        .projects h3 {
+            color: var(--color-foreground-light);
         }
     </style>
 
     <style>
         header img {
             max-width: 20rem;
-        }
-
-        header p {
-            max-width: 80ch;
-        }
-
-        .filter-selector {
-            border-right: var(--border-style);
         }
 
         .filter-selector,
@@ -76,15 +126,14 @@
             margin-top: var(--padding-val);
         }
 
-        .filter-selector summary {
-            font-weight: bold;
-        }
-
         .filter-selector label {
             cursor: pointer;
         }
 
         .projects>div {
+            /* background-color: var(--color-background); */
+            margin-top: var(--padding-val);
+            /* padding: var(--padding-val); */
             border-bottom: var(--border-style);
         }
 
@@ -101,11 +150,18 @@
         }
 
         .filter-line {
-            background-color: white;
-            font-weight: bold;
+            background-color: var(--color-background);
+            /* font-weight: bold; */
             border-bottom: var(--border-style);
         }
 
+        .filter-line button {
+            font-weight: bold;
+            /* font-size: large; */
+            margin-left: var(--padding-val);
+        }
+
+        .projects>div,
         .wrapper {
             padding-left: var(--padding-val);
             padding-right: var(--padding-val);
@@ -116,14 +172,28 @@
         }
 
         @media (min-width: 600px) {
+            /* header p {
+                max-width: 80ch;
+            } */
+
             main {
                 display: flex;
+                gap: var(--padding-val);
             }
 
             main aside {
                 flex-shrink: 0;
                 flex-basis: 25ch;
+                /* border-right: var(--border-style); */
             }
+
+            /* .projects {
+                max-width: 80ch;
+            } */
+
+            /* .filter-selector {
+                border-right: var(--border-style);
+            } */
         }
     </style>
 
@@ -134,9 +204,9 @@
         const qs = (query, parent = document) => parent.querySelector(query);
         const qsa = (query, parent = document) => parent.querySelectorAll(query);
 
-        ['div', 'p', 'span', 'h1', 'h2', 'h3', 'h4', 'h5', 'h6',
-            'a', 'ul', 'li', 'details', 'summary', 'nav', 'header',
-            'button', 'blockquote', 'main', 'aside', 'label', 'b'
+        ['div', 'p', 'span', 'h1', 'h2', 'h3', 'h4', 'h5', 'h6', 'a', 'ul',
+            'li', 'details', 'summary', 'nav', 'header', 'button', 'blockquote',
+            'main', 'aside', 'label', 'b', 'u'
         ].forEach(name =>
             window[name] = (...children) => {
                 const el = ce(name)
@@ -154,54 +224,31 @@
     <script>
         'use strict'
 
-        /*
-        sheet headers
-        [
-            "Project Name",
-            "Place",
-            "Authors",
-            "Year",
-            "Link",
-            "Description ",
-            "Does this project has to do with urban context? Y/N",
-            "Is it a Citizen Science project?",
-            "Nature topic",
-            "Technology ",
-            "Other Keywords",
-            "Implementation",
-            "student name",
-            "Why is related/relevant to our ecology conversation / / why this inspre you?"
-        ]
-        */
-
         const rows = cells.values
         const headers = rows[0]
         const entries = rows.slice(3)
 
+        const i_ubran_context = 6
+        const i_citizen_science = 7
+        const i_nature_topics = 8
+        const i_technoloies = 9
+        const i_other_keywords = 10
+        const i_implimentation = 11
+
         const technology_catagories = [
             'AI',
-            'Data',
-            'Fabrication',
-            'Digital Fabrication',
-            'Sensor',
-            'Sampling',
-            'Coding',
+            'AR',
             'Biomedia',
+            'Biotech',
+            'Coding',
+            'Data',
+            'Digital Fabrication',
+            'Fabrication',
+            'Sampling',
+            'Sensor',
+            'Sound',
+            'VR',
         ]
-
-        const i_ubran_context = headers.indexOf('Does this project has to do with urban context? Y/N')
-        const i_citizen_science = i_ubran_context + 1
-        const i_nature_topics = i_ubran_context + 2
-        const i_technoloies = i_ubran_context + 3
-        const i_other_keywords = i_ubran_context + 4
-        const i_implimentation = i_ubran_context + 5
-
-        const normalize_tags = str => str ? str.toLowerCase().split(',').map(s => s.trim()) : []
-
-        const [topics, show_topics] = gen_tag_selector('Nature Topics', i_nature_topics, plural => `Nature Topic${plural ? 's' : ''}`)
-        const [techs, show_techs] = gen_tag_selector('Technologies', i_technoloies, plural => `Technolog${plural ? 'ies' : 'y'}`)
-        const [keywords, show_keywords] = gen_tag_selector('Keywords', i_other_keywords, plural => `Keyword${plural ? 's' : ''}`)
-        const [impls, show_impls] = gen_tag_selector('Implementations', i_implimentation, plural => `Implementation${plural ? 's' : ''}`)
 
         const head = header(
             img('./EAD.png'),
@@ -209,19 +256,21 @@
             p('This page is an open dataset of classified cases about currnet tech applications of AI, data science and digital fabrication that are already in place to serve nature and human re-connection within the city.'),
         )
 
-        const current_filter = h2()
         const projs = div()
+
+        const urban_context_count = entries.filter(e => apply_filter('Urban Context'))
+        const citizen_science_count = entries.filter(e => apply_filter('Citizen Science'))
 
         const filter_selector = div(
             b('Filter'),
 
-            label(input('checkbox'), 'Urban Context'),
-            label(input('checkbox'), 'Citizen Science'),
+            filter_checkbox_element('Urban Context'),
+            filter_checkbox_element('Citizen Science'),
 
             details(
                 summary('Technology'),
                 ...technology_catagories.map(catagroy_name =>
-                    label(input('checkbox'), catagroy_name))
+                    filter_checkbox_element(catagroy_name))
             ),
 
             details(
@@ -238,24 +287,30 @@
             ),
         )
 
-        const filter_line = div('Showing: All projects')
+        const filter_line = div()
+
+        const checkboxes = [...filter_selector.querySelectorAll('input[type="checkbox"]')]
+        checkboxes.forEach(checkbox => {
+            checkbox.onchange = update_filter
+        })
 
         const main_container = main(
             aside(filter_selector),
             div(
                 filter_line,
                 projs,
-            )
+            ),
         )
-        qsa('details', main_container)
-            .forEach(e => e.setAttribute('open', ''))
+        // qsa('details', main_container)
+        //     .forEach(e => e.setAttribute('open', ''))
 
         projs.classList.add('projects')
         filter_selector.classList.add('filter-selector')
         filter_line.classList.add('filter-line')
 
+        main_container.classList.add('wrapper')
         head.classList.add('wrapper')
-        projs.classList.add('wrapper')
+        // projs.classList.add('wrapper')
         filter_selector.classList.add('wrapper')
         filter_line.classList.add('wrapper')
 
@@ -264,11 +319,71 @@
             main_container,
         )
 
-        show_all()
+        update_filter()
 
-        function show_all() {
-            current_filter.textContent = `Showing: All Projects`
-            show_entries(entries)
+        function filter_checkbox_element(filter) {
+            return label(
+                assign(input('checkbox'), {
+                    value: filter,
+                }),
+                filter + ` (${entries.filter(e => apply_filter(e, filter)).length})`,
+            )
+        }
+
+        function update_filter() {
+            const filter_values = checkboxes
+                .filter(c => c.checked)
+                .map(c => c.value)
+
+            if (filter_values.length === 0) {
+                filter_line.replaceChildren(b(`Showing (${entries.length}): All Projects`))
+                show_entries(entries)
+            }
+            else {
+                const filtered_entries = filter_entries(entries, filter_values)
+                filter_line.replaceChildren(
+                    b(`Showing (${filtered_entries.length}):`),
+                    assign(button('Clear Filter'), {
+                        onclick() {
+                            checkboxes.forEach(c => c.checked = false)
+                            update_filter()
+                        }
+                    }),
+                    ...filter_values.map(val => assign(
+                        button('× ' + val), {
+                        onclick() {
+                            checkboxes.find(c => c.value === val).checked = false
+                            update_filter()
+                        }
+                    }))
+                )
+                // filter_line.textContent = `Showing (${filtered_entries.length}): ${filter_values.join(', ')}`
+                show_entries(filtered_entries)
+            }
+        }
+
+        function entry_get_tokens(entry, column_index) {
+            return entry[column_index] ? entry[column_index].toLowerCase().split(',').map(s => s.trim()) : []
+        }
+
+        function apply_filter(entry, filter_val) {
+            return (filter_val === 'Urban Context' && entry[i_ubran_context] === 'Y')
+                || (filter_val === 'Citizen Science' && entry[i_citizen_science] === 'Y')
+                || (technology_catagories.includes(filter_val) &&
+                    entry_get_tokens(entry, i_technoloies).includes(filter_val.toLowerCase()))
+        }
+
+        function filter_entries(entries, filters) {
+            if (filters.length === 0)
+                return entries
+
+            return entries.filter(row => {
+                for (const filter_val of filters) {
+                    if (apply_filter(row, filter_val))
+                        return true
+                }
+                return false
+            })
         }
 
         function show_entries(list) {
@@ -285,50 +400,6 @@
                 ))
         }
 
-        function gen_tag_selector(heading, col_index, filter_str) {
-            const tags = [...new Set(entries.map(row => normalize_tags(row[col_index])).flat().filter(t => t))]
-            const selected = new Set()
-
-            const elem = details(
-                summary(h3(heading)),
-                assign(button('Clear'), {
-                    onclick() {
-                        selected.clear()
-                        elem.querySelectorAll('.selected').forEach(el => el.classList.remove('selected'))
-                        show_function()
-                    }
-                }),
-                ...tags.map(tag =>
-                    assign(button(tag), {
-                        onclick() {
-                            if (selected.has(tag)) {
-                                selected.delete(tag)
-                                this.classList.remove('selected')
-                            }
-                            else {
-                                selected.add(tag)
-                                this.classList.add('selected')
-                            }
-                            show_function()
-                        }
-                    })
-                )
-            )
-            elem.classList.add('tag-selector')
-
-            function show_function() {
-                const items = entries.filter(row => {
-                    const row_tags = normalize_tags(row[col_index])
-                    for (const tag of selected.keys())
-                        if (row_tags?.includes(tag)) return true
-                    return false
-                })
-                current_filter.textContent = `Showing: ${filter_str(selected.size > 1)}: ${[...selected].join(', ')}`
-                show_entries(items)
-            }
-
-            return [elem, show_function]
-        }
     </script>
 </body>
 
