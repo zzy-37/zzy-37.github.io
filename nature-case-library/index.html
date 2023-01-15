@@ -133,15 +133,19 @@
 
         .projects>div {
             /* background-color: var(--color-background); */
-            margin-top: var(--padding-val);
-            /* padding: var(--padding-val); */
+            /* margin-top: var(--padding-val); */
             border-bottom: var(--border-style);
+        }
+
+        .projects>div h3 {
+            margin: var(--padding-val) 0;
         }
 
         main {
             position: relative;
         }
 
+        .projects>div,
         .filter-selector,
         .filter-line {
             padding: var(--padding-val);
@@ -164,7 +168,6 @@
             margin-left: var(--padding-val);
         }
 
-        .projects>div,
         .wrapper {
             padding-left: var(--padding-val);
             padding-right: var(--padding-val);
@@ -398,7 +401,7 @@
                         }
                     }),
                     ...filter_values.map(([name, val]) => assign(
-                        button(`× ${name} / ${val}`), {
+                        button(`× ${name}${val ? ` / ${val}` : ''}`), {
                         onclick() {
                             checkboxes.find(c => c.name === name && c.value === val).checked = false
                             update_filter()
@@ -436,12 +439,12 @@
                 ...list.map(([name, place, authors, year, link, description]) =>
                     div(
                         h3(name),
-                        div(b('Place '), place),
-                        div(b('Authors '), authors),
-                        div(b('Year '), year),
-                        div(b('Link '), assign(a(link), { href: link }),
-                            blockquote(description ? description : ""),
-                        ))
+                        place ? div(b('Place '), place) : '',
+                        authors ? div(b('Authors '), authors) : '',
+                        year ? div(b('Year '), year) : '',
+                        div(b('Link '), assign(a(link), { href: link })),
+                        description ? blockquote(description) : '',
+                    )
                 ))
         }
     </script>
