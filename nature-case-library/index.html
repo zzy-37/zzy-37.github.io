@@ -128,6 +128,7 @@
 
         .filter-selector label {
             cursor: pointer;
+            text-transform: capitalize;
         }
 
         .projects>div {
@@ -143,10 +144,12 @@
 
         .filter-selector,
         .filter-line {
+            padding: var(--padding-val);
+        }
+
+        .filter-line {
             position: sticky;
             top: 0;
-            padding-top: var(--padding-val);
-            padding-bottom: var(--padding-val);
         }
 
         .filter-line {
@@ -179,12 +182,17 @@
             main {
                 display: flex;
                 gap: var(--padding-val);
+                max-height: 100vh;
             }
 
             main aside {
                 flex-shrink: 0;
-                flex-basis: 25ch;
+                flex-basis: 30ch;
                 /* border-right: var(--border-style); */
+            }
+
+            main>* {
+                overflow: auto;
             }
 
             /* .projects {
@@ -235,6 +243,20 @@
         const i_other_keywords = 10
         const i_implimentation = 11
 
+        const nature_topic_catagories = [
+            'Animal',
+            'Environment',
+            'Material',
+            'Microorganism',
+            'Non-human',
+            'Plants',
+            'Resource',
+            'Sound',
+            'Species',
+            'Synthetic Biology',
+            'Utilization',
+        ]
+
         const technology_catagories = [
             'AI',
             'AR',
@@ -250,10 +272,24 @@
             'VR',
         ]
 
+        const implimentation_catagories = [
+            'Complete',
+            'Prototype',
+            'Speculative',
+        ]
+
+        const other_keywords = [...new Set(entries.map(e => [
+            entry_get_tokens(e, i_nature_topics).filter(token =>
+                !nature_topic_catagories.map(s => s.toLowerCase()).includes(token)),
+            entry_get_tokens(e, i_technoloies).filter(token =>
+                !technology_catagories.map(s => s.toLowerCase()).includes(token)),
+            entry_get_tokens(e, i_other_keywords)
+        ]).flat(3))]
+
         const head = header(
             img('./EAD.png'),
             h1('Welcome to the Ecology and Culture Lab'),
-            p('This page is an open dataset of classified cases about currnet tech applications of AI, data science and digital fabrication that are already in place to serve nature and human re-connection within the city.'),
+            p('This page is an open dataset of classified cases about current tech applications of AI, data science and digital fabrication that are already in place to serve nature and human re-connection within the city.'),
         )
 
         const projs = div()
@@ -270,20 +306,25 @@
             details(
                 summary('Technology'),
                 ...technology_catagories.map(catagroy_name =>
-                    filter_checkbox_element(catagroy_name))
+                    filter_checkbox_element('Technology', catagroy_name))
             ),
 
             details(
                 summary('Nature Topic'),
-                label(input('checkbox'), 'Biodiversity'),
-                label(input('checkbox'), 'Five Elements'),
+                ...nature_topic_catagories.map(catagroy_name =>
+                    filter_checkbox_element('Nature Topic', catagroy_name)),
             ),
 
             details(
                 summary('Implementation'),
-                label(input('checkbox'), 'Complete'),
-                label(input('checkbox'), 'Prototype'),
-                label(input('checkbox'), 'Speculative'),
+                ...implimentation_catagories.map(catagroy_name =>
+                    filter_checkbox_element('Implementation', catagroy_name)),
+            ),
+
+            details(
+                summary('Other Keywords'),
+                ...other_keywords.map(catagroy_name =>
+                    filter_checkbox_element('Other Keywords', catagroy_name)),
             ),
         )
 
@@ -310,37 +351,44 @@
 
         main_container.classList.add('wrapper')
         head.classList.add('wrapper')
-        // projs.classList.add('wrapper')
         filter_selector.classList.add('wrapper')
-        filter_line.classList.add('wrapper')
 
         document.body.append(
-            head,
+            // head,
             main_container,
         )
 
         update_filter()
 
-        function filter_checkbox_element(filter) {
+        function filter_checkbox_element(catagory, filter = '') {
             return label(
                 assign(input('checkbox'), {
+                    name: catagory,
                     value: filter,
                 }),
-                filter + ` (${entries.filter(e => apply_filter(e, filter)).length})`,
+                (filter ? filter : catagory) +
+                ` (${entries.filter(e => apply_filter(e, catagory, filter)).length})`,
             )
         }
 
         function update_filter() {
             const filter_values = checkboxes
                 .filter(c => c.checked)
-                .map(c => c.value)
+                .map(c => [c.name, c.value])
 
             if (filter_values.length === 0) {
                 filter_line.replaceChildren(b(`Showing (${entries.length}): All Projects`))
                 show_entries(entries)
             }
             else {
-                const filtered_entries = filter_entries(entries, filter_values)
+                const filtered_entries = entries.filter(row => {
+                    for (const [catagory, val] of filter_values) {
+                        if (apply_filter(row, catagory, val))
+                            return true
+                    }
+                    return false
+                })
+
                 filter_line.replaceChildren(
                     b(`Showing (${filtered_entries.length}):`),
                     assign(button('Clear Filter'), {
@@ -349,10 +397,10 @@
                             update_filter()
                         }
                     }),
-                    ...filter_values.map(val => assign(
-                        button('× ' + val), {
+                    ...filter_values.map(([name, val]) => assign(
+                        button(`× ${name} / ${val}`), {
                         onclick() {
-                            checkboxes.find(c => c.value === val).checked = false
+                            checkboxes.find(c => c.name === name && c.value === val).checked = false
                             update_filter()
                         }
                     }))
@@ -366,24 +414,21 @@
             return entry[column_index] ? entry[column_index].toLowerCase().split(',').map(s => s.trim()) : []
         }
 
-        function apply_filter(entry, filter_val) {
-            return (filter_val === 'Urban Context' && entry[i_ubran_context] === 'Y')
-                || (filter_val === 'Citizen Science' && entry[i_citizen_science] === 'Y')
-                || (technology_catagories.includes(filter_val) &&
-                    entry_get_tokens(entry, i_technoloies).includes(filter_val.toLowerCase()))
-        }
+        function apply_filter(entry, catagory, filter_val = '') {
+            const lower = filter_val.toLowerCase()
 
-        function filter_entries(entries, filters) {
-            if (filters.length === 0)
-                return entries
-
-            return entries.filter(row => {
-                for (const filter_val of filters) {
-                    if (apply_filter(row, filter_val))
-                        return true
-                }
-                return false
-            })
+            return (catagory === 'Urban Context' && entry[i_ubran_context] === 'Y')
+                || (catagory === 'Citizen Science' && entry[i_citizen_science] === 'Y')
+                || (catagory === 'Nature Topic' && nature_topic_catagories.includes(filter_val) &&
+                    entry_get_tokens(entry, i_nature_topics).includes(lower))
+                || (catagory === 'Technology' && technology_catagories.includes(filter_val) &&
+                    entry_get_tokens(entry, i_technoloies).includes(lower))
+                || (catagory === 'Implementation' && implimentation_catagories.includes(filter_val) &&
+                    entry_get_tokens(entry, i_implimentation).includes(lower))
+                || (catagory === 'Other Keywords' &&
+                    (entry_get_tokens(entry, i_other_keywords).includes(lower) ||
+                        entry_get_tokens(entry, i_nature_topics).includes(lower) ||
+                        entry_get_tokens(entry, i_technoloies).includes(lower)))
         }
 
         function show_entries(list) {
@@ -399,7 +444,6 @@
                         ))
                 ))
         }
-
     </script>
 </body>
 
