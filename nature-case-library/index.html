@@ -20,9 +20,9 @@
         }
 
         @font-face {
-            font-family: AvenirNext;
-            font-style: italic;
-            src: url("avenir-next/AvenirNextLTPro-It.otf") format("opentype");
+            font-family: Neutra;
+            font-weight: bold;
+            src: url("neutraface-text/Neutraface Text Bold.otf") format("opentype");
         }
 
         :root {
@@ -39,14 +39,14 @@
             margin: 0;
         }
 
+        h1 {
+            font-family: Neutra;
+        }
+
         img {
             max-width: 100%;
         }
 
-        a {
-            word-break: break-all;
-            /* color: var(--color-accent); */
-        }
 
         /* a:link {
         } */
@@ -111,8 +111,24 @@
     </style>
 
     <style>
+        header {
+            border-bottom: var(--border-style);
+            height: min-content;
+            display: flex;
+            align-items: center;
+        }
+
+        header h1 {
+            margin: 0;
+        }
+
         header img {
             max-width: 20rem;
+            max-height: 3rem;
+        }
+
+        main {
+            position: relative;
         }
 
         .filter-selector,
@@ -137,16 +153,16 @@
             border-bottom: var(--border-style);
         }
 
+        .projects a {
+            word-break: break-all;
+            /* color: var(--color-accent); */
+        }
+
         .projects>div h3 {
             margin: var(--padding-val) 0;
         }
 
-        main {
-            position: relative;
-        }
-
         .projects>div,
-        .filter-selector,
         .filter-line {
             padding: var(--padding-val);
         }
@@ -173,25 +189,26 @@
             padding-right: var(--padding-val);
         }
 
-        header {
-            padding-top: var(--padding-val);
-        }
 
         @media (min-width: 600px) {
-            /* header p {
-                max-width: 80ch;
-            } */
+            body {
+                display: flex;
+                flex-direction: column;
+                height: 100vh;
+            }
 
             main {
                 display: flex;
+                flex: 1;
                 gap: var(--padding-val);
-                max-height: 100vh;
+                /* max-height: 100vh; */
+                min-height: 0;
             }
 
             main aside {
                 flex-shrink: 0;
                 flex-basis: 30ch;
-                /* border-right: var(--border-style); */
+                border-right: var(--border-style);
             }
 
             main>* {
@@ -216,8 +233,8 @@
         const qsa = (query, parent = document) => parent.querySelectorAll(query);
 
         ['div', 'p', 'span', 'h1', 'h2', 'h3', 'h4', 'h5', 'h6', 'a', 'ul',
-            'li', 'details', 'summary', 'nav', 'header', 'button', 'blockquote',
-            'main', 'aside', 'label', 'b', 'u'
+            'li', 'details', 'summary', 'nav', 'header', 'footer', 'button',
+            'blockquote', 'main', 'aside', 'label', 'b', 'u'
         ].forEach(name =>
             window[name] = (...children) => {
                 const el = ce(name)
@@ -226,6 +243,10 @@
             })
 
         const { assign } = Object
+        const style = (el, styles) => {
+            assign(el.style, styles)
+            return el
+        }
         const img = filename => assign(ce('img'), { src: filename })
         const input = type => assign(ce('input'), { type: type })
     </script>
@@ -289,10 +310,53 @@
             entry_get_tokens(e, i_other_keywords)
         ]).flat(3))]
 
+        // const head = header(
+        //     img('./EAD.png'),
+        //     h1('Welcome to the Ecology and Culture Lab'),
+        //     p('This page is an open dataset of classified cases about current tech applications of AI, data science and digital fabrication that are already in place to serve nature and human re-connection within the city.'),
+        // )
+
         const head = header(
-            img('./EAD.png'),
-            h1('Welcome to the Ecology and Culture Lab'),
-            p('This page is an open dataset of classified cases about current tech applications of AI, data science and digital fabrication that are already in place to serve nature and human re-connection within the city.'),
+            img('./Logos/hulu 30.png'),
+            h1('Ecology X Design Knowledge Base')
+        )
+
+        const main_info = [
+            h1('About us'),
+
+            p('This platform collects projects and cases that address nature related topics and challenges, aiming to explore how design and technology are supporting ecological restoration and integration in a variety of applications.'),
+            p('The platform provides a reference of ecology-relevant projects that can inspire both planners and citizens in how technology advancement can be supportive of new models of urban-nature integration. '),
+            p('You can navigate the dataset by different “technology” and “nature” keywords, which offers a more specific outlook on how the cases have been classified.'),
+            p('The platform is currently at its 1.0 release, and we expect to introduce more visualisation and UI details in version 2.0 by Summer 2023.'),
+
+            p('The platform is created by the ', assign(a('Ecology and Cultures Innovation Lab'), { href: 'https://ecologydesignlabl.org/web' }), ' at ', assign(a('College of Design and Innovation, Tongji University'), { href: "https://tjdi.tongji.edu.cn/" }), '. The project has been funded by ', assign(a('NSFC National Natural Science Foundation of China'), { href: 'https://www.nsfc.gov.cn/english/site_1/index.html' }), ' under the grant agreement ', assign(a('2021-2022 #6201101276'), { href: 'https://ecologydesignlabl.org/web/nsfc-citizenscience/' }), '.'),
+
+            p('Team members: Lu Wentao, Saverio Silli, Francesca Valsecchi, Zhu Ziyi'),
+            p('contact us: ', assign(a('echologydesignlab at tongji.edu.cn'), { href: 'mailto:ecologydesignlab@tongji.edu.cn' })),
+
+            assign(button(b('< Back')), {
+                onclick() {
+                    location.hash = 'filter'
+                }
+            })
+        ]
+
+        const foot = footer(
+            assign(ce('style'), {
+                textContent: `
+                footer { border-top: 1px solid black; padding: var(--padding-val); display: flex; flex-wrap: wrap; gap: var(--padding-val) }
+                footer>p { flex: 1 }
+                footer img { max-height: 5rem; margin-right: var(--padding-val) }
+                ` }),
+
+
+            p('Designed by Ecology and Cultures Innovation Lab, Tongji D&I. Supported by ', assign(a('NSFC'), { href: 'https://www.nsfc.gov.cn/english/site_1/index.html' }), '. ', 'This work is licensed under a ', assign(a('Creative Commons Attribution-NonCommercial-ShareAlike 4.0 International License'), { rel: 'license', href: 'http://creativecommons.org/licenses/by-nc-sa/4.0/' }), '.'),
+
+            div(
+                assign(a(assign(img('./Logos/dilogo.png'), { alt: 'D&I Logo' })), { href: 'https://tjdi.tongji.edu.cn/' }),
+                assign(a(assign(img('./Logos/NSFC Logo.png'), { alt: 'NSFC Logo' })), { href: 'https://www.nsfc.gov.cn/english/site_1/index.html' }),
+                assign(a(assign(img('https://i.creativecommons.org/l/by-nc-sa/4.0/88x31.png'), { alt: 'Creative Commons Licence' })), { rel: 'license', href: 'http://creativecommons.org/licenses/by-nc-sa/4.0/' }),
+            ),
         )
 
         const projs = div()
@@ -338,12 +402,25 @@
             checkbox.onchange = update_filter
         })
 
+        const main_content = div()
+
+        onhashchange = () => {
+            if (location.hash == '#info') {
+                main_content.replaceChildren(...main_info)
+            }
+            else {
+                update_filter()
+            }
+        }
+
+        const side_bar = aside(
+            assign(a(h3('About')), { href: '#info' }),
+            filter_selector
+        )
+
         const main_container = main(
-            aside(filter_selector),
-            div(
-                filter_line,
-                projs,
-            ),
+            side_bar,
+            main_content
         )
         // qsa('details', main_container)
         //     .forEach(e => e.setAttribute('open', ''))
@@ -352,13 +429,16 @@
         filter_selector.classList.add('filter-selector')
         filter_line.classList.add('filter-line')
 
-        main_container.classList.add('wrapper')
+        // main_container.classList.add('wrapper')
         head.classList.add('wrapper')
-        filter_selector.classList.add('wrapper')
+        side_bar.classList.add('wrapper')
+        //filter_selector.classList.add('wrapper')
 
         document.body.append(
-            // head,
+            head,
             main_container,
+            // main_info,
+            foot
         )
 
         update_filter()
@@ -375,6 +455,11 @@
         }
 
         function update_filter() {
+            main_content.replaceChildren(
+                filter_line,
+                projs,
+            )
+            location.hash = 'filter'
             const filter_values = checkboxes
                 .filter(c => c.checked)
                 .map(c => [c.name, c.value])
