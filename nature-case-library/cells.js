@@ -1,5 +1,5 @@
 const cells = {
-  "range": "projects!A1:N134",
+  "range": "projects!A1:N135",
   "majorDimension": "ROWS",
   "values": [
     [
@@ -58,7 +58,7 @@ const cells = {
       "",
       "Y",
       "N",
-      "insect, biodiversity, conservation, animal, garden, habitat, bee, spider",
+      "insect, biodiversity, conservation, animals, garden, habitat, bee, spider",
       "fabrication",
       "",
       "complete"
@@ -73,7 +73,7 @@ const cells = {
       "N",
       "Y",
       "moss, utilization, resource, material, cell",
-      "fabrication, digital fabrication, sensor, biomedia",
+      "fabrication, digital fabrication, sensors, biomedia",
       "",
       "prototype"
     ],
@@ -87,7 +87,7 @@ const cells = {
       "N",
       "Y",
       "air, environment, pollution",
-      "fabrication, digital fabrication, sensor",
+      "fabrication, digital fabrication, sensors",
       "",
       "prototype"
     ],
@@ -115,8 +115,8 @@ const cells = {
       "an exhibition in tate modern / anicka yi transforms tate modern into a fragrant ecosystem of floating machines to\r\n propose a new type of industrial vision and speculates on the possibility of\r\n machines evolving into independent life forms. The machine can interact with\r\n environment & human beings as nature creatures.",
       "N",
       "N",
-      "species, air, non-human",
-      "sensor, digital fabrication, fabrication",
+      "multi-species, air, more-than-human",
+      "sensors, digital fabrication, fabrication",
       "mimicry",
       "speculative",
       "Deng Zhiwen"
@@ -131,7 +131,7 @@ const cells = {
       "Y",
       "N",
       "footprint, wind, light",
-      "fabrication, sensor",
+      "fabrication, sensors",
       "",
       "complete",
       "Deng Zhiwen",
@@ -179,7 +179,7 @@ const cells = {
       "N",
       "N",
       "pigment, color, utilization, resource, material",
-      "fabrication, sensor, biomedia",
+      "fabrication, sensors, biomedia",
       "",
       "complete",
       "Zhu Zihan",
@@ -211,7 +211,7 @@ const cells = {
       "N",
       "N",
       "carbon, footprint, sound",
-      "sensor, coding, fabrication, digital fabrication, sound, data",
+      "sensors, coding, fabrication, digital fabrication, sound, data",
       "social media, virtuality",
       "speculative",
       "Chen Jing",
@@ -226,8 +226,8 @@ const cells = {
       "installation",
       "N",
       "N",
-      "Bionic, non-human, landscape, light",
-      "sensor, data, coding, fabrication, digital fabrication",
+      "Bionic, more-than-human, landscape, light",
+      "sensors, data, coding, fabrication, digital fabrication",
       "",
       "complete",
       "Song Yue",
@@ -242,8 +242,8 @@ const cells = {
       "concept",
       "N",
       "N",
-      "temperature, non-human",
-      "fabrication, data, sensor, coding",
+      "temperature, more-than-human",
+      "fabrication, data, sensors, coding",
       "",
       "prototype",
       "",
@@ -259,7 +259,7 @@ const cells = {
       "N",
       "N",
       "sound, utilization, air",
-      "fabrication, digital fabrication, sound, data, coding, sensor",
+      "fabrication, digital fabrication, sound, data, coding, sensors",
       "",
       "complete",
       "Dong Zixuan"
@@ -273,8 +273,8 @@ const cells = {
       "",
       "N",
       "N",
-      "ant, sound, insect, animal",
-      "sound, data, sensor, fabrication, coding",
+      "ant, sound, insect, animals",
+      "sound, data, sensors, fabrication, coding",
       "",
       "speculative",
       "Dong Zixuan"
@@ -289,7 +289,7 @@ const cells = {
       "Y",
       "N",
       "wind, light, waterscape, utilization, sea",
-      "fabrication, sensor, data, digital fabrication",
+      "fabrication, sensors, data, digital fabrication",
       "",
       "complete",
       "Dong Zixuan",
@@ -337,7 +337,7 @@ const cells = {
       "N",
       "N",
       "desert, wind, degrading, rewild",
-      "fabrication, digital fabrication, data, sensor",
+      "fabrication, digital fabrication, data, sensors",
       "",
       "prototype",
       "Dong Zixuan"
@@ -351,8 +351,8 @@ const cells = {
       "installation for milan design week 2021",
       "N",
       "N",
-      "climate change, co2, species, plants, air, carbon",
-      "fabrication, digital fabrication, data, sensor",
+      "climate change, co2, multi-species, plants, air, carbon",
+      "fabrication, digital fabrication, data, sensors",
       "",
       "complete",
       "Zhou ZiYin",
@@ -368,7 +368,7 @@ const cells = {
       "N",
       "N",
       "sound, resource, environment",
-      "sound, data, sampling, sensor",
+      "sound, data, sampling, sensors",
       "",
       "complete",
       "Licari Giorgia",
@@ -399,7 +399,7 @@ const cells = {
       "interactive website",
       "N",
       "N",
-      "sea, species",
+      "sea, multi-species",
       "digital fabrication, data",
       "deep sea",
       "complete",
@@ -415,7 +415,7 @@ const cells = {
       "Diana Scherer trains the roots of plants to grow in intricate structures, creating a 3D textile. When the roots are fully grown, she removes them from the soil and cuts off the plant stems. The pieces produced are not yet suitable to be worn, but hint at a potential, more sustainable future in which we grow our own fashion in the ground.",
       "N",
       "N",
-      "species, grass, utilization, resource, root",
+      "multi-species, grass, utilization, resource, root",
       "fabrication, digital fabrication, coding, biomedia",
       "",
       "complete",
@@ -431,7 +431,7 @@ const cells = {
       "The title, ‘Plant Fiction’ layers facts, fiction, myth, history, radical thinking and researches our present-day relation- ship with nature and culture, green and the city. Five sce- narios, each formed around a fictitious plant species are placed on location in a London of the near-future. Each kind is utilized to improve a familiar man-made condi- tion. In these near-future scenarios Troika imagined plants that would self-decompose in gain of biofuels, plants that excrete unique pigments to be implemented in security devices, creepers that can sense air-borne viruses and plants that reclaim gold from electronic circuits found in landfills, thus evoking prospective scenarios while uncover- ing our often short-sighted and utilitarian view on nature and mankind’s relationship to it.\nPlant Fiction was purchased for the permanent col- lections of he Art Institute of Chicago and the Israel Museum, Jerusalem.",
       "Y",
       "N",
-      "biodiversity, species, pollution, resource",
+      "biodiversity, multi-species, pollution, resource",
       "fabrication, biomedia",
       "",
       "speculative",
@@ -447,7 +447,7 @@ const cells = {
       "The speculative future of synthetic biology",
       "N",
       "N",
-      "species, synthetic biology, biodiversity",
+      "multi-species, synthetic biology, biodiversity",
       "fabrication, biomedia",
       "",
       "speculative"
@@ -461,7 +461,7 @@ const cells = {
       "The Scatalog imagines using it for cheap, personalised disease monitoring. Engineered bacteria, ingested in yoghurt, would colonise our gut, keeping watch for the chemical markers of diseases. If disease is detected, the bacteria produce an easy-to-read warning by colouring your poo. The Scatalog was made as a tool for critical discourse in synthetic biology and was first presented at iGEM in 2009.",
       "N",
       "N",
-      "species, bacteria, microorganism, utilization, resource, synthetic biology, color, pigment, waste, hygenine",
+      "multi-species, bacteria, micro-organisms, utilization, resource, synthetic biology, color, pigment, waste, hygenine",
       "fabrication, biomedia",
       "",
       "speculative"
@@ -476,7 +476,7 @@ const cells = {
       "N",
       "N",
       "temperature, environment, weather",
-      "fabrication, sensor",
+      "fabrication, sensors",
       "",
       "complete"
     ],
@@ -489,7 +489,7 @@ const cells = {
       "Synthetic biology enabled us to harness our natural environment for the production of things. Coded into the DNA of a plant, product parts grow within the supporting system of the plant's structure. When fully developed, they are stripped like a walnut from its shell or corn from its husk, ready for assembly.\nShops evolved into factory farms, with licensed products grown where sold. Large items take time to grow and are more expensive while small ones are more affordable. The postal service delivers lightweight seed-packets for domestic manufacturers.",
       "Y",
       "N",
-      "species, utilization, plants, resource, agriculture",
+      "multi-species, utilization, plants, resource, agriculture",
       "fabrication, biomedia",
       "",
       "speculative",
@@ -505,7 +505,7 @@ const cells = {
       "Seasons of the Void imagines delicious fruits that are grown from redesigned yeast, gorging on electricity instead of sunlight. As the ship flies away from the Sun, electrosynthesis replaces photosynthesis. Here, farming would rely less on Earth’s seasons than on magnetic fields thrown out by solar storms. ",
       "N",
       "N",
-      "species, synthetic biology, outerspace, food, electrosynthesis",
+      "multi-species, synthetic biology, outerspace, food, electrosynthesis",
       "fabrication",
       "",
       "speculative"
@@ -520,7 +520,7 @@ const cells = {
       "N",
       "N",
       "preservation, conservation, synthetic biology, extinction, biodiversity, rewild",
-      "biomedia, sensor, coding, fabrication, biotech",
+      "biomedia, sensors, coding, fabrication, biotech",
       "",
       "speculative"
     ],
@@ -549,7 +549,7 @@ const cells = {
       "The Wilding of Mars simulates the growth of a planetary wilderness, seeded with Earth life forms -- plants, not human.",
       "N",
       "N",
-      "plants, non-human, colonisation, planet, indigenous life, invasive species",
+      "plants, more-than-human, colonisation, planet, indigenous life, invasive species",
       "coding, digital fabrication",
       "",
       "complete"
@@ -563,8 +563,8 @@ const cells = {
       "A northern white rhino is digitally brought back to life, informed by developments in the human creation of artificial intelligence (AI). Based on research from AI lab DeepMind, the rhino performs as an artificial agent, an autonomous entity that learns from its environment. A life-size projection, 5m wide, shows the artificial rhino roaming in a virtual world, becoming more “real” as it comprehends the limits of the space. As the artificial rhino habituates to its space, its form and sound toggle from pixelation to lifelike—reminding the viewer that this living, breathing rhino, coming to life without its natural context, is entirely artificial.",
       "N",
       "N",
-      "species, extinction, environment, habitat, rhino",
-      "AI, VR, digital fabrication",
+      "multi-species, extinction, environment, habitat, rhino",
+      "AI, virtual reality, digital fabrication",
       "",
       "complete"
     ],
@@ -577,7 +577,7 @@ const cells = {
       "Using genetic engineering to resurrect the smell of extinct flowers—so that humans may again experience something we have destroyed—is awesome and perhaps terrifying. This dizzying feeling evokes the sublime, an “expression of the unknowable”, an aesthetic",
       "N",
       "N",
-      "species, extinction, smell, plants, flower",
+      "multi-species, extinction, smell, plants, flower",
       "biotech, digital fabrication, biotech, sampling",
       "synthetic biology tech",
       "complete"
@@ -591,7 +591,7 @@ const cells = {
       "In the installation, a natural dawn chorus is taken over by artificial birds, their calls generated using machine learning. Solo recordings of chiffchaffs, great tits, redstarts, robins, thrushes, and entire dawn choruses were used to train two neural networks, pitted against each other to sing (a Generative Adversarial Network, or GAN). Reflecting on how birds develop their song from each other, a call and response of real and artificial birds spatialise the evolution of a new language. Samples taken from each stage in the GAN’s training revealing the artificial birds’ growing lifelikeness. ",
       "Y",
       "N",
-      "bird, species, sound",
+      "bird, multi-species, sound",
       "biotech, digital fabrication, biotech, sampling",
       "synthetic biology tech",
       "complete"
@@ -620,7 +620,7 @@ const cells = {
       "Y",
       "N",
       "garden, landscape",
-      "AR, digital fabrication",
+      "augmented reality, digital fabrication",
       "",
       "complete",
       "",
@@ -636,7 +636,7 @@ const cells = {
       "Y",
       "N",
       "rewild, plants, landscape",
-      "AR",
+      "augmented reality",
       "",
       "complete"
     ],
@@ -663,7 +663,7 @@ const cells = {
       "Cultivating Frequencies transforms a garden into an interactive and generative musical installation by analyzing data from the garden and translating them into musical components. ",
       "N",
       "N",
-      "species, symbiosis, plants, sound, ecosystem, environment, soil, garden, temperature, bionic, biorhythm",
+      "multi-species, symbiosis, plants, sound, ecosystem, environment, soil, garden, temperature, bionic, biorhythm",
       "data, fabrication, coding, digital fabrication",
       "interaction",
       "complete"
@@ -677,7 +677,7 @@ const cells = {
       "-the actual algae garden, the algae can be cultivated by the visitors by blowing co2 in the photo-bioreactor bags, observe the diverse colours as well as the different ecologies of micro or macro algae with magnifying lenses and finally interact via LED responsive memory system.- the regional co-action plan is presented via a map on the floor below the garden as well as a Touristic Map of the region presenting the master plan as well as the different type of algae and topographic region which is possible to find at the moment on the local landscape and the proposed prototype that could be develop from these resources.",
       "N",
       "N",
-      "agriculture, algae, microorganism, utilization, resource, food, waterscape, co2",
+      "agriculture, algae, micro-organisms, utilization, resource, food, waterscape, co2",
       "coding, fabrication, biomedia",
       "",
       "prototype"
@@ -707,7 +707,7 @@ const cells = {
       "This project showcases ecoLogicStudio's recent work on the future of green urban planning, combining artificial intelligence with big data analysis. It also features a unique insight in the infrastructural logics of the Venetian canal system with a speculative AI video simulation, illustrating the accelerated evolution of the Venetian urban fabric over the course of the next 250 years.",
       "Y",
       "N",
-      "slime mould, microorganism, landscape, utilization",
+      "slime mould, micro-organisms, landscape, utilization",
       "AI, data, biomedia",
       "urban planning",
       "prototype"
@@ -721,7 +721,7 @@ const cells = {
       "AIRlab is an urban laboratory for converting air pollution into products that help protect our breathing.",
       "Y",
       "N",
-      "air, species, microorganism, food, utilization, algae, resource, material, agriculture, carbon, fertilizer",
+      "air, multi-species, micro-organisms, food, utilization, algae, resource, material, agriculture, carbon, fertilizer",
       "biomedia, data, coding, digital fabrication, fabrication",
       "circular economy",
       "prototype"
@@ -735,8 +735,8 @@ const cells = {
       "A trained machine learning algorithm that behaves like a living Slime Mould and depicts the future of a bio-digital autonomous Paris.\n/\nDeepGreen is a long-term project developed by ecoLogicStudio with UNDP (United Nations Development Programme) combining AI and big data analysis. The project aims at designing systemic cities that use their size and collective energy to offer refuge for both humans and displaced wildlife, that promote the emergence of positive microclimate, that replenish depleted water sources and that restore degraded terrains, pushing back on processes such as desertification, land erosion and contamination.",
       "Y",
       "N",
-      "slime mould, microorganism, landscape, utilization",
-      "AI, data, biomedia, sensor, sampling, coding, biotech",
+      "slime mould, micro-organisms, landscape, utilization",
+      "AI, data, biomedia, sensors, sampling, coding, biotech",
       "urban planning, machine learning",
       "prototype"
     ],
@@ -749,7 +749,7 @@ const cells = {
       "It is a tactile sound installation located in the elevator of the Tang Teaching Museum that connects hidden artifacts of science to familiar domains of the everyday. The installation reenvisions the elevator as a biological cell and its visitors as proteins as they are prompted to engage with a haptic textiles sculpture while listening to a sonic tour of a biotech laboratory.",
       "Y",
       "N",
-      "cell, non-human, sound",
+      "cell, more-than-human, sound",
       "fabrication, biomedia",
       "",
       "complete"
@@ -777,8 +777,8 @@ const cells = {
       "OLFi uses the sense of smell to remind users when their smart devices are present. Devices would emit a smell depending on its specific activity.",
       "N",
       "N",
-      "smell, microorganism, air, synthetic biology, utilization",
-      "biomedia, fabrication, sensor",
+      "smell, micro-organisms, air, synthetic biology, utilization",
+      "biomedia, fabrication, sensors",
       "",
       "speculative"
     ],
@@ -805,8 +805,8 @@ const cells = {
       "Ecomorphs is an outdoor interactive installation made up of soft robots that are sensitive to their surrounding environment. The team modified 3D printer mechanisms to solder sheets of TPU sheets together into bespoke shapes that define the appearance and embodied performance of the soft robots. The installation utilises a variety of integrated sensing approaches that regulate air pressure inside the robot, detect human gestures, human visual attention, and observers movement around the work. This data is combined to choreograph the motion of the robots mysteriously living deep in a dark forest.",
       "N",
       "N",
-      "species, non-human, forest",
-      "coding, fabrication, digital fabrication, sensor",
+      "multi-species, more-than-human, forest",
+      "coding, fabrication, digital fabrication, sensors",
       "",
       "prototype"
     ],
@@ -819,8 +819,8 @@ const cells = {
       "the team questioned what a post-anthropocentric technology might look like, replacing robotics with the material Chitosan to create a kinetic and responsive installation.",
       "N",
       "N",
-      "species, non-human, material",
-      "biomedia, sensor, biotech, biomedia, fabrication",
+      "multi-species, more-than-human, material",
+      "biomedia, sensors, biotech, biomedia, fabrication",
       "",
       "prototype"
     ],
@@ -834,7 +834,7 @@ const cells = {
       "Y",
       "N",
       "sea, utilization, resource, preservation, moss, ecosystem",
-      "sensor, fabrication",
+      "sensors, fabrication",
       "urban farming, installation",
       "speculative"
     ],
@@ -861,7 +861,7 @@ const cells = {
       "educate people about diverse sextuality/identity with knowledge of botany, reconnecting people with natue.",
       "N",
       "N",
-      "species, plants, tree, flower, regenerate",
+      "multi-species, plants, tree, flower, regenerate",
       "fabrication",
       "identity, sexuality",
       "complete"
@@ -875,7 +875,7 @@ const cells = {
       "visitors to the installation are confronted with a customer-like buying experience, in which they are encouraged to donate to one of China’s giant pandas currently housed in international zoos. The buying process is experienced in six increasingly complicated stages, layering the hard ‘sales pitch’ of commerce over a revelatory exhibition narrative that exposes the realities of Panda Diplomacy.",
       "N",
       "N",
-      "species, preservation, animal, extinction, panda",
+      "multi-species, preservation, animals, extinction, panda",
       "fabrication",
       "panda, politics",
       "complete"
@@ -889,7 +889,7 @@ const cells = {
       "A machine that can observe and learn from a microorganism and uses the data arising from its behavioural patterns as a source of composition for an audio-visual score. This project is focused on the creation of an artificial intelligence that has the ability to identify repeated coordinated actions inside biological cultures. ",
       "N",
       "N",
-      "microorganism, sound",
+      "micro-organisms, sound",
       "AI, data, biomedia, sound",
       "",
       "complete"
@@ -918,7 +918,7 @@ const cells = {
       "Y",
       "N",
       "plants, sound, ecology, biorhythm",
-      "AI, sensor, digital fabrication, coding, sound",
+      "AI, sensors, digital fabrication, coding, sound",
       "",
       "complete"
     ],
@@ -932,7 +932,7 @@ const cells = {
       "Y",
       "N",
       "plants, sound, ecology, biorhythm",
-      "AI, sensor, digital fabrication, coding, sound",
+      "AI, sensors, digital fabrication, coding, sound",
       "",
       "complete"
     ],
@@ -946,7 +946,7 @@ const cells = {
       "Y",
       "N",
       "bird, sound, environment",
-      "AR, digital fabrication, sound",
+      "augmented reality, digital fabrication, sound",
       "",
       "complete"
     ],
@@ -987,7 +987,7 @@ const cells = {
       "",
       "N",
       "N",
-      "plants, root, species, biodiversity, tree, resource, grass",
+      "plants, root, multi-species, biodiversity, tree, resource, grass",
       "data",
       "drawing, documentation",
       "complete"
@@ -1015,8 +1015,8 @@ const cells = {
       "A microbial record player, translating bacteria to sound",
       "N",
       "N",
-      "bacteria, microorganism, sound",
-      "sensor, data, biomedia, sound, fabrication, digital fabrication, biotech, coding",
+      "bacteria, micro-organisms, sound",
+      "sensors, data, biomedia, sound, fabrication, digital fabrication, biotech, coding",
       "",
       "complete"
     ],
@@ -1029,7 +1029,7 @@ const cells = {
       "-",
       "N",
       "N",
-      "kombucha, microorganism, material",
+      "kombucha, micro-organisms, material",
       "biomedia",
       "sclupture, art work, aesthetic",
       "complete"
@@ -1057,7 +1057,7 @@ const cells = {
       "",
       "N",
       "N",
-      "species, microorganism, material, flower",
+      "multi-species, micro-organisms, material, flower",
       "fabrication",
       "sclupture, art work, aesthetic",
       "complete"
@@ -1071,7 +1071,7 @@ const cells = {
       "",
       "N",
       "N",
-      "species, microorganism, material, bacteria, fungi",
+      "multi-species, micro-organisms, material, bacteria, fungi",
       "fabrication",
       "sclupture, art work, aesthetic",
       "complete"
@@ -1099,7 +1099,7 @@ const cells = {
       "",
       "N",
       "N",
-      "bacteria, material, light, color, pigment, fungi, microorganism",
+      "bacteria, material, light, color, pigment, fungi, micro-organisms",
       "biomedia",
       "sclupture, art work, aesthetic",
       "complete"
@@ -1113,7 +1113,7 @@ const cells = {
       "",
       "N",
       "N",
-      "species, plants, material, color, flower",
+      "multi-species, plants, material, color, flower",
       "biomedia, fabrication",
       "sclupture, art work, aesthetic",
       "complete"
@@ -1127,7 +1127,7 @@ const cells = {
       "",
       "N",
       "N",
-      "bee, beehive, species, pollinator, light, color, material",
+      "bee, beehive, multi-species, pollinator, light, color, material",
       "biomedia, fabrication",
       "sclupture, art work, aesthetic",
       "complete"
@@ -1141,7 +1141,7 @@ const cells = {
       "",
       "N",
       "N",
-      "bacteria, material, light, color, pigment, fungi, microorganism",
+      "bacteria, material, light, color, pigment, fungi, micro-organisms",
       "biomedia, fabrication",
       "sclupture, art work, aesthetic",
       "complete"
@@ -1155,8 +1155,8 @@ const cells = {
       "Plants Play is a wearable device that allows you to listen to the Music generated by Plants and Trees. Through two electrodes settled on the leaves, Plants Play converts electrical plant variations into musical notes, and send them by bluetooth on your smartphone. ",
       "N",
       "Y",
-      "species, plants, sound, tree, biorhythm",
-      "sensor, data, coding, fabrication, sound",
+      "multi-species, plants, sound, tree, biorhythm",
+      "sensors, data, coding, fabrication, sound",
       "",
       "complete"
     ],
@@ -1169,7 +1169,7 @@ const cells = {
       "",
       "N",
       "N",
-      "plants, color, material, non-human, tree",
+      "plants, color, material, more-than-human, tree",
       "fabrication",
       "paintings",
       "complete"
@@ -1184,7 +1184,7 @@ const cells = {
       "N",
       "N",
       "tree, environment, air, biodiversity, landscape, co2, forest, tropical forest, climate change",
-      "sampling, sensor, coding, digital fabrication",
+      "sampling, sensors, coding, digital fabrication",
       "",
       "complete"
     ],
@@ -1198,7 +1198,7 @@ const cells = {
       "N",
       "N",
       "tree, environment, air, biodiversity, landscape, co2, forest, tropical forest, climate change",
-      "fabrication, sensor, sampling, coding, data",
+      "fabrication, sensors, sampling, coding, data",
       "",
       "complete"
     ],
@@ -1211,8 +1211,8 @@ const cells = {
       "Rainforest Connection (RFCx) builds and deploys scalable, open acoustic monitoring systems that can halt illegal logging and poaching, and can enable biodiversity measurement and monitoring.",
       "N",
       "Y",
-      "forest, tropical forest, biodiversity, preservation, conservation, sound, animal",
-      "sensor, data, AI, fabrication",
+      "forest, tropical forest, biodiversity, preservation, conservation, sound, animals",
+      "sensors, data, AI, fabrication",
       "illegal loggoing, poaching, threat detection, biodiversity monitoring",
       "complete"
     ],
@@ -1225,8 +1225,8 @@ const cells = {
       "The MindSpore AI framework is boosting the accuracy and efficiency of analyzing infrared image data to improve conservation of the snow leopard in China's Qinghai-Tibet Plateau",
       "N",
       "N",
-      "animal, preservation, conservation, leopard, extinction",
-      "AI, sensor, data",
+      "animals, preservation, conservation, leopard, extinction",
+      "AI, sensors, data",
       "",
       "complete"
     ],
@@ -1239,8 +1239,8 @@ const cells = {
       "Artificial intelligence are protecting the wild Atlantic salmon from being overwhelmed by its invasive Pacific cousin",
       "N",
       "N",
-      "species, preservation, conservation, salmon, invasive species, ecosystem, animal, food, waterscape",
-      "AI, sensor, digital fabrication",
+      "multi-species, preservation, conservation, salmon, invasive multi-species, ecosystem, animals, food, waterscape",
+      "AI, sensors, digital fabrication",
       "",
       "complete"
     ],
@@ -1253,8 +1253,8 @@ const cells = {
       "Deploying China's first connected Asian Elephant protection, monitoring, and warning system",
       "N",
       "N",
-      "species, preservation, conservation, elephant, extinction",
-      "AI, sensor, data",
+      "multi-species, preservation, conservation, elephant, extinction",
+      "AI, sensors, data",
       "",
       "complete"
     ],
@@ -1267,8 +1267,8 @@ const cells = {
       "Smart technology deployed off the Irish south coast can mean the difference between life & death for aquatic mammals",
       "N",
       "N",
-      "species, preservation, conservation, whale, sea, animal, sound, pollution, dolphin, extinction, environment, waterscape",
-      "AI, sensor, data, sound",
+      "multi-species, preservation, conservation, whale, sea, animals, sound, pollution, dolphin, extinction, environment, waterscape",
+      "AI, sensors, data, sound",
       "machine learning",
       "complete"
     ],
@@ -1281,7 +1281,7 @@ const cells = {
       "Located in and around a mature tree in a significant site, and working with a team of aerialists, singers and performers they have created a durational performance made up of cycles of songs, movement and messages.",
       "Y",
       "N",
-      "tree, sound, symbiosis, non-human",
+      "tree, sound, symbiosis, more-than-human",
       "fabrication, sound",
       "community",
       "complete"
@@ -1295,7 +1295,7 @@ const cells = {
       "",
       "N",
       "Y",
-      "species, material, sound, animal",
+      "multi-species, material, sound, animals",
       "fabrication, sound",
       "",
       "complete"
@@ -1309,7 +1309,7 @@ const cells = {
       "Algaculture designs a new symbiotic relationship between humans and algae. It proposes a future where humans will be enhanced with algae living inside new bodily organs, allowing us to be semi-photosynthetic. Almost enabling us to become plant-like by gaining food from light. As such, we will be symbionts (meaning that both entities entirely depend on each other for survival), entering into a mutually beneficial relationship with the algae.",
       "N",
       "N",
-      "food, symbiosis, algae, resource, non-human, co2, utilization",
+      "food, symbiosis, algae, resource, more-than-human, co2, utilization",
       "fabrication",
       "",
       "speculative"
@@ -1323,7 +1323,7 @@ const cells = {
       "The algae, which are a photosynthetic plant-like organism, feeds on the carbon dioxide in the singer’s breath. As an important future food source, the singer’s algae can also be eaten. Alongside listening to her music, the audience can also taste her song.",
       "N",
       "N",
-      "food, symbiosis, algae, resource, non-human, co2, utilization, sound",
+      "food, symbiosis, algae, resource, more-than-human, co2, utilization, sound",
       "fabrication",
       "",
       "speculative"
@@ -1337,7 +1337,7 @@ const cells = {
       "Instruments are created to transform contamination into valuable materials, by employing plants and engineered bacteria.\n\nInstead of mining material from geological sources and using fossil fuels, that lead to environmental harm, could future generations use the contamination and pollution we leave behind to build their future world? Can they build balanced relationships with the natural world to be a no-waste civilisation?",
       "N",
       "N",
-      "pollution, microorganism, material, utilization, plants, bacteria, waste",
+      "pollution, micro-organisms, material, utilization, plants, bacteria, waste",
       "fabrication, biotech",
       "synthetic biology tech",
       "speculative"
@@ -1351,7 +1351,7 @@ const cells = {
       "Man-made biodiversity to recover Earth’s lost species.\nClimate change, a human population of 9 billion, the effects of deforestation and rising oceans will drive species to extinction. Scientists say three species of organisms become extinct every hour due to environmental pressures created by humans. Biodiversity is not just a green issue. It is vital as a life support system and we simply cannot exist without rich biodiversity. If we don’t act now, we will loose organisms which might become a solution to unforeseen disasters and diseases.",
       "N",
       "N",
-      "species, synthetic biology, biodiversity, extinction, regenerate",
+      "multi-species, synthetic biology, biodiversity, extinction, regenerate",
       "fabrication, biotech",
       "",
       "speculative"
@@ -1365,7 +1365,7 @@ const cells = {
       "See with the skin, smell with suckers, change colour for social interactions and sense the world with a brain distributed across the body.\n\nThese abilities possessed by an octopus shape a mind that is possibly one of the most different non-human forms of intelligence to our own. Altered Ways of Being takes inspiration from the octopus to reveal links between our own human body and mind.",
       "N",
       "N",
-      "species, octopus, non-human, animal, color, light, bionic, smell",
+      "multi-species, octopus, more-than-human, animals, color, light, bionic, smell",
       "fabrication",
       "",
       "speculative"
@@ -1380,7 +1380,7 @@ const cells = {
       "Y",
       "N",
       "tree, sound, biorhythm",
-      "sensor, coding, fabrication, sound",
+      "sensors, coding, fabrication, sound",
       "",
       "prototype"
     ],
@@ -1393,8 +1393,8 @@ const cells = {
       "Simple DIY construction of a makeshift microscope encourages urbanites to collect and observe microbial samples. An app records the microscope sessions, with AI included in to recognize and classify the observed species. Finally, translation of microscopic data allows diving into the microbial sample in an immersive VR experience.",
       "Y",
       "Y",
-      "microorganism, species, biodiversity",
-      "AI, sensor, coding, VR, fabrication, sampling",
+      "micro-organisms, multi-species, biodiversity",
+      "AI, sensors, coding, virtual reality, fabrication, sampling",
       "",
       "prototype"
     ],
@@ -1407,8 +1407,8 @@ const cells = {
       "The project explores the design of connected micro-environments for birds that are placed on the empty balconies of district 9 of Milan, citizens can become volunteers by hosting the birds ‘suite cabins’, which allows being a member of a specific digital community that brings together the passion of bird lovers and the ecologist expertise. These product-service solutions aim to increase and restore biodiversity in the locality and find new relations between human-animal interactions.",
       "Y",
       "Y",
-      "bird, habitat, environment, animal",
-      "sensor, fabrication",
+      "bird, habitat, environment, animals",
+      "sensors, fabrication",
       "",
       "prototype"
     ],
@@ -1435,7 +1435,7 @@ const cells = {
       "Several projects, including: chalking names of different plants in urban area, citizen science projects collaborating with citizens to record species in cities",
       "Y",
       "Y",
-      "species, plants, biodiversity",
+      "multi-species, plants, biodiversity",
       "sampling, fabrication, data",
       "photography",
       "complete"
@@ -1477,7 +1477,7 @@ const cells = {
       "A biomaterials starter kit designed to introduce makers to the expansive world of biomaterials, the contents of the Starter Culture kit, which include bioplastics, mycelium and silk proteins, can be propagated and shared among makers",
       "N",
       "N",
-      "material, mycellium, silk, microorganism",
+      "material, mycellium, silk, micro-organisms",
       "biomedia, biotech, fabrication",
       "",
       "prototype"
@@ -1491,7 +1491,7 @@ const cells = {
       "A panel inside homes on which organisms like lichen or slime mold grow and behave as biosensors and living art, Mutua offers a fresh, living concept for interior design.",
       "N",
       "N",
-      "microorganism, utilization, material, color, pigment, slime mould",
+      "micro-organisms, utilization, material, color, pigment, slime mould",
       "biomedia, fabrication",
       "",
       "prototype"
@@ -1505,7 +1505,7 @@ const cells = {
       "Pairing drones with living organisms, Growing Buildings seeks to heal urban infrastructure with bacteria and slime mold that produce organic sealants.  ",
       "Y",
       "N",
-      "microorganism, utilization, material, slime mould, bacteria",
+      "micro-organisms, utilization, material, slime mould, bacteria",
       "biomedia, fabrication",
       "construction repair",
       "prototype"
@@ -1519,7 +1519,7 @@ const cells = {
       "Plants are often deficient in the amounts of protein necessary to sustain the human diet because they are composed mainly of water and starches. To supplement nutrition, MyoTomato proposes bioengineering edible plants to produce myoglobin, a protein normally found in meat. As part of their lab work, the team inserted a DNA sequence naturally found in beef products into a tomato’s genome using agrobacteria.",
       "N",
       "N",
-      "species, food, utilization, resource, synthetic biology, agriculture, plants, tomato, animal",
+      "multi-species, food, utilization, resource, synthetic biology, agriculture, plants, tomato, animals",
       "biomedia, fabrication, biotech",
       "synthetic biology tech",
       "speculative"
@@ -1533,7 +1533,7 @@ const cells = {
       "While tumors in animals may be benign or malignant, in plants they may have alternative functions. Bioengineering tumors into plants can rapidly expand the plant's size and therefore possibilities for increased food production. The resulting biomass may not only edible but far more nutritious. Tumo would produce an accelerated crop rich in vitamins, nutrients, and proteins that has a crisp texture and familiar flavors.",
       "N",
       "N",
-      "species, food, utilization, resource, synthetic biology, agriculture, plants, animal",
+      "multi-species, food, utilization, resource, synthetic biology, agriculture, plants, animals",
       "biomedia, fabrication",
       "",
       "speculative"
@@ -1547,7 +1547,7 @@ const cells = {
       "Latin for support, Stabilimentum is a couture mask that filters air using live spiders and the electrostatic properties of their silk. Inspired by the symbiotic relationship between humans and the microbiome, the fashion accessory creates a symbiosis between human and arachnid.",
       "N",
       "N",
-      "spider, eletrostatic, air, symbiosis, species, microorganism, pollution, resource, utilization, animal, silk",
+      "spider, eletrostatic, air, symbiosis, multi-species, micro-organisms, pollution, resource, utilization, animals, silk",
       "biomedia, fabrication",
       "",
       "speculative"
@@ -1561,8 +1561,8 @@ const cells = {
       "This smart bracelet automatically sprays surfaces with customized probiotics, containing Staphylococcus epidermidis, a bacterial strain that protects the skin from pathogens. The team developed a functional version that pairs with a computer keyboard to prevent MRSA infection in hospitals.",
       "N",
       "N",
-      "microorganism, skin, hygenine, symbiosis, utilization, bacteria, synthetic biology, resource, material",
-      "fabrication, sensor",
+      "micro-organisms, skin, hygenine, symbiosis, utilization, bacteria, synthetic biology, resource, material",
+      "fabrication, sensors",
       "",
       "prototype"
     ],
@@ -1575,7 +1575,7 @@ const cells = {
       "Life/Light is an integrated system that blurs the boundary between living nature and artifacts. The system provides evening light, energy, and greywater treatment for a human habitat using bioluminescent algae.",
       "Y",
       "N",
-      "microorganism, utilization, light, algae",
+      "micro-organisms, utilization, light, algae",
       "fabrication",
       "lighting structure",
       "prototype"
@@ -1590,7 +1590,7 @@ const cells = {
       "N",
       "N",
       "regenerate",
-      "fabrication, sensor",
+      "fabrication, sensors",
       "fiction",
       "speculative"
     ],
@@ -1603,7 +1603,7 @@ const cells = {
       "Quantworm Industries is a nanotech wormery housed on former coal mining sites in South Wales that utilizes the earthworm’s natural ability to bio-remediate contaminated soil and bio-synthesize nanoparticles called quantum dots (QDs) from heavy metals. ",
       "N",
       "N",
-      "worm, quantum dot, species, pollution, synthetic biology, soil, material, resource, utilization, animal",
+      "worm, quantum dot, multi-species, pollution, synthetic biology, soil, material, resource, utilization, animals",
       "fabrication",
       "",
       "speculative"
@@ -1617,9 +1617,9 @@ const cells = {
       "Human actions have altered the Earth so profoundly that we have entered a new geological epoch - the Anthropocene. The project suggests genetically modifying a chicken with pink bones and feathers using a gene from the insect cochineal to produce a pigment that will be fossilized when combined with the calcium of the bone. By changing the color of chickens to pink, this project rejects the current violence inflicted upon the non-human world and poses questions of the impact and power of synthetic biology. ",
       "N",
       "N",
-      "species, extinction, animal, chicken, pigment, color, non-human, synthetic biology",
+      "multi-species, extinction, animals, chicken, pigment, color, more-than-human, synthetic biology",
       "biomedia, fabrication, biotech",
-      "anthroprocene, non-human, synthetic biology tech",
+      "anthroprocene, more-than-human, synthetic biology tech",
       "speculative"
     ],
     [
@@ -1631,7 +1631,7 @@ const cells = {
       "As NASA, SpaceX, and others, now attempt to bring earthlings to Mars, Planetary Personhood is an opportunity to free ourselves from the conceptual baggage of earthly traditions and systems. Seeking to move away from the dualistic divide between living beings and inanimate matter, the project invites us to a new way of relating to a planetary whole, and to the myriad of nonhuman forces and actants that surround us.",
       "N",
       "N",
-      "planet, rock, non-human, utilization, landscape, outerspace",
+      "planet, rock, more-than-human, utilization, landscape, outerspace",
       "fabrication",
       "decolonisation",
       "speculative"
@@ -1645,7 +1645,7 @@ const cells = {
       "This work is an exploration of how legends and mythology can create long-term family ties to the land and nonhuman beings built on compassion. The tree human Vide is given form in a semi-permanent public sculpture, and was born out of a dialogue with biologists and residents of the UNESCO Biosphere Reserve Östra Vätterbranterna, as part of the project Nature Takes Over by Österängens Konsthall.",
       "N",
       "N",
-      "forest, tree, non-human",
+      "forest, tree, more-than-human",
       "fabrication",
       "legend, mythology, coonection, sculpture, storytelling",
       "complete"
@@ -1659,8 +1659,8 @@ const cells = {
       "The work consists of an installation, where the audience is presented with a glass chamber full of mosquitos. The chamber has multiple openings/doors, where humans can voluntarily put their hand and arm inside the chamber to meet/feed the mosquitos. Sitting on top of the chamber is the “translator machine”, a device that creates the bridge between mosquitoes and humans, while also being an entity in itself.",
       "N",
       "N",
-      "mosquito, animal, food, non-human, insect",
-      "fabrication, sensor, biomedia",
+      "mosquito, animals, food, more-than-human, insect",
+      "fabrication, sensors, biomedia",
       "anthroprocene, kinship",
       "speculative"
     ],
@@ -1673,8 +1673,8 @@ const cells = {
       "A group of DIY biohackers design a new sensor plant that detects pollution levels and indicates the result in sound to elevate the worsening environmental condition to their fellow citizen. When the plants are put in a beneficial surrounding, they “sing” beautifully. When put in a heavily polluted place, they “scream” a disturbing noise.Initially, the environment improves as people respond to the emotional cues of the plants. However, having found a new niche in which to prosper, the plants eventually mutate and are spread without control, rendering polluted areas uninhabitable by noise. It’s as if nature suddenly has the power to express itself, claiming rights to exist.",
       "N",
       "N",
-      "species, synthetic biology, pollution, environment, utilization, sound, plants, invasive species",
-      "biomedia, sensor, coding, fabrication, biotech",
+      "multi-species, synthetic biology, pollution, environment, utilization, sound, plants, invasive multi-species",
+      "biomedia, sensors, coding, fabrication, biotech",
       "",
       "speculative"
     ],
@@ -1687,7 +1687,7 @@ const cells = {
       "In the face of bee extinction, an alluring plant, that tap into human desires and needs, has started appearing around outdoor gyms. The passing humans drink the plant nectar to replenish their strength. Some pollen sticks in their shirt, and as they drink from the next plant, the vital cross breeding occurs.",
       "N",
       "N",
-      "species, food, bee, pollinator, plant, synthetic biology, ecosystem, flower, ecology",
+      "multi-species, food, bee, pollinator, plant, synthetic biology, ecosystem, flower, ecology",
       "biotech, fabrication, biomedia",
       "synthetic biology tech, photography",
       "speculative"
@@ -1701,9 +1701,9 @@ const cells = {
       "Human, non-human, boundaries, ineffable.\nA vending machine sells “cures for anthropocentrism”. To obtain the cure you must sacrifice the shiny capsule you just received, breaking it open to reveal a stone that you can eat. The stone is accompanied by a short message, claiming that when you eat this stone, you will never look at stones the same way again. Claiming that stones are not dead, and that you should think about what they want. Thinking about the world differently changes the world. Eating the stone, you become the stone - existence/consciousness is not something exceptionally human.",
       "N",
       "N",
-      "stone, rock, food, symbiosis, non-human, landscape",
+      "stone, rock, food, symbiosis, more-than-human, landscape",
       "fabrication",
-      "post-anthroprocentrism, non-human",
+      "post-anthroprocentrism, more-than-human",
       "speculative"
     ],
     [
@@ -1729,7 +1729,7 @@ const cells = {
       "POM lures flies using a controlled release of pheromones from a remote-controlled node, which clusters them around the flowers needing pollination. Nodes distributed throughout the farm enable this ‘cloud of flies’ to be shepherded from one region to another, covering all the blossoms that might be in flower at that point. POM ensures both efficient pollination and fruit harvests in the future.",
       "Y",
       "N",
-      "bee, beehive, species, pollinator, flower, animal",
+      "bee, beehive, multi-species, pollinator, flower, animals",
       "fabrication",
       "",
       "prototype"
@@ -1743,7 +1743,7 @@ const cells = {
       "Inspired by the interconnected networks of fungi in soil and plant interaction within these networks, Mycotopia is a mycelial planter system designed to recreate these networks within urban and domestic settings.",
       "Y",
       "N",
-      "fungi, microorganism, planter, species, symbiosis, utilization, material, rewild, mycellium",
+      "fungi, micro-organisms, planter, multi-species, symbiosis, utilization, material, rewild, mycellium",
       "fabrication, biomedia",
       "",
       "prototype"
@@ -1758,7 +1758,7 @@ const cells = {
       "N",
       "N",
       "plants, biorhythm",
-      "sensor, data",
+      "sensors, data",
       "transformation, fabric",
       "prototype"
     ],
@@ -1772,7 +1772,7 @@ const cells = {
       "N",
       "N",
       "alcohol, utilization, material, synthetic biology",
-      "sensor, biomedia, fabrication",
+      "sensors, biomedia, fabrication",
       "",
       "prototype"
     ],
@@ -1785,7 +1785,7 @@ const cells = {
       "UKEW 2029 explores how the socio-political landscape of the United Kingdom could interact with advances in biotechnology. A collection of physical artifacts, photographs, and text bring to life a possible future in which biotech is ubiquitous.\nThe project is presented as three fictional case studies which explore how communities existing today could navigate this future and utilise biotechnologies unique capabilities to pursue their goals. (Security and Protection – Dispersed Maker Communities; Biohacked Buildings – London; Wildflower Protests – Sheffield)",
       "Y",
       "Y",
-      "species, fungi, microorganism, synthetic biology, plants, utilization, resource, flower",
+      "multi-species, fungi, micro-organisms, synthetic biology, plants, utilization, resource, flower",
       "biomedia, fabrication, biotech",
       "community, political agenda, photography",
       "speculative"
@@ -1813,7 +1813,7 @@ const cells = {
       "Microbial Architecture imagines what a building would look like from the eyes of microorganisms. It envisioning a world where the real authority comes from nature, which challenges the value of human-centric dominance.",
       "N",
       "N",
-      "microorganism, ecology, non-human, environment, landscape",
+      "micro-organisms, ecology, more-than-human, environment, landscape",
       "fabrication, biomedia",
       "architecture, de-human-centric",
       "prototype"
@@ -1827,7 +1827,7 @@ const cells = {
       "an ecosystem that detects air pollution and enhances childrens' relationship to nature",
       "Y",
       "N",
-      "species, ecosystem, air, pollution, animal, insect, algae, plants",
+      "multi-species, ecosystem, air, pollution, animals, insect, algae, plants",
       "fabrication, biomedia",
       "children",
       "prototype"
@@ -1841,8 +1841,8 @@ const cells = {
       "Sharebiota expands on recent discoveries that humans and their pets share beneficial strains of bacteria leading to healthier immune systems. It is a public installation that integrates collection, production, and distribution of dog microbiota.",
       "N",
       "N",
-      "microorganism, dog, symbiosis, utilization, resource, animal, bacteria",
-      "fabrication, sensor, biomedia, biotech",
+      "micro-organisms, dog, symbiosis, utilization, resource, animals, bacteria",
+      "fabrication, sensors, biomedia, biotech",
       "",
       "speculative"
     ],
@@ -1855,7 +1855,7 @@ const cells = {
       "Olfact encapsulates genetically engineered bacteria in a piece of jewelry to allow the wearer to capture a scent photograph/moment in time.",
       "N",
       "N",
-      "bacteria, microorganism, material, utilization, non-human, smell",
+      "bacteria, micro-organisms, material, utilization, more-than-human, smell",
       "biotech",
       "jewlery, smell/olfactory information, social relationship",
       "prototype"
@@ -1869,7 +1869,7 @@ const cells = {
       "Fabiont aims to create a probiotic fabric to enhance the skin microbiome and reestablish the beneficial microbes it contains. The fabric incorporates probiotics in silk fibroins extracted from raw silk. The garment acts as an additional “skin” layer that augments the naturally given skin microbiome, a paradigm shift in both the fashion and skincare industries.",
       "N",
       "N",
-      "microorganism, symbiosis, utilization, material, bacteria, skin",
+      "micro-organisms, symbiosis, utilization, material, bacteria, skin",
       "biotech, biomedia",
       "",
       "prototype"
@@ -1883,7 +1883,7 @@ const cells = {
       "Beyond 100% imagines a microchip that can genetically modify a human’s capacity to acquire, manage, and share nutrition. The chip endows the user with the ability to receive nutrition from new food sources.",
       "N",
       "N",
-      "food, species, synthetic biology, animal",
+      "food, multi-species, synthetic biology, animals",
       "biomedia, biotech",
       "",
       "speculative"
@@ -1915,6 +1915,20 @@ const cells = {
       "biomedia, biotech, fabrication",
       "children",
       "prototype"
+    ],
+    [
+      "Nurture",
+      "Edinburgh, UK",
+      "MARK WILLIAMS, TARA WIGHT, YINGRUI MA, SAFA AJJAN",
+      "2018",
+      "https://biodesign.eca.ed.ac.uk/edible-architecture-growing-meals-at-home/",
+      "The state of global food production is changing rapidly. The Nurture team is attempting to envision how the state of our food may look in 10 – 20 years time and discovering the problems we may face.\n\nNurture takes a new approach to eating and food preparation. Currently we are building a modular unit to contain our hydroponic and Spirulina growth systems, and we are also creating recipes for how people would be able to cook with this new ingredient, which we are putting in a cook book.",
+      "Y",
+      "N",
+      "food, algae, utilization, resource",
+      "biomedia, biotech, fabrication",
+      "home-grow, agriculture",
+      "speculative"
     ]
   ]
 }
