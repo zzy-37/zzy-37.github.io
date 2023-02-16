@@ -21,6 +21,7 @@
 > “意识形态的转变主要是强调生活的质量而非更高的生活标准。” *-A.奈斯*
 
 ![The Blue Marble](The_Earth_seen_from_Apollo_17.jpg)
+
 *The Blue Marble, taken by the Apollo 17 crew in 1972*
 
 其提倡通过加深个人与自然的联系，达成与自然的和谐，从而建立起“生态上的自我认同”以及一种“环境道德观念”。
@@ -34,10 +35,12 @@
 ### 如何感受自然
 
 ![butterfly wing pattern](butterfly-wing-pattern.jpg)
+
 At a smaller scale, the scales that make up those butterfly wing patterns are etched with parallel ridges that scramble light waves hitting them so that only certain colors are reflected.
 *-Nikola Rahme/Shutterstock.com*
 
 ![chameleon tail](chameleon-tail.jpg)
+
 A furled chameleon tail obviously takes its shape from the rolling of a tube, but its pattern is distinct from that created by rolling an even tube, such as that of a garden hose. The gentle taper of the tail produces a logarithmic spiral—one that gets smaller, yet the small parts look like the large parts.
 *Michal Filip Gmerek/Shutterstock.com*
  
@@ -58,9 +61,11 @@ A furled chameleon tail obviously takes its shape from the rolling of a tube, bu
 [分形（Fractal）](https://en.wikipedia.org/wiki/Fractal) 是无限[自相似（self-similar）](https://en.wikipedia.org/wiki/Self-similarity)的，具有分形维数的迭代数学结构。分形状图案在自然界中广泛存在，存在于云层、河流网络、地质断层线、山脉、海岸线、动物着色、雪花、晶体、血管分支、肌动蛋白细胞骨架以及波浪等多种现象中。
 
 ![leaf geometry](leaf1s.jpg)
+
 *The geometric beauty of leaves. by Paul Boukle*
 
 ![Egypt](egypt2b.jpg)
+
 *Fractal forms found by using Google Earth. by Paul Boukle*
 
 > 无限迭代在本质上是不可能的，所以所有的“分形”模式都只是近似的。例如，蕨类植物和伞形植的叶子只有自相似（羽状）到2，3或4个水平。蕨类植物和动物的生长模式发生在植物和动物中，包括苔藓动物，珊瑚，空气蕨类植物，阿根廷蜥蜴等水生动物，以及非生物，特别是放电。L系统分形可以通过改变少量参数来模拟不同的树木生长模式，包括分支角度，节点或分支点之间的距离（节点间长度）以及每个分支点的分支数量。
