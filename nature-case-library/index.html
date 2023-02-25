@@ -1,5 +1,7 @@
+<!DOCTYPE html>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
+<link rel="icon" href="Logos/hulu-edit.png">
 <title>Case Library | Ecology and Culture Lab</title>
 <style>
     :root {
@@ -46,7 +48,7 @@
 
     header img,
     footer img {
-        max-height: 5rem;
+        max-height: 4rem;
     }
 
     footer img {
@@ -79,6 +81,12 @@
         margin-right: 0.5rem;
     }
 
+    .tag-cloud span {
+        display: inline-block;
+        margin-right: 0.5ch;
+        vertical-align: middle;
+    }
+
     @media (min-width: 600px) {
         body {
             display: flex;
@@ -104,28 +112,30 @@
     }
 </style>
 <style>
-    :root:has(input[value="theme1"]:checked) {
+    /* :root:has(input[value="theme1"]:checked) {
         --color-bg: #3D1766;
         --color-bg1: #6F1AB6;
         --color-fg: white;
         --color-accent1: #FF0032;
         --color-accent2: #CD0404;
-    }
+    } */
 
-    :root:has(input[value="theme2"]:checked) {
+    /* :root:has(input[value="theme2"]:checked) {
         --color-bg: #eee8d5;
         --color-bg1: #fdf6e3;
         --color-fg: #586e75;
         --color-fg1: #073642;
         --color-accent1: #d33682;
         --color-accent2: #6c71c4;
-    }
+    } */
 
-    .theme-selector {
-        position: fixed;
-        top: 0;
-        right: 0;
-        z-index: 10;
+    :root {
+        --color-bg: #eee8d5;
+        --color-bg1: #fdf6e3;
+        --color-fg: #586e75;
+        --color-fg1: #073642;
+        --color-accent1: #d33682;
+        --color-accent2: #6c71c4;
     }
 
     body {
@@ -165,6 +175,16 @@
 
     p {
         max-width: 80ch;
+    }
+
+    .tag-cloud span {
+        background-color: var(--color-bg1);
+        color: var(--color-accent2);
+        cursor: pointer;
+    }
+
+    .tag-cloud span:hover {
+        text-decoration: underline;
     }
 
     main button {
@@ -226,46 +246,19 @@
 
     }
 </style>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/marked/4.2.12/marked.min.js"></script>
+<script src="utils.js"></script>
 <script src="cells.js"></script>
 <script type="module">
     'use strict'
 
-    const ce = name => document.createElement(name)
-    const { assign } = Object;
-
-    ['div', 'p', 'span', 'header', 'footer', 'main', 'aside', 'section', 'article', 'blockquote', 'h1', 'h2', 'h3', 'h4', 'h5', 'h6', 'nav', 'ul', 'ol', 'li', 'details', 'summary', 'hr', 'br', 'a', 'b', 'i', 'label', 'button']
-        .forEach(name => window[name] = (...children) => {
-            const el = ce(name)
-            el.append(...children)
-            return el
-        })
-
-    const img = src => assign(ce('img'), { src })
-
-    const script = async src => new Promise((resolve, reject) =>
-        document.head.append(
-            assign(ce('script'), {
-                src: src,
-                onload: resolve,
-                onerror: reject,
-            })
-        ))
-
-    const markdown = async str => {
-        const el = ce('template')
-        if (!window.marked)
-            await script('https://cdnjs.cloudflare.com/ajax/libs/marked/4.2.12/marked.min.js')
-        el.innerHTML = marked.parse(str)
-        return el.content
-    }
-
-    const head = header(
-        img('./Logos/hulu 30.png'),
-        h1('Ecology X Design Knowledge Base'),
+    const header = E('header')(
+        E('img', { src: './Logos/hulu-edit.png' })(),
+        E('h1')('Ecology X Design Knowledge Base'),
     )
 
-    const foot = footer(
-        await markdown(`\
+    const footer = E('footer')(
+        markdown_sync(`\
 Designed by Ecology and Cultures Innovation Lab, Tongji D&I. Supported by
 [NSFC](https://www.nsfc.gov.cn/english/site_1/index.html). This work is licensed
 under a [Creative Commons Attribution-NonCommercial-ShareAlike 4.0 International
@@ -277,8 +270,8 @@ License](http://creativecommons.org/licenses/by-nc-sa/4.0/).
 `),
     )
 
-    const about = article(
-        await markdown(`\
+    const about = E('article')(
+        markdown_sync(`\
 # About us
 
 This platform collects projects and cases that address nature related topics and
@@ -307,9 +300,7 @@ Team members: Lu Wentao, Saverio Silli, Francesca Valsecchi, Zhu Ziyi
 
 contact us: [echologydesignlab@tongji.edu.cn](mailto:ecologydesignlab@tongji.edu.cn)
 `),
-        assign(button('< Back'), {
-            onclick: () => location.hash = '#'
-        })
+        E('button', { onclick: () => location.hash = '' })('< Back')
     )
 
     const entries = cells.values.slice(3)
@@ -358,7 +349,7 @@ contact us: [echologydesignlab@tongji.edu.cn](mailto:ecologydesignlab@tongji.edu
     const entry_get_tokens = (entry, column_index) =>
         entry[column_index] ? entry[column_index].split(',').map(s => s.trim()) : []
 
-    const tags = [... new Set(entries.reduce((result, entry) => [
+    const tags = [...new Set(entries.reduce((result, entry) => [
         ...result,
         ...entry_get_tokens(entry, i_other_keywords),
         ...entry_get_tokens(entry, i_nature_topics).filter(token => !nature_topic_catagories.includes(token)),
@@ -366,20 +357,21 @@ contact us: [echologydesignlab@tongji.edu.cn](mailto:ecologydesignlab@tongji.edu
         [])
     )]
 
-    const projects = ul()
-    projects.classList.add('projects')
+    const projects = E('ul', { className: 'projects' })()
     const show_entries = list =>
         projects.replaceChildren(
             ...list.map(([name, place, authors, year, link, description]) =>
-                li(
-                    h2(name),
-                    p(
-                        place ? div(b('Place '), place) : '',
-                        authors ? div(b('Authors '), authors) : '',
-                        year ? div(b('Year '), year) : '',
-                        div(b('Link '), assign(a(link), { href: link })),
+                E('li')(
+                    E('h2')(name),
+                    E('p')(
+                        place ? E('div')(E('b')('Place '), place) : '',
+                        authors ? E('div')(E('b')('Authors '), authors) : '',
+                        year ? E('div')(E('b')('Year '), year) : '',
+                        E('div')(
+                            E('b')('Link '),
+                            E('a', { href: link })(link)),
                     ),
-                    description ? blockquote(description) : '',
+                    description ? E('blockquote')(description) : '',
                 )
             ))
 
@@ -394,13 +386,15 @@ contact us: [echologydesignlab@tongji.edu.cn](mailto:ecologydesignlab@tongji.edu
             ...entry_get_tokens(entry, i_nature_topics),
             ...entry_get_tokens(entry, i_technoloies)].includes(value))
 
-    const filter_line = div()
-    filter_line.classList.add('filter-line')
+    const filter_line = E('div', { className: 'filter-line' })()
 
     const update_filter = () => {
-        location.hash = '#'
+        location.hash = ''
 
-        const checkboxes = [...filter_selector.querySelectorAll('input[type="checkbox"]')]
+        const checkboxes = [
+            ...filter_selector.querySelectorAll('input[type="checkbox"]'),
+            ...tag_cloud.querySelectorAll('input[type="checkbox"]')
+        ]
         const filters = checkboxes.filter(c => c.checked).map(c => [c.name, c.value])
 
         if (filters.length === 0) {
@@ -418,86 +412,88 @@ contact us: [echologydesignlab@tongji.edu.cn](mailto:ecologydesignlab@tongji.edu
             filter_line.replaceChildren(
                 `Showing (${filtered_entries.length}): `,
                 ...filters.map(([category, value]) =>
-                    assign(button(`x ${category}${value ? ` / ${value}` : ''}`), {
+                    E('button', {
                         onclick: () => {
                             checkboxes.find(c => c.name === category && c.value === value).checked = false
                             update_filter()
                         }
-                    })),
-                assign(button('Clear'), {
+                    })(`x ${category}${value ? ` / ${value}` : ''}`)),
+                E('button', {
                     onclick: () => {
                         checkboxes.forEach(c => c.checked = false)
                         update_filter()
                     }
-                }),
+                })('Clear'),
             )
             show_entries(filtered_entries)
         }
     }
 
-    const filter_checkbox = (category, value = '') =>
-        label(
-            assign(ce('input'), {
+    const filter_checkbox = (catagory, value = '') =>
+        E('label')(
+            E('input', {
                 type: 'checkbox',
-                name: category,
+                name: catagory,
                 value: value,
                 onchange: update_filter,
-            }),
-            (value ? value : category) + ` (${entries.filter(entry => apply_filter(entry, category, value)).length})`
+            })(),
+            (value ? value : catagory) + ` (${entries.filter(entry => apply_filter(entry, catagory, value)).length})`
         )
 
-    const filter_selector = div(
-        h3('Filter'),
-        ul(...[
-            filter_checkbox('Urban Context'),
-            filter_checkbox('Citizen Science'),
-            details(
-                summary('Technology'),
-                ul(...technology_catagories.map(value => li(filter_checkbox('Technology', value))))
-            ),
-            details(
-                summary('Nature Topic'),
-                ul(...nature_topic_catagories.map(value => li(filter_checkbox('Nature Topic', value)))),
-            ),
-            details(
-                summary('Implementation'),
-                ul(...implimentation_catagories.map(value => li(filter_checkbox('Implementation', value)))),
-            ),
-            // details(
-            //     summary('Tags'),
-            //     ul(...tags.map(value => li(filter_checkbox('Tags', value)))),
-            // ),
-        ].map(el => li(el))),
-    )
-    filter_selector.classList.add('filter-selector')
+    const filter_selector = (() => {
+        const filter_group_details = (name, catagories) =>
+            E('details')(
+                E('summary')(name),
+                E('ul')(...catagories.map(value => E('li')(filter_checkbox(name, value))))
+            )
 
-    const sidebar = aside(
-        nav(
-            h3(assign(a('About'), { href: '#about' })),
-            h3(assign(a('Tags'), { href: '#about' })),
-            // hr(),
+        return E('div', { className: 'filter-selector' })(
+            E('h3')(E('a', { href: '#' })('Filter')),
+            E('ul')(...[
+                filter_checkbox('Urban Context'),
+                filter_checkbox('Citizen Science'),
+                filter_group_details('Technology', technology_catagories),
+                filter_group_details('Nature Topic', nature_topic_catagories),
+                filter_group_details('Implementation', implimentation_catagories),
+            ].map(el => E('li')(el))),
+        )
+    })()
+
+    const sidebar = E('aside')(
+        E('nav')(
+            E('h3')(E('a', { href: '#about' })('About')),
+            E('h3')(E('a', { href: '#tags' })('Tags')),
             filter_selector,
         ))
 
-    const main_container = div()
+    const theme_selector = (() => {
+        const theme_radio_button = (value, checked) => E('label')(E('input', { type: 'radio', name: 'theme', value: value, checked })(), value)
 
-    const theme_radio_button = value =>
-        label(
-            assign(ce('input'), {
-                type: 'radio',
-                name: 'theme',
-                value: value,
-            }),
-            value
+        return E('span', { style: 'position: fixed; top: 0; right: 0; z-index: 10;' })(
+            theme_radio_button('theme1'),
+            theme_radio_button('theme2', true),
         )
-    const theme_selector = span(
-        theme_radio_button('theme1'),
-        theme_radio_button('theme2'),
-    )
-    theme_selector.classList.add('theme-selector')
-    theme_selector.querySelector('input[value="theme1"]').checked = true
+    })()
 
-    document.body.append(theme_selector, head, main(sidebar, main_container))
+    const tag_cloud = (() => {
+        let max_count = 0
+        const pairs = tags.map(tag => {
+            const count = entries.filter(entry => apply_filter(entry, 'Tags', tag)).length
+            if (count > max_count) max_count = count
+            return [tag, count]
+        })
+
+        const max_size = 36
+        const min_size = 16
+
+        return E('div', { className: 'tag-cloud' })(
+            ...pairs.map(([tag, count]) => E('span', { style: `font-size: ${min_size + (count / max_count) * (max_size - min_size)}px` })
+                (filter_checkbox('Tags', tag))),
+        )
+    })()
+
+    const main_container = E('div')()
+    document.body.append(header, E('main')(sidebar, main_container))
 
     onhashchange = () => {
         switch (location.hash) {
@@ -509,17 +505,18 @@ contact us: [echologydesignlab@tongji.edu.cn](mailto:ecologydesignlab@tongji.edu
                 main_container.replaceChildren(about)
                 break
 
+            case '#tags':
+                main_container.replaceChildren(tag_cloud)
+                break
+
             default:
                 location.hash = ''
                 return
         }
 
-        main_container.append(foot)
+        main_container.append(footer)
     }
 
-
-    onload = () => {
-        update_filter()
-        onhashchange()
-    }
+    update_filter()
+    onhashchange()
 </script>

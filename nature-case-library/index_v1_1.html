@@ -1,0 +1,523 @@
+<!DOCTYPE html>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Case Library | Ecology and Culture Lab</title>
+<style>
+    :root {
+        --color-bg: white;
+        --color-fg: black;
+    }
+
+    * {
+        box-sizing: border-box;
+    }
+
+    @font-face {
+        font-family: Neutra;
+        font-weight: bold;
+        src: url("neutraface-text/Neutraface Text Bold.otf") format("opentype");
+    }
+
+    h1,
+    h2,
+    h3 {
+        font-family: Neutra;
+    }
+
+    body {
+        margin: 0;
+        background-color: var(--color-bg);
+        color: var(--color-fg);
+    }
+
+    img {
+        max-width: 100%;
+    }
+
+    summary,
+    label,
+    button {
+        cursor: pointer;
+    }
+
+    header {
+        display: flex;
+        align-items: center;
+    }
+
+    header img,
+    footer img {
+        max-height: 5rem;
+    }
+
+    footer img {
+        margin-right: 1rem;
+    }
+
+    main ul {
+        padding-inline-start: 0;
+        list-style: none;
+    }
+
+    .projects a {
+        word-break: break-all;
+    }
+
+    .filter-selector li {
+        margin-top: 0.5rem;
+    }
+
+    .filter-line {
+        font-weight: bold;
+        line-height: 2rem;
+
+        position: sticky;
+        top: 0;
+        background-color: var(--color-bg);
+    }
+
+    .filter-line button {
+        margin-right: 0.5rem;
+    }
+
+    @media (min-width: 600px) {
+        body {
+            display: flex;
+            flex-direction: column;
+            height: 100vh;
+        }
+
+        main {
+            flex: 1;
+            display: flex;
+            min-height: 0;
+        }
+
+        main>* {
+            height: 100%;
+            overflow: auto;
+        }
+
+        main aside {
+            flex-shrink: 0;
+            flex-basis: 25ch;
+        }
+    }
+</style>
+<style>
+    :root:has(input[value="theme1"]:checked) {
+        --color-bg: #3D1766;
+        --color-bg1: #6F1AB6;
+        --color-fg: white;
+        --color-accent1: #FF0032;
+        --color-accent2: #CD0404;
+    }
+
+    :root:has(input[value="theme2"]:checked) {
+        --color-bg: #eee8d5;
+        --color-bg1: #fdf6e3;
+        --color-fg: #586e75;
+        --color-fg1: #073642;
+        --color-accent1: #d33682;
+        --color-accent2: #6c71c4;
+    }
+
+    .theme-selector {
+        position: fixed;
+        top: 0;
+        right: 0;
+        z-index: 10;
+    }
+
+    body {
+        accent-color: var(--color-accent1);
+    }
+
+    ::-webkit-scrollbar {
+        width: .7rem;
+    }
+
+    ::-webkit-scrollbar-track:hover {
+        background-color: var(--color-bg1);
+    }
+
+    ::-webkit-scrollbar-thumb {
+        background-color: var(--color-accent1);
+    }
+
+    a {
+        color: var(--color-accent1);
+    }
+
+    header {
+        margin: 1rem;
+    }
+
+    footer {
+        margin-top: 5rem;
+        border-top: solid var(--color-accent1);
+        width: fit-content;
+    }
+
+    .filter-line {
+        padding: 1rem 0;
+        border-bottom: solid var(--color-bg1);
+    }
+
+    p {
+        max-width: 80ch;
+    }
+
+    main button {
+        background-color: var(--color-bg1);
+        color: var(--color-accent1);
+        border: none;
+        font-weight: bold;
+    }
+
+    aside nav a {
+        color: var(--color-fg);
+    }
+
+    .projects li h2,
+    article h1 {
+        text-decoration: underline;
+        text-decoration-color: var(--color-accent1);
+        text-decoration-thickness: 3px;
+        text-underline-offset: 3px;
+    }
+
+    main {
+        margin: 0 1rem;
+        padding-bottom: 3rem;
+    }
+
+    @media (min-width: 600px) {
+        .projects {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 3rem;
+        }
+
+        .projects li {
+            flex-basis: 60ch;
+            flex-grow: 1;
+            max-width: 80ch;
+        }
+    }
+
+    @media (min-width: 750px) {
+        main {
+            margin: 0 3rem;
+        }
+
+        main aside+* {
+            padding: 0 1rem;
+        }
+    }
+
+    @media (min-width: 900px) {
+        main {
+            margin: 0 5rem;
+        }
+
+        main aside+* {
+            padding: 0 3rem;
+        }
+
+    }
+</style>
+<script src="cells.js"></script>
+<script type="module">
+    'use strict'
+
+    const ce = name => document.createElement(name)
+    const { assign } = Object;
+
+    ['div', 'p', 'span', 'header', 'footer', 'main', 'aside', 'section', 'article', 'blockquote', 'h1', 'h2', 'h3', 'h4', 'h5', 'h6', 'nav', 'ul', 'ol', 'li', 'details', 'summary', 'hr', 'br', 'a', 'b', 'i', 'label', 'button']
+        .forEach(name => window[name] = (...children) => {
+            const el = ce(name)
+            el.append(...children)
+            return el
+        })
+
+    const img = src => assign(ce('img'), { src })
+
+    const script = async src => new Promise((resolve, reject) =>
+        document.head.append(
+            assign(ce('script'), {
+                src: src,
+                onload: resolve,
+                onerror: reject,
+            })
+        ))
+
+    const markdown = async str => {
+        const el = ce('template')
+        if (!window.marked)
+            await script('https://cdnjs.cloudflare.com/ajax/libs/marked/4.2.12/marked.min.js')
+        el.innerHTML = marked.parse(str)
+        return el.content
+    }
+
+    const head = header(
+        img('./Logos/hulu 30.png'),
+        h1('Ecology X Design Knowledge Base'),
+    )
+
+    const foot = footer(
+        await markdown(`\
+Designed by Ecology and Cultures Innovation Lab, Tongji D&I. Supported by
+[NSFC](https://www.nsfc.gov.cn/english/site_1/index.html). This work is licensed
+under a [Creative Commons Attribution-NonCommercial-ShareAlike 4.0 International
+License](http://creativecommons.org/licenses/by-nc-sa/4.0/).
+
+[![D&I Logo](./Logos/dilogo.png)](https://tjdi.tongji.edu.cn/)
+[![NSFC Logo](./Logos/NSFC%20Logo.png)](https://www.nsfc.gov.cn/english/site_1/index.html)
+[![Creative Commons Licence](https://i.creativecommons.org/l/by-nc-sa/4.0/88x31.png)](http://creativecommons.org/licenses/by-nc-sa/4.0/)
+`),
+    )
+
+    const about = article(
+        await markdown(`\
+# About us
+
+This platform collects projects and cases that address nature related topics and
+challenges, aiming to explore how design and technology are supporting
+ecological restoration and integration in a variety of applications.
+
+The platform provides a reference of ecology-relevant projects that can inspire
+both planners and citizens in how technology advancement can be supportive of
+new models of urban-nature integration.
+
+You can navigate the dataset by different "technology" and "nature" keywords,
+which offers a more specific outlook on how the cases have been classified.
+
+The platform is currently at its 1.0 release, and we expect to introduce more
+visualisation and UI details in version 2.0 by Summer 2023.
+
+The platform is created by the [Ecology and Cultures Innovation
+Lab](https://ecologydesignlab.org/web) at [College of Design and Innovation,
+Tongji University](https://tjdi.tongji.edu.cn/). The project has been funded by
+[NSFC National Natural Science Foundation of
+China](https://www.nsfc.gov.cn/english/site_1/index.html) under the grant
+agreement [2021-2022
+#6201101276](https://ecologydesignlab.org/web/nsfc-citizenscience/).
+
+Team members: Lu Wentao, Saverio Silli, Francesca Valsecchi, Zhu Ziyi
+
+contact us: [echologydesignlab@tongji.edu.cn](mailto:ecologydesignlab@tongji.edu.cn)
+`),
+        assign(button('< Back'), {
+            onclick: () => location.hash = ''
+        })
+    )
+
+    const entries = cells.values.slice(3)
+    const i_ubran_context = 6
+    const i_citizen_science = 7
+    const i_nature_topics = 8
+    const i_technoloies = 9
+    const i_other_keywords = 10
+    const i_implimentation = 11
+
+    const nature_topic_catagories = [
+        'animals',
+        'environment',
+        'material',
+        'micro-organisms',
+        'more-than-human',
+        'plants',
+        'resource',
+        'sound',
+        'multi-species',
+        'synthetic Biology',
+        'utilization',
+    ]
+
+    const technology_catagories = [
+        'AI',
+        'augmented reality',
+        'biomedia',
+        'biotech',
+        'coding',
+        'data',
+        'digital fabrication',
+        'fabrication',
+        'sampling',
+        'sensors',
+        'sound',
+        'virtual reality',
+    ]
+
+    const implimentation_catagories = [
+        'complete',
+        'prototype',
+        'speculative',
+    ]
+
+    const entry_get_tokens = (entry, column_index) =>
+        entry[column_index] ? entry[column_index].split(',').map(s => s.trim()) : []
+
+    const tags = [... new Set(entries.reduce((result, entry) => [
+        ...result,
+        ...entry_get_tokens(entry, i_other_keywords),
+        ...entry_get_tokens(entry, i_nature_topics).filter(token => !nature_topic_catagories.includes(token)),
+        ...entry_get_tokens(entry, i_technoloies).filter(token => !technology_catagories.includes(token))],
+        [])
+    )]
+
+    const projects = ul()
+    projects.classList.add('projects')
+    const show_entries = list =>
+        projects.replaceChildren(
+            ...list.map(([name, place, authors, year, link, description]) =>
+                li(
+                    h2(name),
+                    p(
+                        place ? div(b('Place '), place) : '',
+                        authors ? div(b('Authors '), authors) : '',
+                        year ? div(b('Year '), year) : '',
+                        div(b('Link '), assign(a(link), { href: link })),
+                    ),
+                    description ? blockquote(description) : '',
+                )
+            ))
+
+    const apply_filter = (entry, category, value = '') =>
+        (category === 'Urban Context' && entry[i_ubran_context] === 'Y') ||
+        (category === 'Citizen Science' && entry[i_citizen_science] === 'Y') ||
+        (category === 'Nature Topic' && entry_get_tokens(entry, i_nature_topics).includes(value)) ||
+        (category === 'Technology' && entry_get_tokens(entry, i_technoloies).includes(value)) ||
+        (category === 'Implementation' && entry_get_tokens(entry, i_implimentation).includes(value)) ||
+        (category === 'Tags' && [
+            ...entry_get_tokens(entry, i_other_keywords),
+            ...entry_get_tokens(entry, i_nature_topics),
+            ...entry_get_tokens(entry, i_technoloies)].includes(value))
+
+    const filter_line = div()
+    filter_line.classList.add('filter-line')
+
+    const update_filter = () => {
+        location.hash = ''
+
+        const checkboxes = [...filter_selector.querySelectorAll('input[type="checkbox"]')]
+        const filters = checkboxes.filter(c => c.checked).map(c => [c.name, c.value])
+
+        if (filters.length === 0) {
+            filter_line.textContent = `Showing (${entries.length}): All projects`
+            show_entries(entries)
+        } else {
+            const filtered_entries = entries.filter(entry => {
+                for (const [category, value] of filters) {
+                    if (apply_filter(entry, category, value))
+                        return true
+                }
+                return false
+            })
+
+            filter_line.replaceChildren(
+                `Showing (${filtered_entries.length}): `,
+                ...filters.map(([category, value]) =>
+                    assign(button(`x ${category}${value ? ` / ${value}` : ''}`), {
+                        onclick: () => {
+                            checkboxes.find(c => c.name === category && c.value === value).checked = false
+                            update_filter()
+                        }
+                    })),
+                assign(button('Clear'), {
+                    onclick: () => {
+                        checkboxes.forEach(c => c.checked = false)
+                        update_filter()
+                    }
+                }),
+            )
+            show_entries(filtered_entries)
+        }
+    }
+
+    const filter_checkbox = (catagory, value = '') =>
+        label(
+            assign(ce('input'), {
+                type: 'checkbox',
+                name: catagory,
+                value: value,
+                onchange: update_filter,
+            }),
+            (value ? value : catagory) + ` (${entries.filter(entry => apply_filter(entry, catagory, value)).length})`
+        )
+
+    const filter_selector = div(
+        h3('Filter'),
+        ul(...[
+            filter_checkbox('Urban Context'),
+            filter_checkbox('Citizen Science'),
+            details(
+                summary('Technology'),
+                ul(...technology_catagories.map(value => li(filter_checkbox('Technology', value))))
+            ),
+            details(
+                summary('Nature Topic'),
+                ul(...nature_topic_catagories.map(value => li(filter_checkbox('Nature Topic', value)))),
+            ),
+            details(
+                summary('Implementation'),
+                ul(...implimentation_catagories.map(value => li(filter_checkbox('Implementation', value)))),
+            ),
+            // details(
+            //     summary('Tags'),
+            //     ul(...tags.map(value => li(filter_checkbox('Tags', value)))),
+            // ),
+        ].map(el => li(el))),
+    )
+    filter_selector.classList.add('filter-selector')
+
+    const sidebar = aside(
+        nav(
+            h3(assign(a('About'), { href: '#about' })),
+            h3(assign(a('Tags'), { href: '#about' })),
+            // hr(),
+            filter_selector,
+        ))
+
+    const main_container = div()
+
+    const theme_radio_button = value =>
+        label(
+            assign(ce('input'), {
+                type: 'radio',
+                name: 'theme',
+                value: value,
+            }),
+            value
+        )
+    const theme_selector = span(
+        theme_radio_button('theme1'),
+        theme_radio_button('theme2'),
+    )
+    theme_selector.classList.add('theme-selector')
+    theme_selector.querySelector('input[value="theme1"]').checked = true
+
+    document.body.append(theme_selector, head, main(sidebar, main_container))
+
+    onhashchange = () => {
+        switch (location.hash) {
+            case '':
+                main_container.replaceChildren(filter_line, projects)
+                break
+
+            case '#about':
+                main_container.replaceChildren(about)
+                break
+
+            default:
+                location.hash = ''
+                return
+        }
+
+        main_container.append(foot)
+    }
+
+    update_filter()
+    onhashchange()
+</script>
