@@ -1,0 +1,119 @@
+<!DOCTYPE html>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Document</title>
+<script src="https://zzy-37.github.io/assets/utils.js"></script>
+<script src="ifs.js"></script>
+<script>
+    const create_context = (width, height, type = '2d') => E('canvas', { width, height })().getContext(type)
+
+    const ifs_ctx = create_context(800, 600)
+    with (ifs_ctx) {
+        translate(0, canvas.height)
+        scale(1, -1)
+    }
+
+    const state = {
+        iteration: 50000,
+        ifs: barnsleysfern_ifs,
+    }
+
+    const update = () => {
+        with (ifs_ctx) {
+            fillStyle = 'black'
+            fillRect(0, 0, canvas.width, canvas.height)
+            const img = ifs_to_canvas_fit_size(state.ifs, canvas.width, canvas.height, state.iteration)
+            drawImage(img, (canvas.width - img.width) / 2, (canvas.height - img.height) / 2)
+        }
+    }
+
+    const ifs_selector = (() => {
+        const label_radio_button = (name, ifs, checked = false) =>
+            E('label')(
+                E('input', {
+                    type: 'radio',
+                    name: 'ifs',
+                    checked: checked,
+                    oninput() {
+                        if (this.checked) {
+                            state.ifs = ifs
+                            update()
+                        }
+                    }
+                })(),
+                name
+            )
+
+        return E('div')(
+            label_radio_button('Barnsley\'s Fern', barnsleysfern_ifs, true),
+            label_radio_button('Maple Leaf', mapleleaf_ifs),
+            label_radio_button('Tree', tree_ifs),
+            label_radio_button('Twig', twig_ifs),
+            label_radio_button('Random', make_random_ifs(4)),
+        )
+    })()
+
+    const iteration_slider = (() => {
+        const value_span = E('span')()
+        const input = E('input', {
+            type: 'range',
+            max: 100000,
+            value: 50000,
+            oninput() {
+                value_span.textContent = this.value
+                state.iteration = this.value
+                update()
+            },
+            style: 'cursor: pointer'
+        })()
+
+        return E('div')(E('label')('iteration: ', input, value_span))
+    })()
+
+
+    const gl_create_shader = (gl, type, src) => {
+        with (gl) {
+            const shader = createShader(type)
+            shaderSource(shader, src)
+            compileShader(shader)
+            if (getShaderParameter(shader, COMPILE_STATUS))
+                return shader
+
+            console.error(getShaderInfoLog(shader))
+            deleteShader(shader)
+            throw 'Failed to compile shader.'
+        }
+    }
+
+    const gl_create_program = (gl, vert_src, frag_src) => {
+        with (gl) {
+            const vert_shader = gl_create_shader(gl, VERTEX_SHADER, vert_src)
+            const frag_shader = gl_create_shader(gl, FRAGMENT_SHADER, frag_src)
+            const program = createProgram()
+            attachShader(program, vert_shader)
+            attachShader(program, frag_shader)
+            linkProgram(program)
+            if (getProgramParameter(program, LINK_STATUS))
+                return program
+
+            console.error(getProgramInfoLog(program))
+            deleteProgram(program)
+            throw 'Failed to link program'
+        }
+    }
+
+    const vert_src = `\
+    void main(void) {
+        gl_Position = vec4(gl_VertexID - 1, 0, 0);
+    }
+    `
+
+    const ripple_ctx = create_context(800, 600, 'webgl2')
+
+
+    onload = () => {
+        document.body.append(
+            E('div')(ifs_selector, iteration_slider, ifs_ctx.canvas),
+        )
+    }
+</script>

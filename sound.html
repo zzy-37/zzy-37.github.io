@@ -1,13 +1,58 @@
+<script src="assets/utils.js"></script>
+<style>
+    .keys div {
+        border: solid;
+        padding: 1rem;
+    }
+</style>
 <script>
-    const audioCtx = new AudioContext()
-    const oscillator = audioCtx.createOscillator()
-    oscillator.connect(audioCtx.destination)
-    console.log(oscillator)
-    oscillator.start()
-    let isPlaying = false
-    onclick = () => {
-        isPlaying = !isPlaying
-        if (isPlaying) audioCtx.resume()
-        else audioCtx.suspend()
+    const context = new AudioContext()
+
+    const A4 = 440
+
+    const waveform = E('div')(
+        ...["sine", "square", "sawtooth", "triangle", 'custom'].map(value =>
+            E('label')(E('input', { type: 'radio', name: 'waveform', value: value })(), value)
+        )
+    )
+
+    const keys = E('div', {
+        className: 'keys',
+        onmousedown(e) {
+            e.preventDefault()
+        }
+    })(
+        ...Array.from({ length: 10 }).map((v, i) =>
+            E('div', {
+                onmouseenter(e) {
+                    if (e.buttons & 1) { // left button down
+                        this.onmousedown()
+                    }
+                },
+                onmousedown() {
+                    context.resume()
+                    const osc = new OscillatorNode(context, {
+                        type: document.querySelector('input[name="waveform"]:checked').value,
+                        frequency: A4 * Math.pow(1.059463, i),
+                    })
+                    const gain_node = new GainNode(context)
+                    osc.connect(gain_node).connect(context.destination)
+                    // const start_time = context.currentTime + 0.04
+                    // gain_node.gain.exponentialRampToValueAtTime(1, start_time);
+                    osc.start()
+
+                    this.onmouseup = this.onmouseleave = () => {
+                        const stop_time = context.currentTime + 0.5
+                        gain_node.gain.exponentialRampToValueAtTime(0.001, stop_time);
+                        osc.stop(stop_time + 0.3)
+                    }
+                },
+            })(i))
+    )
+
+
+    onload = () => {
+        document.body.append(waveform, keys)
+        document.querySelector('input[name="waveform"][value="sine"]').checked = true
     }
 </script>
