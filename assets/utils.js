@@ -14,7 +14,7 @@ const load_script = src => new Promise((resolve, reject) =>
         onerror: reject
     })()))
 
-const html_to_fragment = text => E('template', { innerHTML: text }).content
+const html_to_fragment = text => E('template', { innerHTML: text })().content
 
 const markdown = async text => {
     if (!window.marked) await load_script('https://cdnjs.cloudflare.com/ajax/libs/marked/4.2.12/marked.min.js')
