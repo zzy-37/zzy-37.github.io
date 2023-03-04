@@ -4,6 +4,8 @@
 
 2022/6/11 Zhu Ziyi
 
+![thumbnail](imgs/thumbnail.jpg)
+
 ## 项目背景
 
 本项目是基于探索物理计算和传感器设备在促进公民科学与自然探索活动当中所能提供的新的可能性所进行。
@@ -20,7 +22,7 @@
 
 > “意识形态的转变主要是强调生活的质量而非更高的生活标准。” *-A.奈斯*
 
-![The Blue Marble](The_Earth_seen_from_Apollo_17.jpg)
+![The Blue Marble](imgs/The_Earth_seen_from_Apollo_17.jpg)
 
 *The Blue Marble, taken by the Apollo 17 crew in 1972*
 
@@ -34,12 +36,12 @@
             
 ### 如何感受自然
 
-![butterfly wing pattern](butterfly-wing-pattern.jpg)
+![butterfly wing pattern](imgs/butterfly-wing-pattern.jpg)
 
 At a smaller scale, the scales that make up those butterfly wing patterns are etched with parallel ridges that scramble light waves hitting them so that only certain colors are reflected.
 *-Nikola Rahme/Shutterstock.com*
 
-![chameleon tail](chameleon-tail.jpg)
+![chameleon tail](imgs/chameleon-tail.jpg)
 
 A furled chameleon tail obviously takes its shape from the rolling of a tube, but its pattern is distinct from that created by rolling an even tube, such as that of a garden hose. The gentle taper of the tail produces a logarithmic spiral—one that gets smaller, yet the small parts look like the large parts.
 *Michal Filip Gmerek/Shutterstock.com*
@@ -60,11 +62,11 @@ A furled chameleon tail obviously takes its shape from the rolling of a tube, bu
 
 [分形（Fractal）](https://en.wikipedia.org/wiki/Fractal) 是无限[自相似（self-similar）](https://en.wikipedia.org/wiki/Self-similarity)的，具有分形维数的迭代数学结构。分形状图案在自然界中广泛存在，存在于云层、河流网络、地质断层线、山脉、海岸线、动物着色、雪花、晶体、血管分支、肌动蛋白细胞骨架以及波浪等多种现象中。
 
-![leaf geometry](leaf1s.jpg)
+![leaf geometry](imgs/leaf1s.jpg)
 
 *The geometric beauty of leaves. by Paul Boukle*
 
-![Egypt](egypt2b.jpg)
+![Egypt](imgs/egypt2b.jpg)
 
 *Fractal forms found by using Google Earth. by Paul Boukle*
 
@@ -85,8 +87,10 @@ A furled chameleon tail obviously takes its shape from the rolling of a tube, bu
 我在本项目当中使用的用于生成分形图像的算法为一组应用了仿射变换的函数，其表达式为：
 
 $$
-x_{n+1} = ax_n + by_n + e \\
-y_{n+1} = cy_n + dy_n + f
+\begin{align}
+x_{n+1} &= ax_n + by_n + e \\
+y_{n+1} &= cy_n + dy_n + f
+\end{align}
 $$
 
 ***demo of affine transformation***
@@ -106,6 +110,7 @@ L-system是一系列不同形式的正规语法规则，多被用于植物生长
 本项目使用L系统来实现对基于迭代函数系统生成的图像的分布与合成。
 
 ***demo of ifs***
+<div class="ifs-widget"></div>
 
 ## 波
 
@@ -122,21 +127,20 @@ L-system是一系列不同形式的正规语法规则，多被用于植物生长
 在数学中，非归一化的sinc函数定义为对所有 $x ≠ 0$，由
 
 $$
-sinc(x) = \frac{\sin(x)}{x}
+sinc(x) = \frac{\sin(x)}{x}, x \ne 0
 $$
 
 使用sinc函数模拟了波在传播过程中能量的不断减少，以及在实际的实现当中，定义了以下函数f(x)来计算实际波在特定时刻在一个特定位置的状态。
 
 $$
 \begin{align}
-&dist = |x-orig| \\
-&dt = time - st \\
-&scaler =
-    \begin{cases}
-    0, &dt > lifetime\\
-    \frac{(lifetime-dt)}{lifetime}\cdot pow, &dt \leq lifetime
+dist &= |x-orig| \\
+dt &= time - st \\
+scaler &= \begin{cases}
+    0, &dt > lifetime \\
+    \displaystyle\frac{(lifetime-dt)}{lifetime}\cdot pow, &dt \leq lifetime
     \end{cases} \\
-&f(x) = \frac{\sin(dist - time)}{dist}\cdot scaler
+f(x) &= \frac{\sin(dist - time)}{dist}\cdot scaler
 \end{align}
 $$
 
@@ -145,11 +149,10 @@ $$
 在实际应用当中，我使用以上函数计算了在特定空间当中各个点的波的强度，以及复数的波的叠加情况，并使用此数值对像素的颜色或者偏移量进行映射，以此来实现对波的传播的模拟。
 
 ***demo of ripples***
+<div class="ripple-widget"></div>
 
 ## 链接
 
 所有算法实现的细节与函数等均以程序库的形式开源，这使得任何想要使用该程序的用户可以自由获取以及在此基础上进行修改与改进，使其作为市民科学的以及自然探索研究的便利工具和材料。
 
-Github repo: https://github.com/zzy-37/procedural-nature
-
-在Github上查看此页面：https://github.com/zzy-37/zzy-37.github.io/tree/master/nature
+在Github上查看此页面：https://github.com/zzy-37/zzy-37.github.io/tree/master/procedural-nature
