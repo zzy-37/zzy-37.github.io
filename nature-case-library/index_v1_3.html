@@ -1,0 +1,612 @@
+<!DOCTYPE html>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<link rel="icon" href="Logos/hulu-edit.png">
+<title>Case Library | Ecology and Culture Lab</title>
+<style>
+    :root {
+        --color-bg: white;
+        --color-fg: black;
+    }
+
+    * {
+        box-sizing: border-box;
+    }
+
+    @font-face {
+        font-family: Neutra;
+        font-weight: bold;
+        src: url("neutraface-text/Neutraface Text Bold.otf") format("opentype");
+    }
+
+    h1,
+    h2,
+    h3 {
+        font-family: Neutra;
+    }
+
+    body {
+        margin: 0;
+        background-color: var(--color-bg);
+        color: var(--color-fg);
+    }
+
+    img {
+        max-width: 100%;
+    }
+
+    summary,
+    label,
+    button {
+        cursor: pointer;
+    }
+
+    header {
+        display: flex;
+        align-items: center;
+    }
+
+    header img,
+    footer img {
+        max-height: 4rem;
+    }
+
+    footer img {
+        margin-right: 1rem;
+    }
+
+    main ul {
+        padding-inline-start: 0;
+        list-style: none;
+    }
+
+    .projects a {
+        word-break: break-all;
+    }
+
+    .filter-selector li {
+        margin-top: 0.5rem;
+    }
+
+    .filter-line {
+        font-weight: bold;
+        line-height: 2rem;
+
+        position: sticky;
+        top: 0;
+        background-color: var(--color-bg);
+    }
+
+    .filter-line button {
+        margin-right: 0.5rem;
+    }
+
+    .tag-cloud label {
+        display: inline-block;
+        margin-right: 0.5ch;
+        vertical-align: middle;
+    }
+
+    @media (min-width: 600px) {
+        body {
+            display: flex;
+            flex-direction: column;
+            height: 100vh;
+        }
+
+        main {
+            flex: 1;
+            display: flex;
+            min-height: 0;
+        }
+
+        main>* {
+            height: 100%;
+            overflow: auto;
+        }
+
+        main aside {
+            flex-shrink: 0;
+            flex-basis: 25ch;
+        }
+    }
+</style>
+<style>
+    /* :root:has(input[value="theme1"]:checked) {
+        --color-bg: #3D1766;
+        --color-bg1: #6F1AB6;
+        --color-fg: white;
+        --color-accent1: #FF0032;
+        --color-accent2: #CD0404;
+    } */
+
+    /* :root:has(input[value="theme2"]:checked) {
+        --color-bg: #eee8d5;
+        --color-bg1: #fdf6e3;
+        --color-fg: #586e75;
+        --color-fg1: #073642;
+        --color-accent1: #d33682;
+        --color-accent2: #6c71c4;
+    } */
+
+    :root {
+        --color-bg: #eee8d5;
+        --color-bg1: #fdf6e3;
+        --color-fg: #586e75;
+        --color-fg1: #073642;
+        --color-accent1: #d33682;
+        --color-accent2: #6c71c4;
+    }
+
+    body {
+        accent-color: var(--color-accent1);
+    }
+
+    ::-webkit-scrollbar {
+        width: .7rem;
+    }
+
+    ::-webkit-scrollbar-track:hover {
+        background-color: var(--color-bg1);
+    }
+
+    ::-webkit-scrollbar-thumb {
+        background-color: var(--color-accent1);
+    }
+
+    a {
+        color: var(--color-accent1);
+    }
+
+    header {
+        margin: 1rem;
+    }
+
+    footer {
+        margin-top: 5rem;
+        border-top: solid var(--color-accent1);
+        width: fit-content;
+    }
+
+    .filter-line {
+        padding: 1rem 0;
+        border-bottom: solid var(--color-bg1);
+    }
+
+    p {
+        max-width: 80ch;
+    }
+
+    .tag-cloud label {
+        background-color: var(--color-bg1);
+        color: var(--color-accent2);
+        cursor: pointer;
+    }
+
+    .tag-cloud label:hover {
+        text-decoration: underline;
+    }
+
+    main button {
+        background-color: var(--color-bg1);
+        color: var(--color-accent1);
+        border: none;
+        font-weight: bold;
+    }
+
+    aside nav a {
+        color: var(--color-fg);
+    }
+
+    .projects li h2,
+    article h1 {
+        text-decoration: underline;
+        text-decoration-color: var(--color-accent1);
+        text-decoration-thickness: 3px;
+        text-underline-offset: 3px;
+    }
+
+    main {
+        margin: 0 1rem;
+        padding-bottom: 3rem;
+    }
+
+    @media (min-width: 600px) {
+        .projects {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 3rem;
+        }
+
+        .projects li {
+            flex-basis: 60ch;
+            flex-grow: 1;
+            max-width: 80ch;
+        }
+    }
+
+    @media (min-width: 750px) {
+        main {
+            margin: 0 3rem;
+        }
+
+        main aside+* {
+            padding: 0 1rem;
+        }
+    }
+
+    @media (min-width: 900px) {
+        main {
+            margin: 0 5rem;
+        }
+
+        main aside+* {
+            padding: 0 3rem;
+        }
+
+    }
+</style>
+<script src="cells.js"></script>
+<script src="helper.js"></script>
+<script type="module">
+    const about_md = `\
+# About us
+
+This platform collects projects and cases that address nature related topics and
+challenges, aiming to explore how design and technology are supporting
+ecological restoration and integration in a variety of applications.
+
+The platform provides a reference of ecology-relevant projects that can inspire
+both planners and citizens in how technology advancement can be supportive of
+new models of urban-nature integration.
+
+You can navigate the dataset by different "technology" and "nature" keywords,
+which offers a more specific outlook on how the cases have been classified.
+
+The platform is currently at its 1.0 release, and we expect to introduce more
+visualisation and UI details in version 2.0 by Summer 2023.
+
+The platform is created by the [Ecology and Cultures Innovation
+Lab](https://ecologydesignlab.org/web) at [College of Design and Innovation,
+Tongji University](https://tjdi.tongji.edu.cn/). The project has been funded by
+[NSFC National Natural Science Foundation of
+China](https://www.nsfc.gov.cn/english/site_1/index.html) under the grant
+agreement [2021-2022
+#6201101276](https://ecologydesignlab.org/web/nsfc-citizenscience/).
+
+Team members: Lu Wentao, Saverio Silli, Francesca Valsecchi, Zhu Ziyi
+
+contact us: [echologydesignlab@tongji.edu.cn](mailto:ecologydesignlab@tongji.edu.cn)
+`
+
+    const footer_md = `\
+Designed by Ecology and Cultures Innovation Lab, Tongji D&I. Supported by
+[NSFC](https://www.nsfc.gov.cn/english/site_1/index.html). This work is licensed
+under a [Creative Commons Attribution-NonCommercial-ShareAlike 4.0 International
+License](http://creativecommons.org/licenses/by-nc-sa/4.0/).
+
+[![D&I Logo](./Logos/dilogo.png)](https://tjdi.tongji.edu.cn/)
+[![NSFC Logo](./Logos/NSFC%20Logo.png)](https://www.nsfc.gov.cn/english/site_1/index.html)
+[![Creative Commons Licence](https://i.creativecommons.org/l/by-nc-sa/4.0/88x31.png)](http://creativecommons.org/licenses/by-nc-sa/4.0/)
+`
+
+    let iota = 6
+    const i_urban_context = iota++
+    const i_citizen_science = iota++
+    const i_nature_topics = iota++
+    const i_technoloies = iota++
+    const i_other_keywords = iota++
+    const i_implimentation = iota++
+
+    const nature_topic_categories = [
+        'animals',
+        'environment',
+        'material',
+        'micro-organisms',
+        'more-than-human',
+        'plants',
+        'resource',
+        'sound',
+        'multi-species',
+        'synthetic biology',
+        'utilization',
+    ]
+
+    const technology_categories = [
+        'AI',
+        'augmented reality',
+        'biomedia',
+        'biotech',
+        'coding',
+        'data',
+        'digital fabrication',
+        'fabrication',
+        'sampling',
+        'sensors',
+        'sound',
+        'virtual reality',
+    ]
+
+    const implimentation_categories = [
+        'complete',
+        'prototype',
+        'speculative',
+    ]
+
+    const entries = cells.values.slice(3)
+    const entry_elements = entries.map(
+        ([name, place, authors, year, link, description]) =>
+            li(
+                h2(name),
+                p(
+                    place ? div(b('Place '), place) : '',
+                    authors ? div(b('Authors '), authors) : '',
+                    year ? div(b('Year '), year) : '',
+                    div(b('Link '), a(link)(link)),
+                ),
+                description ? blockquote(description) : '',
+            ))
+
+    const category_name = category => {
+        switch (category) {
+            case i_urban_context: return 'Urban Context'
+            case i_citizen_science: return 'Citizen Science'
+            case i_nature_topics: return 'Nature Topics'
+            case i_technoloies: return 'Technology'
+            case i_implimentation: return 'Implementation'
+            case i_other_keywords: return 'Tags'
+            default: throw new Error('invalid category')
+        }
+    }
+
+    const entry_get_tokens = (entry_index, column_index) =>
+        entries[entry_index][column_index]
+            ? entries[entry_index][column_index].split(',').map(s => s.trim())
+            : []
+
+    const nature_tokens = entries.map((_, i) => entry_get_tokens(i, i_nature_topics))
+    const technology_tokens = entries.map((_, i) => entry_get_tokens(i, i_technoloies))
+    const implementation_tokens = entries.map((_, i) => entry_get_tokens(i, i_implimentation))
+    const tag_tokens = entries.map((_, i) => [
+        ...entry_get_tokens(i, i_other_keywords),
+        ...nature_tokens[i].filter(token => !nature_topic_categories.includes(token)),
+        ...technology_tokens[i].filter(token => !technology_categories.includes(token)),
+    ])
+
+    const tags = [...new Set(tag_tokens.flat())]
+
+    /*
+    const output = {
+        columns: [
+            'Project Name', 'Place', 'Author', 'Year', 'Link', 'Description',
+            'Urban Context', 'Citizen Science', 'Nature topic', 'Technology', 'Tag', 'Implementation'
+        ],
+        nature_topics: [
+            'animals', 'environment', 'material', 'micro-organisms', 'more-than-human',
+            'plants', 'resource', 'sound', 'multi-species', 'synthetic biology', 'utilization',
+        ],
+        technoloies: [
+            'AI', 'augmented reality', 'biomedia', 'biotech', 'coding', 'data', 'digital fabrication',
+            'fabrication', 'sampling', 'sensors', 'sound', 'virtual reality',
+        ],
+        tags,
+        implementations: ['complete', 'prototype', 'speculative',],
+    }
+
+    output.data = entries.map((entry, i) => [
+        ...entry.slice(0, 6),
+        entry[i_urban_context] === 'Y',
+        entry[i_citizen_science] === 'Y',
+        nature_tokens[i].reduce((prev, current) => {
+            for (const [i, token] of output.nature_topics.entries()) {
+                if (token === current) {
+                    return prev |= 1 << i
+                }
+            }
+            return prev
+        }, 0),
+        technology_tokens[i].reduce((prev, current) => {
+            for (const [i, token] of output.technoloies.entries()) {
+                if (token === current) {
+                    return prev |= 1 << i
+                }
+            }
+            return prev
+        }, 0),
+        tag_tokens[i].reduce((prev, current) => {
+            for (const [i, token] of output.tags.entries()) {
+                if (token === current) {
+                    prev[~~(i / 50)] |= 1 << (i % 50)
+                    return prev
+                }
+            }
+            return prev
+        }, [0, 0, 0, 0]),
+        implementation_tokens[i].reduce((prev, current) => {
+            for (const [i, token] of output.implementations.entries()) {
+                if (token === current) {
+                    return prev |= 1 << i
+                }
+            }
+            return prev
+        }, 0),
+    ])
+
+    const blob = new Blob([JSON.stringify(output)])
+    const url = URL.createObjectURL(blob)
+    const download_link = ce('a', { href: url, download: 'data.json' })('data.json')
+
+    document.body.append(download_link)
+
+    throw 0
+    */
+
+    const apply_filter = (entry_index, category, value = '') =>
+        (category === category_name(i_urban_context) && entries[entry_index][i_urban_context] === 'Y') ||
+        (category === category_name(i_citizen_science) && entries[entry_index][i_citizen_science] === 'Y') ||
+        (category === category_name(i_nature_topics) && nature_tokens[entry_index].includes(value)) ||
+        (category === category_name(i_technoloies) && technology_tokens[entry_index].includes(value)) ||
+        (category === category_name(i_implimentation) && implementation_tokens[entry_index].includes(value)) ||
+        (category === category_name(i_other_keywords) && tag_tokens[entry_index].includes(value))
+
+    const filter_checkboxes = []
+
+    const project_container = ce('ul', { className: 'projects ' })()
+    const filter_line = ce('div', { className: 'filter-line' })()
+
+    const back_to_home = () => location.hash = ''
+
+    const update = () => {
+        back_to_home()
+
+        const checked = filter_checkboxes.filter(checkbox => checkbox.checked)
+
+        if (!checked.length) {
+            project_container.replaceChildren(...entry_elements)
+            filter_line.textContent = `Showing(${project_container.children.length}): All projects`
+            return
+        }
+
+        project_container.replaceChildren(
+            ...entry_elements.filter((_, i) => {
+                for (const checkbox of checked) {
+                    const [category, value] = checkbox.value.split('/')
+                    if (apply_filter(i, category, value))
+                        return true
+                }
+                return false
+            })
+        )
+
+        filter_line.replaceChildren(
+            `Showing(${project_container.children.length}): `,
+            ...checked.map(checkbox =>
+                button({
+                    textContent: 'x ' + checkbox.value,
+                    onclick() {
+                        checkbox.checked = false
+                        update()
+                    }
+                })),
+            button({
+                textContent: 'Clear',
+                onclick() {
+                    checked.forEach(checkbox => checkbox.checked = false)
+                    update()
+                }
+            }),
+        )
+    }
+    update()
+
+    const make_filter_checkbox = (category_index, value, count = undefined) => {
+        const category = category_name(category_index)
+
+        let filter_val = category
+        if (category_index !== i_urban_context && category_index !== i_citizen_science)
+            filter_val += `/${value}`
+
+        const checkbox = input({
+            type: 'checkbox', name: category, value: filter_val,
+            onchange: update,
+        })
+
+        filter_checkboxes.push(checkbox)
+
+        if (!count)
+            count = entries
+                .filter((_, i) => apply_filter(i, category, value))
+                .length
+
+        return label(checkbox, value, `(${count})`)
+    }
+
+    const tag_cloud = (() => {
+        let max_count = 0
+        const pairs = tags.map(tag => {
+            const count = entries
+                .filter((_, i) => apply_filter(i, category_name(i_other_keywords), tag))
+                .length
+            if (count > max_count) max_count = count
+            return [make_filter_checkbox(i_other_keywords, tag), count]
+        })
+
+        return ce('div', { className: 'tag-cloud' })(
+            ...pairs.map(([elem, count]) => (
+                elem.style.fontSize = map_range(count, 1, max_count, 16, 36) + 'px',
+                elem
+            ))
+        )
+    })()
+
+    const about_container = document.createElement('article')
+    const footer_container = document.createElement('footer')
+
+    const main_container = document.createElement('div')
+
+    const page = [
+        ce('header')(
+            img('./Logos/hulu-edit.png'),
+            h1('Ecology X Design Knowledge Base'),
+        ),
+        ce('main')(
+            ce('aside')(
+                ce('nav')(
+                    h3(a('#about')('About')),
+                    h3(a('#tags')('Tags')),
+                    ce('div', { className: 'filter-selector' })(
+                        h3(a()('Filter')),
+                        ul(...[
+                            make_filter_checkbox(i_urban_context, category_name(i_urban_context)),
+                            make_filter_checkbox(i_citizen_science, category_name(i_citizen_science)),
+                            details(summary(category_name(i_technoloies)),
+                                ul(...technology_categories.map(value =>
+                                    li(make_filter_checkbox(i_technoloies, value))))
+                            ),
+                            details(summary(category_name(i_nature_topics)),
+                                ul(...nature_topic_categories.map(value =>
+                                    li(make_filter_checkbox(i_nature_topics, value))))
+                            ),
+                            details(summary(category_name(i_implimentation)),
+                                ul(...implimentation_categories.map(value =>
+                                    li(make_filter_checkbox(i_implimentation, value))))
+                            ),
+                        ].map(el => li(el))),
+                    ),
+                )
+            ),
+            div(
+                main_container,
+                footer_container,
+            )
+        ),
+    ]
+
+        ; (onhashchange = () => {
+            const rules = {
+                '': [filter_line, project_container],
+                '#about': [
+                    about_container,
+                    button({ textContent: '< back', onclick: back_to_home }),
+                ],
+                '#tag': [tag_cloud]
+            }
+
+            for (const rule in rules) {
+                if (rule === location.hash) {
+                    main_container.replaceChildren(...rules[rule])
+                    return
+                }
+            }
+
+            back_to_home()
+        })()
+
+    document.body.append(...page)
+
+    load_marked().then(() => {
+        about_container.innerHTML = marked.parse(about_md)
+        footer_container.innerHTML = marked.parse(footer_md)
+    })
+
+</script>
