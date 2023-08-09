@@ -1,20 +1,364 @@
 <!DOCTYPE html>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Datavis for case library</title>
-
-<meta name="color-scheme" content="dark">
+<title>Case Library | Datavis</title>
 <style>
-    @font-face {
-        font-family: Neutra;
-        src: url("neutraface-text/Neutraface Text Book.otf") format("opentype");
-    }
+  canvas {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100vw;
+    height: 100vh;
+    z-index: -10;
+  }
+
+  #heading-tec,
+  #heading-nat {
+    pointer-events: none;
+    color: white;
+    mix-blend-mode: overlay;
+    position: fixed;
+    font-size: 5vw;
+    margin: 1rem;
+  }
+
+  #heading-nat {
+    right: 0;
+    bottom: 0;
+    text-align: right;
+  }
+
+  #heading-tec {
+    bottom: 0;
+    left: 0;
+  }
+
+  #heading-tec.vert-layout {
+    bottom: auto;
+    left: auto;
+    top: 0;
+    right: 0;
+    text-align: right;
+    display: flex;
+    flex-direction: column-reverse;
+  }
+
+  #field-tec,
+  #field-nat {
+    font-size: 8vw;
+    font-weight: bold;
+  }
+
+  #proj-info-container {
+    position: fixed;
+    top: 0;
+    left: 0;
+    margin: 1rem;
+    pointer-events: none;
+    color: white;
+    mix-blend-mode: overlay;
+    font-size: 2vw;
+  }
+
+  #proj-info-container :first-child {
+    font-size: 4vw;
+  }
 </style>
 
-<script src="helper.js"></script>
-<script src="case-library-data.js"></script>
+<canvas id="cnv"></canvas>
+<div id="heading-tec">
+  <div id="field-tec"></div>
+  Technology
+</div>
+<div id="heading-nat">
+  <div id="field-nat"></div>
+  Nature topic
+</div>
+<div id="proj-info-container">
+  <div id="container-name"></div>
+  <div id="container-place"></div>
+  <div id="container-author"></div>
+  <div id="container-year"></div>
+</div>
+
 <script src="case-library-entries.js"></script>
-<script src="datavis.js"></script>
 <script>
-    document.addEventListener('DOMContentLoaded', main)
+  const hexagon_cell_size = 2.5
+  const project_circle_radius = 0.9
+  const selected_circle_radius = 1.3
+  const hue_tec = 0.6
+  const hue_nat = 0.8
+
+  const { sqrt, random, sin, cos, PI, min, max } = Math
+
+  const point_in_rect = (px, py, x, y, w, h) =>
+    px > x && px < x + w && py > y && py < y + h
+
+  const point_in_circle = (px, py, cx, cy, r) => {
+    const dx = px - cx
+    const dy = py - cy
+    return dx * dx + dy * dy < r * r
+  }
+
+  const generate_hexagon_center_points = proj_indices => {
+    const xs = new Float32Array(proj_indices.length)
+    const ys = new Float32Array(proj_indices.length)
+    const rs = new Float32Array(proj_indices.length)
+
+    const get_hexagon_spiral_edge_length = points_count => {
+      let len = 0
+      for (let i = 1; i < points_count; i += 6 * ++len);
+      return len
+    }
+    for (const [i, proj_index_array] of proj_indices.entries())
+      rs[i] = (get_hexagon_spiral_edge_length(proj_index_array.length) + 1) * hexagon_cell_size
+
+    let minx, miny, maxx, maxy
+    minx = miny = -rs[0]
+    maxx = maxy = rs[0]
+
+    xs[0] = ys[0] = 0
+    for (let i = 1; i < proj_indices.length; ++i) {
+      const r = rs[i]
+      let found = false
+      while (!found) {
+        for (let j = 0; !found && j < i; ++j) {
+          const a = random() * PI * 2
+          const rsum = r + rs[j]
+          const x = xs[j] + cos(a) * rsum
+          const y = ys[j] + sin(a) * rsum
+
+          found = true
+          for (let k = 0; k < i; ++k) {
+            if (point_in_circle(x, y, xs[k], ys[k], r + rs[k])) {
+              found = false
+              break
+            }
+          }
+          if (found) {
+            xs[i] = x
+            ys[i] = y
+            minx = min(minx, x - r)
+            miny = min(miny, y - r)
+            maxx = max(maxx, x + r)
+            maxy = max(maxy, y + r)
+          }
+        }
+      }
+    }
+    for (const i of proj_indices.keys()) {
+      xs[i] -= minx
+      ys[i] -= miny
+    }
+    return {
+      xs, ys, rs,
+      count: proj_indices.length,
+      width: maxx - minx,
+      height: maxy - miny
+    }
+  }
+
+  const proj_indices_tec = case_library_fields['technology'].map(value =>
+    case_library_entries.map((_, i) => i).filter(i => apply_filter(case_library_entries[i], 'technology', value)))
+  const proj_indices_nat = case_library_fields['nature topic'].map(value =>
+    case_library_entries.map((_, i) => i).filter(i => apply_filter(case_library_entries[i], 'nature topic', value)))
+  const hexagons_tec = generate_hexagon_center_points(proj_indices_tec)
+  const hexagons_nat = generate_hexagon_center_points(proj_indices_nat)
+
+  const vert_layout_width = max(hexagons_tec.width, hexagons_nat.width)
+  const vert_layout_height = hexagons_tec.height + hexagons_nat.height
+  const hori_layout_width = hexagons_tec.width + hexagons_nat.width
+  const hori_layout_height = max(hexagons_tec.height, hexagons_nat.height)
+
+  const css_color_rgb = (r, g, b, a = 1) => `rgb(${~~(r * 256)}, ${~~(g * 256)}, ${~~(b * 256)}, ${a})`
+  const css_color_hsl = (h, s, l, a = 1) => `hsl(${~~(h * 360)}, ${~~(s * 100)}%, ${~~(l * 100)}%, ${a})`
+
+  const group_color_saturation = 0.5
+  const group_color_lightness_light = 0.8
+  const group_color_lightness_medium = 0.6
+  const group_color_lightness_dark = 0.4
+
+  const hue_color_light = (h, a = 1) => css_color_hsl(h, group_color_saturation, group_color_lightness_light, a)
+  const hue_color_medium = (h, a = 1) => css_color_hsl(h, group_color_saturation, group_color_lightness_medium, a)
+  const hue_color_dark = (h, a = 1) => css_color_hsl(h, group_color_saturation, group_color_lightness_dark, a)
+
+  const cnv = document.getElementById('cnv')
+  const ctx = cnv.getContext('2d')
+
+  let mouse_x, mouse_y
+  let mouse_over_project_index = -1
+  let selected_project_index = -1
+
+  cnv.onmousemove = e => {
+    mouse_x = e.offsetX
+    mouse_y = e.offsetY
+  }
+
+  cnv.onclick = () => {
+    selected_project_index = mouse_over_project_index
+  }
+
+  const draw_circle = (x, y, r) => {
+    ctx.beginPath()
+    ctx.arc(x, y, r, 0, PI * 2)
+  }
+
+  const draw_hexagon = (x, y, r) => {
+    ctx.beginPath()
+    ctx.moveTo(x + r, y)
+    for (let i = 1; i < 6; ++i) {
+      const xx = x + cos(i * PI / 3) * r
+      const yy = y + sin(i * PI / 3) * r
+      ctx.lineTo(xx, yy)
+    }
+    ctx.closePath()
+  }
+
+  const ctx_transition = ({ offx, offy, scale }, callback) => {
+    ctx.save()
+    ctx.translate(offx, offy)
+    ctx.scale(scale, scale)
+    const mx = (mouse_x - offx) / scale
+    const my = (mouse_y - offy) / scale
+    callback(mx, my)
+    ctx.restore()
+  }
+
+  const foreach_hexagon_in_group = (hexagons, callback) => {
+    for (let i = 0; i < hexagons.count; ++i) {
+      const x = hexagons.xs[i]
+      const y = hexagons.ys[i]
+      const r = hexagons.rs[i]
+      if (callback(x, y, r, i)) break
+    }
+  }
+
+  const foreach_point_in_hexagon_spiral = (n, callback) => {
+    for (
+      let i = 0, a = 0, x = 0, y = 0, edgelen = 1, edge = 0;
+      i < n;
+      ++i
+    ) {
+      if (callback(x, y, i)) break
+      if (i === 1) a += 2
+      if (i > 1) {
+        if (a >= 6) a = 0
+        else if (++edge === edgelen) {
+          if (a === 1) ++edgelen
+          edge = 0
+          ++a
+        }
+      }
+      x += cos(a * PI / 3) * hexagon_cell_size
+      y += sin(a * PI / 3) * hexagon_cell_size
+    }
+  }
+
+  const heading_tec = document.getElementById('heading-tec')
+  const container_name = document.getElementById('container-name')
+  const container_place = document.getElementById('container-place')
+  const container_author = document.getElementById('container-author')
+  const container_year = document.getElementById('container-year')
+  const field_container_tec = document.getElementById('field-tec')
+  const field_container_nat = document.getElementById('field-nat')
+
+  requestAnimationFrame(function draw() {
+    cnv.width = cnv.clientWidth
+    cnv.height = cnv.clientHeight
+
+    const bg_gradient = ctx.createLinearGradient(0, 0, cnv.width, cnv.height)
+    bg_gradient.addColorStop(0, hue_color_dark(hue_tec))
+    bg_gradient.addColorStop(1, hue_color_dark(hue_nat))
+    ctx.fillStyle = bg_gradient
+    ctx.fillRect(0, 0, cnv.width, cnv.height)
+
+    const fit_center = (w1, h1, w2, h2, padding) => {
+      w1 -= 2 * padding
+      h1 -= 2 * padding
+      const ratio1 = w1 / h1
+      const ratio2 = w2 / h2
+      const scale = ratio1 > ratio2 ? h1 / h2 : w1 / w2
+      const offx = padding + (ratio1 > ratio2 ? (w1 - w2 * scale) / 2 : 0)
+      const offy = padding + (ratio1 > ratio2 ? 0 : (h1 - h2 * scale) / 2)
+      return { offx, offy, scale }
+    }
+    const vert_layout = fit_center(cnv.width, cnv.height, vert_layout_width, vert_layout_height, 20)
+    const hori_layout = fit_center(cnv.width, cnv.height, hori_layout_width, hori_layout_height, 20)
+
+    const layout1 = vert_layout.scale > hori_layout.scale ? vert_layout : hori_layout
+    const layout2 = { ...layout1 }
+    if (layout1 === vert_layout) {
+      layout2.offy += layout1.scale * hexagons_tec.height
+      heading_tec.classList.add('vert-layout')
+    } else {
+      layout2.offx += layout1.scale * hexagons_tec.width
+      heading_tec.classList.remove('vert-layout')
+    }
+
+    mouse_over_project_index = -1
+
+    const hex_groups = [
+      [hexagons_tec, proj_indices_tec, layout1, hue_tec],
+      [hexagons_nat, proj_indices_nat, layout2, hue_nat],
+    ]
+
+    let mouse_over_group_index = -1
+    let mouse_over_hexagon_index = -1
+
+    for (const [group_index, group] of hex_groups.entries()) {
+      const [hexagons, proj_indices, layout, hue] = group
+      ctx_transition(layout, (mx, my) => {
+        foreach_hexagon_in_group(hexagons, (x, y, r, i) => {
+          if (point_in_circle(mx, my, x, y, r)) {
+            mouse_over_group_index = group_index
+            mouse_over_hexagon_index = i
+            foreach_point_in_hexagon_spiral(proj_indices[i].length, (cx, cy, j) => {
+              if (point_in_circle(mx, my, x + cx, y + cy, project_circle_radius)) {
+                mouse_over_project_index = proj_indices[i][j]
+                return true //break out of foreach loop
+              }
+            })
+            return true
+          }
+        })
+      })
+      if (mouse_over_group_index >= 0) break
+    }
+
+    field_container_tec.textContent = mouse_over_group_index === 0 ? case_library_fields['technology'][mouse_over_hexagon_index] : ''
+    field_container_nat.textContent = mouse_over_group_index === 1 ? case_library_fields['nature topic'][mouse_over_hexagon_index] : ''
+
+    cnv.style['cursor'] = mouse_over_project_index >= 0 ? 'pointer' : ''
+
+    if (mouse_over_project_index >= 0 || selected_project_index >= 0) {
+      const [name, place, author, year] = case_library_entries[mouse_over_project_index >= 0 ?
+        mouse_over_project_index : selected_project_index]
+      container_name.textContent = name
+      container_place.textContent = place
+      container_author.textContent = author
+      container_year.textContent = year
+    } else {
+      container_name.textContent = ''
+      container_place.textContent = ''
+      container_author.textContent = ''
+      container_year.textContent = ''
+    }
+
+    for (const [group_index, [hexagons, proj_indices, layout, hue]] of hex_groups.entries()) {
+      ctx_transition(layout, (mx, my) => {
+        foreach_hexagon_in_group(hexagons, (x, y, r, i) => {
+          foreach_point_in_hexagon_spiral(proj_indices[i].length, (cx, cy, j) => {
+            const proj_index = proj_indices[i][j]
+            ctx.fillStyle = proj_index === selected_project_index ? 'yellow' :
+              proj_index === mouse_over_project_index ? hue_color_light(hue) : hue_color_medium(hue)
+            draw_circle(x + cx, y + cy, proj_index === selected_project_index || proj_index === mouse_over_project_index ?
+              selected_circle_radius : project_circle_radius)
+            ctx.fill()
+          })
+        })
+      })
+    }
+
+    requestAnimationFrame(draw)
+  })
 </script>

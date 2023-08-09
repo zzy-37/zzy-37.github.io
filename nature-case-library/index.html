@@ -1,247 +1,361 @@
 <!DOCTYPE html>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<link rel="icon" href="Logos/hulu-edit.png">
+<!-- <meta name="color-scheme" content="dark"> -->
 <title>Case Library | Ecology and Culture Lab</title>
+<link rel="icon" href="assets/hulu-edit.png">
+
 <style>
-    :root {
-        --color-bg: white;
-        --color-fg: black;
-    }
+  :root {
+    --solarized-base03: #002b36;
+    --solarized-base02: #073642;
+    --solarized-base01: #586e75;
+    --solarized-base00: #657b83;
+    --solarized-base0: #839496;
+    --solarized-base1: #93a1a1;
+    --solarized-base2: #eee8d5;
+    --solarized-base3: #fdf6e3;
+    --solarized-yellow: #b58900;
+    --solarized-orange: #cb4b16;
+    --solarized-red: #dc322f;
+    --solarized-magenta: #d33682;
+    --solarized-violet: #6c71c4;
+    --solarized-blue: #268bd2;
+    --solarized-cyan: #2aa198;
+    --solarized-green: #859900;
 
-    * {
-        box-sizing: border-box;
-    }
+    --color-bg: var(--solarized-base3);
+    --color-bg1: var(--solarized-base2);
+    --color-fg: var(--solarized-base02);
+    --color-fg-dimmed: var(--solarized-base1);
+    --color-accent1: var(--solarized-magenta);
+    --color-accent2: var(--solarized-violet);
 
-    @font-face {
-        font-family: Neutra;
-        font-weight: bold;
-        src: url("neutraface-text/Neutraface Text Bold.otf") format("opentype");
-    }
+    --color-impl: var(--solarized-red);
+    --color-nature: var(--solarized-green);
+    --color-tech: var(--solarized-blue);
+    --color-flags: var(--solarized-orange);
+    --color-keyword: var(--solarized-cyan);
+  }
 
-    h1,
-    h2,
-    h3 {
-        font-family: Neutra;
-    }
 
-    body {
-        margin: 0;
-        background-color: var(--color-bg);
-        color: var(--color-fg);
-    }
+  ::-webkit-scrollbar {
+    width: .7rem;
+  }
 
-    img {
-        max-width: 100%;
-    }
+  ::-webkit-scrollbar-track:hover {
+    background-color: var(--color-bg1);
+  }
 
-    summary,
-    label,
-    button {
-        cursor: pointer;
-    }
+  ::-webkit-scrollbar-thumb {
+    background-color: var(--color-accent1);
+  }
 
-    header {
-        display: flex;
-        align-items: center;
-    }
+  body {
+    background-color: var(--color-bg);
+    color: var(--color-fg);
+    accent-color: var(--color-accent1);
+  }
 
-    header img,
-    footer img {
-        max-height: 4rem;
-    }
+  a {
+    color: var(--color-accent1);
+  }
 
-    footer img {
-        margin-right: 1rem;
-    }
+  * {
+    box-sizing: border-box;
+  }
 
-    main ul {
-        padding-inline-start: 0;
-        list-style: none;
-    }
+  img {
+    max-width: 100%;
+  }
 
-    .projects a {
-        word-break: break-all;
-    }
+  summary,
+  label,
+  button {
+    cursor: pointer;
+  }
 
-    .filter-selector li {
-        margin-top: 0.5rem;
-    }
+  header {
+    display: flex;
+    align-items: center;
+  }
 
-    .filter-line {
-        font-weight: bold;
-        line-height: 2rem;
+  header img {
+    max-width: 3rem;
+    object-fit: contain;
+  }
 
-        position: sticky;
-        top: 0;
-        background-color: var(--color-bg);
-    }
+  nav {
+    margin-bottom: .5rem;
+  }
 
-    .filter-line button {
-        margin-right: 0.5rem;
-    }
+  nav>* {
+    margin-right: .5rem;
+  }
 
-    .tag-cloud label {
-        display: inline-block;
-        margin-right: 0.5ch;
-        vertical-align: middle;
-    }
+  #projects a {
+    word-break: break-all;
+  }
 
-    @media (min-width: 600px) {
-        body {
-            display: flex;
-            flex-direction: column;
-            height: 100vh;
-        }
+  .proj-info span {
+    display: inline-block;
+    margin-right: .5em;
+    margin-bottom: .5em;
+    padding: 0 .5em;
+    color: var(--color-bg);
+  }
 
-        main {
-            flex: 1;
-            display: flex;
-            min-height: 0;
-        }
+  .info-impl {
+    background-color: var(--color-impl);
+  }
 
-        main>* {
-            height: 100%;
-            overflow: auto;
-        }
+  .info-nature {
+    background-color: var(--color-nature);
+  }
 
-        main aside {
-            flex-shrink: 0;
-            flex-basis: 25ch;
-        }
-    }
-</style>
-<style>
-    /* :root {
-        --color-bg: #3D1766;
-        --color-bg1: #6F1AB6;
-        --color-fg: white;
-        --color-accent1: #FF0032;
-        --color-accent2: #CD0404;
-    } */
+  .info-tech {
+    background-color: var(--color-tech);
+  }
 
-    :root {
-        --color-bg: #eee8d5;
-        --color-bg1: #fdf6e3;
-        --color-fg: #586e75;
-        --color-fg1: #073642;
-        --color-accent1: #d33682;
-        --color-accent2: #6c71c4;
-    }
+  .info-flags {
+    background-color: var(--color-flags);
+  }
 
-    body {
-        accent-color: var(--color-accent1);
-    }
+  .info-keyword {
+    background-color: var(--color-keyword);
+  }
 
-    ::-webkit-scrollbar {
-        width: .7rem;
-    }
+  #filter-selector {
+    position: sticky;
+    top: 0;
+    background-color: var(--color-bg);
+    border-bottom: solid var(--color-accent1);
+    padding: .5rem 0;
+  }
 
-    ::-webkit-scrollbar-track:hover {
-        background-color: var(--color-bg1);
-    }
+  #filter-selector summary {
+    font-weight: bold;
+  }
 
-    ::-webkit-scrollbar-thumb {
-        background-color: var(--color-accent1);
-    }
+  #filter-selector summary button {
+    margin-left: .5rem;
+    background-color: var(--color-accent1);
+    color: var(--color-bg);
+    border: none;
+    font-weight: bold;
+  }
 
-    a {
-        color: var(--color-accent1);
-    }
+  #filter-selector b {
+    text-transform: capitalize;
+  }
 
-    header {
-        margin: 1rem;
-    }
+  #filter-selector>div {
+    margin-top: .5rem;
+  }
 
-    footer {
-        margin-top: 5rem;
-        border-top: solid var(--color-accent1);
-        width: fit-content;
-    }
+  #tag-cloud label {
+    color: var(--color-accent2);
+  }
 
-    .filter-line {
-        padding: 1rem 0;
-        border-bottom: solid var(--color-bg1);
-    }
+  #filter-selector label,
+  #tag-cloud label {
+    display: inline-block;
+    margin-left: .5rem;
+  }
 
-    p {
-        max-width: 80ch;
-    }
 
-    .tag-cloud label {
-        background-color: var(--color-bg1);
-        color: var(--color-accent2);
-        cursor: pointer;
-    }
+  /* #filter-selector label:has(input:checked) {
+    display: none;
+  } */
 
-    .tag-cloud label:hover {
-        text-decoration: underline;
-    }
+  #filter-selector label:has(input:disabled),
+  #tag-cloud label:has(input:disabled) {
+    color: var(--color-fg-dimmed);
+  }
 
-    main button {
-        background-color: var(--color-bg1);
-        color: var(--color-accent1);
-        border: none;
-        font-weight: bold;
-    }
+  footer {
+    margin-top: 5rem;
+  }
 
-    aside nav a {
-        color: var(--color-fg);
-    }
+  footer img {
+    max-height: 5rem;
+  }
 
-    .projects li h2,
-    article h1 {
-        text-decoration: underline;
-        text-decoration-color: var(--color-accent1);
-        text-decoration-thickness: 3px;
-        text-underline-offset: 3px;
-    }
+  #new-project-form {
+    border-bottom: solid var(--color-accent1);
+  }
 
+  #new-project-form>* {
+    margin: .5rem 0;
+    display: flex;
+  }
+
+  #new-project-form>*>:first-child {
+    flex-basis: 15ch;
+    flex-shrink: 0;
+    font-weight: bold;
+  }
+
+  #new-project-form>*>input,
+  #new-project-form textarea {
+    width: 60ch;
+  }
+
+  #new-project-form img {
+    display: block;
+    max-height: 300px;
+    margin-top: .5rem;
+  }
+
+  #new-project-form>:has(input[required])>:first-child::after {
+    content: ' *';
+    color: var(--color-accent1);
+  }
+
+  #new-project-form label:has(input[type='radio']),
+  #new-project-form label:has(input[type='checkbox']) {
+    display: inline-block;
+    margin-right: .5rem;
+  }
+
+  /* @media(min-width: 600px) {
     main {
-        margin: 0 1rem;
-        padding-bottom: 3rem;
+      display: flex;
+      gap: 1em;
     }
 
-    @media (min-width: 600px) {
-        .projects {
-            display: flex;
-            flex-wrap: wrap;
-            gap: 3rem;
-        }
-
-        .projects li {
-            flex-basis: 60ch;
-            flex-grow: 1;
-            max-width: 80ch;
-        }
+    nav {
+      display: flex;
+      flex-direction: column;
     }
-
-    @media (min-width: 750px) {
-        main {
-            margin: 0 3rem;
-        }
-
-        main aside+* {
-            padding: 0 1rem;
-        }
-    }
-
-    @media (min-width: 900px) {
-        main {
-            margin: 0 5rem;
-        }
-
-        main aside+* {
-            padding: 0 3rem;
-        }
-
-    }
+  } */
 </style>
-<script src="case-library-data.js"></script>
+
+<header>
+  <img src="assets/hulu-edit.png">
+  <span>Ecology X Design Knowledge Base</span>
+</header>
+<main>
+  <nav>
+    <a href="#">Projects</a>
+    <a href="#tags">Tags</a>
+    <a href="#new-project">Add project</a>
+    <a href="datavis.html">Datavis</a>
+    <a href="#about">About</a>
+  </nav>
+  <div id="content"></div>
+</main>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/marked/5.1.2/marked.min.js"></script>
 <script src="case-library-entries.js"></script>
-<script src="helper.js"></script>
 <script>
-    const about_md = `\
+  const append = (element, ...children) => (element.append(...children), element)
+  const createElement = (name, attrs, ...children) => append(Object.assign(document.createElement(name), attrs), ...children)
+
+  const span = (...children) => createElement('span', {}, ...children)
+
+  const make_project_element = ([
+    name, place, author, year, link, description, impl,
+    nature_topics, technologies, flags, keywords
+  ]) =>
+    createElement('div', {},
+      createElement('h3', {}, createElement('a', { href: link, textContent: name + '\u{1F517}' })),
+      !place ? '' : createElement('p', { textContent: `Place: ${place}` }),
+      !author ? '' : createElement('p', { textContent: `Author: ${author}` }),
+      !year ? '' : createElement('p', { textContent: `Year: ${year}` }),
+      // !link ? '' : createElement('p', {},
+      //   'Link: ', createElement('a', { href: link, textContent: link })),
+      !description ? '' : createElement('blockquote', { innerText: description }),
+      createElement('div', { className: 'proj-info' },
+        !impl ? '' : createElement('span', { className: 'info-impl' }, `implementation/${impl}`),
+        !nature_topics.length ? '' : createElement('span', { className: 'info-nature' }, `nature topic/${nature_topics}`),
+        !technologies.length ? '' : createElement('span', { className: 'info-tech' }, `technology/${technologies}`),
+        !flags.length ? '' : createElement('span', { className: 'info-flags' }, `flag/${flags}`),
+        !keywords.length ? '' : createElement('span', { className: 'info-keyword' }, `keyword/${keywords}`),
+      ),
+      createElement('hr'),
+    )
+  const project_elements = case_library_entries.map(make_project_element)
+
+  const filter_update = () => {
+    const checked_input = []
+    const unchecked_input = []
+    filter_inputs.forEach(input => input.checked ? checked_input.push(input) : unchecked_input.push(input))
+    const current_entires_indices = case_library_entries.map((_, i) => i).filter(i => {
+      for (const { name, value } of checked_input) {
+        if (!apply_filter(case_library_entries[i], name, value)) return false
+      }
+      return true
+    })
+    unchecked_input.forEach(input => {
+      for (const i of current_entires_indices) {
+        if (apply_filter(case_library_entries[i], input.name, input.value))
+          return input.disabled = false
+      }
+      input.disabled = true
+    })
+    const input_set_value = (input, name, value) => (input[name] = value, input.oninput())
+    filter_info.replaceChildren(
+      `(${current_entires_indices.length}/${case_library_entries.length})`,
+      ...checked_input.map(input => createElement('button', {
+        textContent: `x ${input.name}/${input.value}`,
+        onclick() { input_set_value(input, 'checked', false) },
+      })),
+      !checked_input.length ? '' : createElement('button', {
+        textContent: 'clear filters',
+        onclick() { checked_input.forEach(input => input_set_value(input, 'checked', false)) }
+      }),
+    )
+    project_container.replaceChildren(...current_entires_indices.map(i => project_elements[i]))
+  }
+  const push = (arr, element) => (arr.push(element), element)
+  const project_container = createElement('div', { id: 'projects' })
+  const filter_inputs = []
+  const filter_info = createElement('span')
+  const filter_selector = createElement('details', { id: 'filter-selector' },
+    createElement('summary', { textContent: 'Filters' }, filter_info),
+    ...Object.entries(case_library_fields).map(([name, values]) => {
+      const heading = createElement('div', {}, createElement('b', { textContent: name }))
+      const container = createElement('div', {},
+        heading,
+        ...values.map(value => {
+          const input = createElement('input', {
+            type: 'checkbox', name, value, oninput() {
+              (this.checked ? heading : container).append(label)
+              filter_update()
+            }
+          })
+          filter_inputs.push(input)
+          const label = createElement('label', {}, input, value)
+          return label
+        })
+      )
+      return container
+    }),
+  )
+  const project_page_element = createElement('div', { id: 'project-page' },
+    filter_selector,
+    project_container,
+  )
+
+  const all_keywords = {}
+  case_library_entries.forEach(entry =>
+    entry[case_library_field_index('keyword')].forEach(value =>
+      !all_keywords[value] ? all_keywords[value] = 1 : all_keywords[value] += 1))
+
+  const tag_cloud = createElement('div', { id: 'tag-cloud' },
+    ...Object.entries(all_keywords).map(([value, count]) =>
+      createElement('label', { style: `font-size: ${16 + count * 0.8}px` },
+        push(filter_inputs, createElement('input', { type: 'checkbox', name: 'keyword', value, oninput: filter_update })),
+        value, `(${count})`
+      )
+    ),
+  )
+  filter_update()
+
+  const about_page = [
+    createElement('article', {
+      innerHTML: marked.parse(`
 # About us
 
 This platform collects projects and cases that address nature related topics and
@@ -269,181 +383,172 @@ agreement [2021-2022
 Team members: Lu Wentao, Saverio Silli, Francesca Valsecchi, Zhu Ziyi
 
 contact us: [echologydesignlab@tongji.edu.cn](mailto:ecologydesignlab@tongji.edu.cn)
-`
+`),
+    }),
 
-    const footer_md = `\
+    createElement('footer', {
+      innerHTML: marked.parse(`\
 Designed by Ecology and Cultures Innovation Lab, Tongji D&I. Supported by
 [NSFC](https://www.nsfc.gov.cn/english/site_1/index.html). This work is licensed
 under a [Creative Commons Attribution-NonCommercial-ShareAlike 4.0 International
 License](http://creativecommons.org/licenses/by-nc-sa/4.0/).
 
-[![D&I Logo](./Logos/dilogo.png)](https://tjdi.tongji.edu.cn/)
-[![NSFC Logo](./Logos/NSFC%20Logo.png)](https://www.nsfc.gov.cn/english/site_1/index.html)
+[![D&I Logo](assets/dilogo.png)](https://tjdi.tongji.edu.cn/)
+[![NSFC Logo](assets/NSFC%20Logo.png)](https://www.nsfc.gov.cn/english/site_1/index.html)
 [![Creative Commons Licence](https://i.creativecommons.org/l/by-nc-sa/4.0/88x31.png)](http://creativecommons.org/licenses/by-nc-sa/4.0/)
-`
+`)
+    }),
+    // createElement('img', { src: 'assets/dilogo.png' }),
+    // createElement('img', { src: 'assets/NSFC Logo.png' }),
+  ]
 
-    const entry_elements = entries.map(
-        ([name, place, authors, year, link, description]) =>
-            li(
-                h2(name),
-                p(
-                    place ? div(b('Place '), place) : '',
-                    authors ? div(b('Authors '), authors) : '',
-                    year ? div(b('Year '), year) : '',
-                    div(b('Link '), a(link)(link)),
-                ),
-                description ? blockquote(description) : '',
-            ))
+  const form_inputs = {
+    name: createElement('input', { placeholder: 'Project name', name: 'name', required: true }),
+    place: createElement('input', { placeholder: 'Place', name: 'place' }),
+    author: createElement('input', { placeholder: 'Author', name: 'author' }),
+    year: createElement('input', { placeholder: 'Time of the project(year)', name: 'year' }),
+    link: createElement('input', { placeholder: 'Project page url', name: 'link', required: true }),
 
-    const filter_checkboxes = []
+    implementation: case_library_fields['implementation'].map(value =>
+      createElement('input', { type: 'radio', name: 'implementation', value, required: true })),
 
-    const project_container = ce('ul', { className: 'projects ' })()
-    const filter_line = ce('div', { className: 'filter-line' })()
+    nature_topics: case_library_fields['nature topic'].map(value =>
+      createElement('input', { type: 'checkbox', name: 'nature topic', value })),
 
-    const back_to_home = () => location.hash = ''
+    technology: case_library_fields['technology'].map(value =>
+      createElement('input', { type: 'checkbox', name: 'technology', value })),
 
-    const update = () => {
-        back_to_home()
+    flag: case_library_fields['flag'].map(value =>
+      createElement('input', { type: 'checkbox', name: 'flag', value })),
 
-        const checked = filter_checkboxes.filter(checkbox => checkbox.checked)
+    keyword: createElement('input', { placeholder: 'Project keywords, seprate by comma', name: 'keyword' }),
+    description: createElement('textarea', { placeholder: 'Add project description.', rows: 5 }),
+    image: createElement('input', { type: 'file', accept: 'image/*', name: 'image', onchange() { } }),
+  }
 
-        if (!checked.length) {
-            project_container.replaceChildren(...entry_elements)
-            filter_line.textContent = `Showing(${project_container.children.length}): All projects`
-            return
-        }
-
-        project_container.replaceChildren(
-            ...entry_elements.filter((_, i) => {
-                for (const checkbox of checked) {
-                    if (apply_filter(entries[i], checkbox.name, checkbox.value))
-                        return true
-                }
-                return false
-            })
-        )
-
-        filter_line.replaceChildren(
-            `Showing(${project_container.children.length}): `,
-            ...checked.map(checkbox =>
-                button({
-                    textContent: `x ${checkbox.name}/${checkbox.value}`,
-                    onclick() {
-                        checkbox.checked = false
-                        update()
-                    }
-                })),
-            button({
-                textContent: 'Clear',
-                onclick() {
-                    checked.forEach(checkbox => checkbox.checked = false)
-                    update()
-                }
-            }),
-        )
-    }
-    update()
-
-    const make_filter_checkbox = (category, value = '', count = filtered_count(category, value)) => {
-        const checkbox = input({
-            type: 'checkbox', name: category, value,
-            onchange: update,
-        })
-        filter_checkboxes.push(checkbox)
-
-        return label(checkbox, value || category, `(${count})`)
-    }
-
-    const filter_group = (name, category) =>
-        details(summary(name),
-            ul(...category.map(value =>
-                li(make_filter_checkbox(name, value))))
-        )
-
-    const filter_selector = ce('div', { className: 'filter-selector' })(
-        h3(a()('Filter')),
-        ul(...[
-            make_filter_checkbox(columns[i_urban_context]),
-            make_filter_checkbox(columns[i_citizen_science]),
-            filter_group(columns[i_technology], technology_categories),
-            filter_group(columns[i_nature_topic], nature_topic_categories),
-            filter_group(columns[i_implimentation], implementation_categories),
-        ].map(el => li(el))),
-    )
-
-    const tag_cloud = (() => {
-        const tags = [...new Set(entries.reduce((prev, current) => [...prev, ...current[i_tag]], []))]
-        let max_count = 0
-        const counts = tags.map(tag => {
-            const count = filtered_count(columns[i_tag], tag)
-            if (count > max_count) max_count = count
-            return count
-        })
-
-        return ce('div', { className: 'tag-cloud' })(
-            ...tags.map((tag, i) =>
-                Object.assign(
-                    make_filter_checkbox(columns[i_tag], tag, counts[i]), {
-                    style: `font-size: ${map_range(counts[i], 1, max_count, 16, 36)}px`
-                })
-            )
-        )
-    })()
-
-    const about_container = document.createElement('article')
-    const footer_container = document.createElement('footer')
-
-    load_marked().then(() => {
-        about_container.innerHTML = marked.parse(about_md)
-        footer_container.innerHTML = marked.parse(footer_md)
+  const added_projects = []
+  const dump_new_project_json_file_button = createElement('a', { download: 'new_entries.json' },
+    createElement('button', {
+      textContent: 'Dump new project entires', onclick() {
+        const url = URL.createObjectURL(new Blob([JSON.stringify(added_projects, null, 2)]))
+        dump_new_project_json_file_button.href = url
+      }
     })
+  )
 
-    const main_container = document.createElement('div')
+  const new_project_form = createElement('form',
+    {
+      id: 'new-project-form', onsubmit(e) {
+        e.preventDefault()
 
-    const main = () => {
-        document.body.append(
-            ce('header')(
-                img('./Logos/hulu-edit.png'),
-                h1('Ecology X Design Knowledge Base'),
-            ),
-            ce('main')(
-                ce('aside')(
-                    ce('nav')(
-                        h3(a('#about')('About')),
-                        h3(a('#tags')('Tags')),
-                        h3(a('datavis.html')('Datavis')),
-                        filter_selector,
-                    )
-                ),
-                div(
-                    main_container,
-                    footer_container,
-                )
-            ),
-        )
+        const name = form_inputs.name.value
+        const place = form_inputs.place.value
+        const author = form_inputs.author.value
+        const year = form_inputs.year.value
+        const link = form_inputs.link.value
+        const description = form_inputs.description.value
+        const implementation = form_inputs.implementation.find(input => input.checked).value
+        const nature_topics = form_inputs.nature_topics.filter(input => input.checked).map(input => input.value)
+        const technologies = form_inputs.technology.filter(input => input.checked).map(input => input.value)
+        const flags = form_inputs.flag.filter(input => input.checked).map(input => input.value)
+        const keywords = form_inputs.keyword.value.split(',')
+
+        const entry = [
+          name, place, author, year, link, description, implementation,
+          nature_topics, technologies, flags, keywords
+        ]
+        added_projects.push(entry)
+        new_project_form.parentElement.append(make_project_element(entry))
+
+        this.reset()
+      }
+    },
+    createElement('h2', { textContent: 'New Project' }),
+
+    createElement('label', {}, span('Name'), form_inputs.name),
+    createElement('label', {}, span('Place'), form_inputs.place),
+    createElement('label', {}, span('Author'), form_inputs.author),
+    createElement('label', {}, span('Year'), form_inputs.year),
+    createElement('label', {}, span('Link'), form_inputs.link),
+
+    createElement('div', {},
+      span('Implementation'),
+      createElement('div', {},
+        ...form_inputs.implementation.map(input =>
+          createElement('label', {}, input, input.value))
+      ),
+    ),
+
+    createElement('div', {},
+      span('Nature topics'),
+      createElement('div', {},
+        ...form_inputs.nature_topics.map(input =>
+          createElement('label', {}, input, input.value))
+      ),
+    ),
+
+    createElement('div', {},
+      span('Technologies'),
+      createElement('div', {},
+        ...form_inputs.technology.map(input =>
+          createElement('label', {}, input, input.value))
+      ),
+    ),
+
+    createElement('div', {},
+      span('Flags'),
+      createElement('div', {},
+        ...form_inputs.flag.map(input =>
+          createElement('label', {}, input, input.value))
+      ),
+    ),
+
+    createElement('label', {}, span('Keywords'), form_inputs.keyword),
+    createElement('label', {}, span('Description'), form_inputs.description),
+    createElement('div', {},
+      span('Image'),
+      createElement('label', {},
+        'Upload a thumbnail image for the project. ',
+        form_inputs.image,
+        (function () {
+          const img = createElement('img')
+          form_inputs.image.onchange = function () {
+            const f = this.files
+            const url = URL.createObjectURL(f)
+            img.src = url
+          }
+          return img
+        })(),
+      ),
+    ),
+
+    createElement('button', {}, 'Add project'),
+  )
+
+  const content_container = document.getElementById('content')
+  onhashchange = () => {
+    switch (location.hash) {
+      case '':
+        content_container.replaceChildren(project_page_element)
+        break
+
+      case '#about':
+        content_container.replaceChildren(...about_page)
+        break
+
+      case '#tags':
+        content_container.replaceChildren(tag_cloud)
+        break
+
+      case '#new-project':
+        content_container.replaceChildren(new_project_form, dump_new_project_json_file_button)
+        break
+
+      default:
+        location.hash = ''
+        break
     }
-
-    document.addEventListener('DOMContentLoaded', main)
-
-        ; (onhashchange = () => {
-            switch (location.hash) {
-                case '':
-                    main_container.replaceChildren(filter_line, project_container)
-                    break
-
-                case '#about':
-                    main_container.replaceChildren(
-                        about_container,
-                        button({ textContent: '< back', onclick: back_to_home }),
-                    )
-                    break
-
-                case '#tags':
-                    main_container.replaceChildren(tag_cloud)
-                    break
-
-                default: back_to_home()
-            }
-        })()
+  }
+  onhashchange()
 
 </script>
