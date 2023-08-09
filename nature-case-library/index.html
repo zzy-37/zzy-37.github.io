@@ -34,10 +34,9 @@
     --color-impl: var(--solarized-red);
     --color-nature: var(--solarized-green);
     --color-tech: var(--solarized-blue);
-    --color-flags: var(--solarized-orange);
+    --color-flag: var(--solarized-orange);
     --color-keyword: var(--solarized-cyan);
   }
-
 
   ::-webkit-scrollbar {
     width: .7rem;
@@ -52,6 +51,7 @@
   }
 
   body {
+    font-family: sans-serif;
     background-color: var(--color-bg);
     color: var(--color-fg);
     accent-color: var(--color-accent1);
@@ -117,8 +117,8 @@
     background-color: var(--color-tech);
   }
 
-  .info-flags {
-    background-color: var(--color-flags);
+  .info-flag {
+    background-color: var(--color-flag);
   }
 
   .info-keyword {
@@ -133,11 +133,12 @@
     padding: .5rem 0;
   }
 
-  #filter-selector summary {
+  #filter-line {
+    display: inline-block;
     font-weight: bold;
   }
 
-  #filter-selector summary button {
+  #filter-line button {
     margin-left: .5rem;
     background-color: var(--color-accent1);
     color: var(--color-bg);
@@ -191,7 +192,7 @@
   }
 
   #new-project-form>*>:first-child {
-    flex-basis: 15ch;
+    flex-basis: 16ch;
     flex-shrink: 0;
     font-weight: bold;
   }
@@ -270,7 +271,7 @@
         !impl ? '' : createElement('span', { className: 'info-impl' }, `implementation/${impl}`),
         !nature_topics.length ? '' : createElement('span', { className: 'info-nature' }, `nature topic/${nature_topics}`),
         !technologies.length ? '' : createElement('span', { className: 'info-tech' }, `technology/${technologies}`),
-        !flags.length ? '' : createElement('span', { className: 'info-flags' }, `flag/${flags}`),
+        !flags.length ? '' : createElement('span', { className: 'info-flag' }, `flag/${flags}`),
         !keywords.length ? '' : createElement('span', { className: 'info-keyword' }, `keyword/${keywords}`),
       ),
       createElement('hr'),
@@ -295,8 +296,8 @@
       input.disabled = true
     })
     const input_set_value = (input, name, value) => (input[name] = value, input.oninput())
-    filter_info.replaceChildren(
-      `(${current_entires_indices.length}/${case_library_entries.length})`,
+    filter_line.replaceChildren(
+      `Filters(${current_entires_indices.length}/${case_library_entries.length})`,
       ...checked_input.map(input => createElement('button', {
         textContent: `x ${input.name}/${input.value}`,
         onclick() { input_set_value(input, 'checked', false) },
@@ -311,9 +312,10 @@
   const push = (arr, element) => (arr.push(element), element)
   const project_container = createElement('div', { id: 'projects' })
   const filter_inputs = []
-  const filter_info = createElement('span')
+  const filter_line = createElement('div', { id: 'filter-line' })
+  const filter_selector_summary = createElement('summary')
   const filter_selector = createElement('details', { id: 'filter-selector' },
-    createElement('summary', { textContent: 'Filters' }, filter_info),
+    filter_selector_summary,
     ...Object.entries(case_library_fields).map(([name, values]) => {
       const heading = createElement('div', {}, createElement('b', { textContent: name }))
       const container = createElement('div', {},
@@ -529,6 +531,7 @@ License](http://creativecommons.org/licenses/by-nc-sa/4.0/).
   onhashchange = () => {
     switch (location.hash) {
       case '':
+        filter_selector_summary.replaceChildren(filter_line)
         content_container.replaceChildren(project_page_element)
         break
 
@@ -537,7 +540,7 @@ License](http://creativecommons.org/licenses/by-nc-sa/4.0/).
         break
 
       case '#tags':
-        content_container.replaceChildren(tag_cloud)
+        content_container.replaceChildren(filter_line, tag_cloud)
         break
 
       case '#new-project':
