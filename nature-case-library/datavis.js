@@ -114,8 +114,10 @@ const draw = ts => {
     offy1 = offy2 = hori_offy + padding
   }
 
-  const mouse_over_tech_group_index = test_mouse_inside_position(offx1, offy1, scale, tech_hexagons, tech_proj_indices)
-  const mouse_over_nature_group_index = mouse_over_tech_group_index < 0 ? test_mouse_inside_position(offx2, offy2, scale, nature_hexagons, nature_proj_indices) : -1
+  const mouse_over_tech_group_index =
+    test_mouse_inside_position(offx1, offy1, scale, tech_hexagons, tech_proj_indices)
+  const mouse_over_nature_group_index = mouse_over_tech_group_index < 0 ?
+    test_mouse_inside_position(offx2, offy2, scale, nature_hexagons, nature_proj_indices) : -1
   const is_in_hexagon = mouse_over_tech_group_index >= 0 || mouse_over_nature_group_index >= 0
 
   ctx.canvas.style.cursor = mouse_over_proj_index >= 0 ? 'pointer' : ''
@@ -149,7 +151,7 @@ const draw = ts => {
       const y = ctx.canvas.height - padding
 
       set_bold_font_size(font_size1)
-      ctx.fillText('Natue Topic', x, y)
+      ctx.fillText('Nature Topic', x, y)
       if (mouse_over_nature_group_index >= 0) {
         set_bold_font_size(font_size2)
         ctx.fillText(nature_topic_categories[mouse_over_nature_group_index], x, y - font_size1 - padding)
@@ -178,7 +180,7 @@ const draw = ts => {
       const x = ctx.canvas.width - padding
 
       set_bold_font_size(font_size1)
-      ctx.fillText('Natue Topic', x, y)
+      ctx.fillText('Nature Topic', x, y)
       if (mouse_over_nature_group_index >= 0) {
         set_bold_font_size(font_size2)
         ctx.fillText(nature_topic_categories[mouse_over_nature_group_index], x, y - font_size1 - padding)
@@ -293,16 +295,6 @@ const draw_group = (
   ctx.restore()
 }
 
-const to_hex_byte = val => (~~(val * 255)).toString(16).padStart(2, '0')
-
-const ctx_do_transition = (ctx, offx, offy, scale, callback) => {
-  ctx.save()
-  ctx.translate(offx, offy)
-  ctx.scale(scale, scale)
-  callback()
-  ctx.restore()
-}
-
 const test_mouse_inside_position = (offx, offy, scale, hexagons, proj_indices) => {
   const mouse_offx = (mouse_x - offx) / scale
   const mouse_offy = (mouse_y - offy) / scale
@@ -334,10 +326,12 @@ const foreach_hexagon_in_catagory = (hexagons, n, callback) => {
 }
 
 const foreach_point_in_hexagon_spiral = (n, callback) => {
-  for (let i = 0, a = 0, x = 0, y = 0, edgelen = 1, edge = 0;
-    i < n; ++i) {
+  for (
+    let i = 0, a = 0, x = 0, y = 0, edgelen = 1, edge = 0;
+    i < n;
+    ++i
+  ) {
     if (callback(x, y, i)) break
-
     if (i === 1) a += 2
     if (i > 1) {
       if (a >= 6) a = 0
@@ -358,7 +352,6 @@ const fit_center = (w1, h1, w2, h2) => {
   const scale = ratio1 > ratio2 ? h1 / h2 : w1 / w2
   const offx = ratio1 > ratio2 ? (w1 - w2 * scale) / 2 : 0
   const offy = ratio1 > ratio2 ? 0 : (h1 - h2 * scale) / 2
-
   return [offx, offy, scale]
 }
 
