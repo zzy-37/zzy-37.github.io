@@ -1,0 +1,354 @@
+<!DOCTYPE html>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<title>Flood Tiles</title>
+
+<style>
+  :root {
+    --solarized_base03: #002b36;
+    --solarized_base02: #073642;
+    --solarized_base01: #586e75;
+    --solarized_base00: #657b83;
+    --solarized_base0: #839496;
+    --solarized_base1: #93a1a1;
+    --solarized_base2: #eee8d5;
+    --solarized_base3: #fdf6e3;
+
+    --color-bg: var(--solarized_base3);
+    --color-fg: var(--solarized_base02);
+  }
+
+  * {
+    box-sizing: border-box;
+  }
+
+  body {
+    background-color: var(--color-bg);
+    color: var(--color-fg);
+  }
+
+  button,
+  canvas {
+    cursor: pointer;
+  }
+
+  button {
+    background-color: var(--color-bg);
+    border: solid var(--color-fg);
+  }
+
+  button:hover {
+    background-color: var(--color-fg);
+    color: var(--color-bg);
+  }
+
+  #overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100vw;
+    height: 100vh;
+    padding: 1rem;
+    font-size: larger;
+
+    display: flex;
+    flex-direction: column;
+  }
+
+  main {
+    flex: 1;
+    position: relative;
+  }
+
+  main,
+  #fin {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+  }
+
+  #fin {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translateX(-50%) translateY(-50%);
+    ;
+
+    background-color: var(--color-bg);
+    color: var(--color-fg);
+    border: solid var(--color-fg);
+    padding: 2rem;
+  }
+
+  #overlay button {
+    font-size: larger;
+  }
+
+  #overlay #steps {
+    position: absolute;
+    top: 0;
+    right: 0;
+    margin: 1rem;
+
+    font-style: italic;
+    font-weight: bold;
+  }
+
+
+  #start-screen {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100vw;
+    height: 100vh;
+
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+  }
+
+  #start-screen {
+    background-color: var(--color-bg);
+  }
+
+  #start-screen button {
+    padding: 0 3em;
+    font-size: x-large;
+  }
+</style>
+
+<script>
+  const solarized_yellow = '#b58900'
+  const solarized_orange = '#cb4b16'
+  const solarized_red = '#dc322f'
+  const solarized_magenta = '#d33682'
+  const solarized_violet = '#6c71c4'
+  const solarized_blue = '#268bd2'
+  const solarized_cyan = '#2aa198'
+  const solarized_green = '#859900'
+
+  const gl_create_shader = (gl, type, src) => {
+    const shader = gl.createShader(type)
+    gl.shaderSource(shader, src)
+    gl.compileShader(shader)
+    if (gl.getShaderParameter(shader, COMPILE_STATUS))
+      return shader
+    else
+      throw new Error(getShaderInfoLog(shader))
+  }
+
+</script>
+
+<div id="overlay">
+  <div id="steps">Steps Taken: <span id="span-steps-taken"></span></div>
+  <div>
+    <button id="button-restart-level">Restart Level</button>
+    <button id="button-new-level">New Level</button>
+    <button id="button-show-instruction">Show Instruction</button>
+  </div>
+  <div id="instructions">
+    <ul>
+      <li>Click the colored tiles to see what will happen.</li>
+      <li>Try to flood the whole area in while taking the smallest amount of steps.</li>
+      <li>Share the link with your friends to play the current level.</li>
+    </ul>
+  </div>
+
+  <main>
+    <canvas id="cnv"></canvas>
+    <div id="fin">
+      <h1>You've flooded all the tiles!</h1>
+      <div id="fin-info"></div>
+    </div>
+  </main>
+</div>
+
+<div id="start-screen">
+  <h1>Flood Tiles</h1>
+  <button id="start-button">Click to Start</button>
+</div>
+
+<canvas id="gl-cnv"></canvas>
+
+<script>
+  const gl_cnv = document.getElementById('gl-cnv')
+  const gl = gl_cnv.getContext('webgl2')
+
+  const board_dimention = 20
+  const w = 400
+  const h = 400
+  const cell_size = w / board_dimention
+
+  const colors = [
+    solarized_yellow,
+    solarized_orange,
+    solarized_red,
+    solarized_magenta,
+    solarized_violet,
+    solarized_blue,
+    solarized_cyan,
+    solarized_green,
+  ]
+
+  const drip_sound = new Audio('assets/amb_waterdrip_1.flac')
+  const start_screen = document.getElementById('start-screen')
+  const start_button = document.getElementById('start-button')
+  const instruction_container = document.getElementById('instructions')
+  const fade_instruction = () => {
+    instruction_container.style.opacity = 1
+    requestAnimationFrame(function fade2() {
+      instruction_container.style.opacity -= 0.04
+      if (instruction_container.style.opacity > 0)
+        requestAnimationFrame(fade2)
+    })
+  }
+
+  start_button.onclick = () => {
+    drip_sound.play()
+    start_screen.style.opacity = 1
+    requestAnimationFrame(function fade() {
+      start_screen.style.opacity -= 0.04
+      if (start_screen.style.opacity > 0)
+        requestAnimationFrame(fade)
+      else {
+        start_screen.style.display = 'none'
+        cnv.addEventListener('click', fade_instruction, { once: true })
+      }
+    })
+  }
+
+  const button_show_instruction = document.getElementById('button-show-instruction')
+  button_show_instruction.onclick = () => {
+    instruction_container.style.display = 'block'
+    instruction_container.style.opacity = 0
+    requestAnimationFrame(function fadein() {
+      instruction_container.style.opacity = Number(instruction_container.style.opacity) + 0.04
+      if (instruction_container.style.opacity < 1)
+        requestAnimationFrame(fadein)
+      else
+        setTimeout(fade_instruction, 3000)
+    })
+  }
+
+  const splash_sounds = [
+    new Audio('assets/splash/splash1.wav'),
+    new Audio('assets/splash/splash2.wav'),
+    new Audio('assets/wave_01_cc0-11505__transitking__wavesound.flac'),
+    new Audio('assets/wave_02_cc0-11505__transitking__wavesound.flac'),
+    new Audio('assets/wave_03_cc0-11505__transitking__wavesound.flac'),
+    new Audio('assets/wave_04_cc0-11505__transitking__wavesound.flac'),
+  ]
+
+  const cnv = document.getElementById('cnv')
+  cnv.width = w
+  cnv.height = h
+  const ctx = cnv.getContext('2d')
+
+  let board, current_level
+
+  let mouse_x, mouse_y
+  let current_splash_sound = 0
+  let steps_taken = 0
+
+  const gen_level = () => {
+    const level = Array(board_dimention * board_dimention)
+    for (let i = 0; i < level.length; ++i) {
+      level[i] = Math.floor(Math.random() * colors.length)
+    }
+    return level
+  }
+
+  const div_fin = document.getElementById('fin')
+  const div_fin_info = document.getElementById('fin-info')
+
+  const game_init = level => {
+    current_level = level ? level : gen_level()
+    board = [...current_level]
+    steps_taken = 0
+    div_fin.style.display = 'none'
+    location.hash = JSON.stringify(current_level)
+  }
+
+  if (location.hash) {
+    const level = JSON.parse(location.hash.slice(1))
+    game_init(level)
+  } else {
+    game_init()
+  }
+
+  const span_steps_taken = document.getElementById('span-steps-taken')
+  const button_restart_level = document.getElementById('button-restart-level')
+  button_restart_level.onclick = () => {
+    game_init(current_level)
+  }
+  const button_new_level = document.getElementById('button-new-level')
+  button_new_level.onclick = () => {
+    game_init()
+  }
+
+  cnv.onmousemove = e => {
+    const x = e.offsetX
+    const y = e.offsetY
+    mouse_x = x
+    mouse_y = y
+  }
+
+  cnv.onclick = e => {
+    const current_color_index = board[0]
+    const board_indices_to_change_change_color = [0]
+    for (let i = 0; i < board_indices_to_change_change_color.length; ++i) {
+      const idx = board_indices_to_change_change_color[i]
+      const row = Math.floor(idx / board_dimention)
+      const col = idx % board_dimention
+
+      for (const [r, c] of [[row - 1, col], [row, col - 1], [row + 1, col], [row, col + 1]]) {
+        const j = r * board_dimention + c
+        if (r >= 0 && r < board_dimention && c >= 0 && c < board_dimention &&
+          !board_indices_to_change_change_color.includes(j) &&
+          current_color_index === board[j]) {
+          board_indices_to_change_change_color.push(j)
+        }
+      }
+    }
+
+    if (board_indices_to_change_change_color.length === board.length) {
+      div_fin.style.display = 'flex'
+      div_fin_info.textContent = `Took ${steps_taken} steps`
+    } else {
+      steps_taken++
+      splash_sounds[current_splash_sound++ % splash_sounds.length].play()
+
+      const m_col = Math.floor(mouse_x / board_dimention)
+      const m_row = Math.floor(mouse_y / board_dimention)
+      const mouse_color_index = board[m_row * board_dimention + m_col]
+      for (const i of board_indices_to_change_change_color) {
+        board[i] = mouse_color_index
+      }
+
+    }
+  }
+
+  requestAnimationFrame(function draw() {
+    span_steps_taken.textContent = steps_taken
+
+    const m_col = Math.floor(mouse_x / board_dimention)
+    const m_row = Math.floor(mouse_y / board_dimention)
+
+    for (let row = 0; row < board_dimention; ++row) {
+      const y = row * cell_size
+      for (let col = 0; col < board_dimention; ++col) {
+        const x = col * cell_size
+        const i = row * board_dimention + col
+        const color_index = board[i]
+        ctx.fillStyle = colors[color_index]
+        ctx.fillRect(x, y, cell_size, cell_size)
+      }
+    }
+
+    requestAnimationFrame(draw)
+  })
+
+</script>
