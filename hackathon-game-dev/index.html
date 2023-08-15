@@ -61,6 +61,18 @@
     position: relative;
   }
 
+  #cnv-container {
+    position: relative;
+  }
+
+  #gl-cnv {
+    position: absolute;
+    top: 0;
+    left: 0;
+    pointer-events: none;
+    mix-blend-mode: soft-light;
+  }
+
   main,
   #fin {
     display: flex;
@@ -74,7 +86,6 @@
     top: 50%;
     left: 50%;
     transform: translateX(-50%) translateY(-50%);
-    ;
 
     background-color: var(--color-bg);
     color: var(--color-fg);
@@ -95,7 +106,6 @@
     font-style: italic;
     font-weight: bold;
   }
-
 
   #start-screen {
     position: fixed;
@@ -130,14 +140,49 @@
   const solarized_cyan = '#2aa198'
   const solarized_green = '#859900'
 
-  const gl_create_shader = (gl, type, src) => {
+  const create_and_compile_shader = (gl, type, source) => {
     const shader = gl.createShader(type)
-    gl.shaderSource(shader, src)
+    gl.shaderSource(shader, source)
     gl.compileShader(shader)
-    if (gl.getShaderParameter(shader, COMPILE_STATUS))
-      return shader
-    else
-      throw new Error(getShaderInfoLog(shader))
+    if (!gl.getShaderParameter(shader, gl.COMPILE_STATUS)) {
+      const err = new Error(gl.getShaderInfoLog(shader))
+      gl.deleteShader(shader)
+      throw err
+    }
+    return shader
+  }
+
+  const link_shader_to_program = (gl, vert_shader, frag_shader) => {
+    const program = gl.createProgram()
+    gl.attachShader(program, vert_shader)
+    gl.attachShader(program, frag_shader)
+    gl.linkProgram(program)
+    gl.detachShader(program, vert_shader)
+    gl.detachShader(program, frag_shader)
+    if (!gl.getProgramParameter(program, gl.LINK_STATUS)) {
+      const err = new Error(gl.getProgramInfoLog(program))
+      gl.deleteProgram(program)
+      throw err
+    }
+    return program
+  }
+
+  const load_texture_from_source = (gl, tex_unit, texture, source) => {
+    gl.activeTexture(gl.TEXTURE0 + tex_unit)
+    gl.bindTexture(gl.TEXTURE_2D, texture)
+
+    gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_S, gl.CLAMP_TO_EDGE)
+    gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_T, gl.CLAMP_TO_EDGE)
+    gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MIN_FILTER, gl.NEAREST)
+    gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MAG_FILTER, gl.NEAREST)
+
+    gl.texImage2D(gl.TEXTURE_2D, 0, gl.RGBA, gl.RGBA, gl.UNSIGNED_BYTE, source)
+  }
+
+  const create_and_load_texture = (gl, tex_unit, source) => {
+    const texture = gl.createTexture()
+    load_texture_from_source(gl, tex_unit, texture, source)
+    return texture
   }
 
 </script>
@@ -158,7 +203,11 @@
   </div>
 
   <main>
-    <canvas id="cnv"></canvas>
+    <div id="cnv-container">
+      <canvas id="cnv"></canvas>
+      <canvas id="gl-cnv"></canvas>
+    </div>
+
     <div id="fin">
       <h1>You've flooded all the tiles!</h1>
       <div id="fin-info"></div>
@@ -171,12 +220,7 @@
   <button id="start-button">Click to Start</button>
 </div>
 
-<canvas id="gl-cnv"></canvas>
-
 <script>
-  const gl_cnv = document.getElementById('gl-cnv')
-  const gl = gl_cnv.getContext('webgl2')
-
   const board_dimention = 20
   const w = 400
   const h = 400
@@ -247,11 +291,86 @@
   cnv.height = h
   const ctx = cnv.getContext('2d')
 
+  const gl_cnv = document.getElementById('gl-cnv')
+  gl_cnv.width = w
+  gl_cnv.height = h
+  const gl = gl_cnv.getContext('webgl2', { premultipliedAlpha: false })
+
+  const mask_cnv = document.createElement('canvas')
+  mask_cnv.width = w
+  mask_cnv.height = h
+  const mask_ctx = mask_cnv.getContext('2d')
+
+  const max_ripple_count = 10
+
+  const vert_shader = create_and_compile_shader(gl, gl.VERTEX_SHADER, `\
+  #version 300 es
+
+  out vec2 tex_coord;
+
+  void main() {
+    vec2 uv = vec2(gl_VertexID & 1, (gl_VertexID >> 1) & 1);
+    gl_Position = vec4(uv * 2.0 - 1.0, 0, 1);
+    tex_coord = vec2(uv.x, 1.0 - uv.y);
+  }
+  `)
+
+  const frag_shader = create_and_compile_shader(gl, gl.FRAGMENT_SHADER, `\
+  #version 300 es
+  precision highp float;
+
+  uniform float time;
+  uniform float scale_x;
+
+  uniform vec2 points[${max_ripple_count}];
+  uniform float powers[${max_ripple_count}];
+
+  uniform sampler2D tex;
+
+  float ripple(vec2 pos, float power) {
+    vec2 pos_diff = gl_FragCoord.xy - pos;
+    float dist = length(pos_diff) * scale_x;
+    float sinc = sin(dist - time) / dist;
+    return sinc * power;
+  }
+
+  in vec2 tex_coord;
+  out vec4 color;
+
+  void main() {
+    float brightness = 0.0;
+    for (int i = 0; i < ${max_ripple_count}; ++i) {
+      if (powers[i] > 0.0)
+        brightness += ripple(points[i], powers[i]);
+    }
+    vec4 texel = texture(tex, tex_coord);
+    color = vec4(vec3(brightness + .5), texel.r);
+  }
+  `)
+
+  const ripple_program = link_shader_to_program(gl, vert_shader, frag_shader)
+  gl.useProgram(ripple_program)
+  const loc_u_time = gl.getUniformLocation(ripple_program, 'time')
+  const loc_u_scale_x = gl.getUniformLocation(ripple_program, 'scale_x')
+  const loc_u_points = gl.getUniformLocation(ripple_program, 'points')
+  const loc_u_powers = gl.getUniformLocation(ripple_program, 'powers')
+  const loc_u_tex = gl.getUniformLocation(ripple_program, 'tex')
+  const mask_texture = gl.createTexture()
+
   let board, current_level
 
   let mouse_x, mouse_y
   let current_splash_sound = 0
   let steps_taken = 0
+
+  let scale_x = .2
+  let speed = 10
+
+  const points = new Float32Array(max_ripple_count * 2)
+  const powers = new Float32Array(max_ripple_count)
+
+  const div_fin = document.getElementById('fin')
+  const div_fin_info = document.getElementById('fin-info')
 
   const gen_level = () => {
     const level = Array(board_dimention * board_dimention)
@@ -260,9 +379,6 @@
     }
     return level
   }
-
-  const div_fin = document.getElementById('fin')
-  const div_fin_info = document.getElementById('fin-info')
 
   const game_init = level => {
     current_level = level ? level : gen_level()
@@ -290,14 +406,16 @@
   }
 
   cnv.onmousemove = e => {
-    const x = e.offsetX
-    const y = e.offsetY
-    mouse_x = x
-    mouse_y = y
+    mouse_x = e.offsetX
+    mouse_y = e.offsetY
   }
 
   cnv.onclick = e => {
+    const m_col = Math.floor(mouse_x / board_dimention)
+    const m_row = Math.floor(mouse_y / board_dimention)
+    const mouse_color_index = board[m_row * board_dimention + m_col]
     const current_color_index = board[0]
+
     const board_indices_to_change_change_color = [0]
     for (let i = 0; i < board_indices_to_change_change_color.length; ++i) {
       const idx = board_indices_to_change_change_color[i]
@@ -308,7 +426,7 @@
         const j = r * board_dimention + c
         if (r >= 0 && r < board_dimention && c >= 0 && c < board_dimention &&
           !board_indices_to_change_change_color.includes(j) &&
-          current_color_index === board[j]) {
+          (current_color_index === board[j] || mouse_color_index === board[j])) {
           board_indices_to_change_change_color.push(j)
         }
       }
@@ -321,17 +439,46 @@
       steps_taken++
       splash_sounds[current_splash_sound++ % splash_sounds.length].play()
 
-      const m_col = Math.floor(mouse_x / board_dimention)
-      const m_row = Math.floor(mouse_y / board_dimention)
-      const mouse_color_index = board[m_row * board_dimention + m_col]
+      mask_ctx.fillStyle = 'black'
+      mask_ctx.fillRect(0, 0, w, h)
+
+      mask_ctx.fillStyle = 'white'
       for (const i of board_indices_to_change_change_color) {
         board[i] = mouse_color_index
-      }
 
+        const x = (i % board_dimention) * cell_size
+        const y = Math.floor(i / board_dimention) * cell_size
+        mask_ctx.fillRect(x, y, cell_size, cell_size)
+      }
+    }
+
+    load_texture_from_source(gl, 0, mask_texture, mask_cnv)
+
+    for (let i = 0; i < max_ripple_count; ++i) {
+      if (powers[i] <= 0) {
+        powers[i] = 2
+        points[i * 2] = mouse_x
+        points[i * 2 + 1] = h - mouse_y
+        break
+      }
     }
   }
 
-  requestAnimationFrame(function draw() {
+  requestAnimationFrame(function draw(ts) {
+    const time = ts / 1000
+
+    gl.uniform1f(loc_u_time, time * speed)
+    gl.uniform1f(loc_u_scale_x, scale_x)
+    gl.uniform2fv(loc_u_points, points, 0, points.length)
+    gl.uniform1fv(loc_u_powers, powers, 0, powers.length)
+    gl.uniform1i(loc_u_tex, 0)
+
+    gl.drawArrays(gl.TRIANGLE_STRIP, 0, 4)
+
+    for (let i = 0; i < max_ripple_count; ++i) {
+      powers[i] -= 0.001
+    }
+
     span_steps_taken.textContent = steps_taken
 
     const m_col = Math.floor(mouse_x / board_dimention)
