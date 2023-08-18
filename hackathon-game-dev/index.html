@@ -243,10 +243,10 @@
   const instruction_container = document.getElementById('instructions')
   const fade_instruction = () => {
     instruction_container.style.opacity = 1
-    requestAnimationFrame(function fade2() {
+    requestAnimationFrame(function fade() {
       instruction_container.style.opacity -= 0.04
       if (instruction_container.style.opacity > 0)
-        requestAnimationFrame(fade2)
+        requestAnimationFrame(fade)
     })
   }
 
@@ -425,10 +425,11 @@
     steps_taken = 0
     div_fin.style.display = 'none'
     location.hash = level_encode_base64(current_level)
+    mask_ctx.fillStyle = 'black'
+    mask_ctx.fillRect(0, 0, w, h)
   }
 
   if (location.hash) {
-    // const level = JSON.parse(location.hash.slice(1))
     const level = level_decode_base64(location.hash.slice(1))
     game_init(level)
   } else {
@@ -437,13 +438,9 @@
 
   const span_steps_taken = document.getElementById('span-steps-taken')
   const button_restart_level = document.getElementById('button-restart-level')
-  button_restart_level.onclick = () => {
-    game_init(current_level)
-  }
+  button_restart_level.onclick = () => game_init(current_level)
   const button_new_level = document.getElementById('button-new-level')
-  button_new_level.onclick = () => {
-    game_init()
-  }
+  button_new_level.onclick = () => game_init()
 
   cnv.onmousemove = e => {
     mouse_x = e.offsetX
@@ -480,13 +477,13 @@
       board[i] = mouse_color_index
     }
 
+    steps_taken++
+    splash_sounds[current_splash_sound++ % splash_sounds.length].play()
+
     const board_indices_to_fill_mask = get_continues_color_board_indices()
     if (board_indices_to_fill_mask.length === board.length) {
       div_fin.style.display = 'flex'
       div_fin_info.textContent = `Took ${steps_taken} steps`
-    } else {
-      steps_taken++
-      splash_sounds[current_splash_sound++ % splash_sounds.length].play()
     }
 
     mask_ctx.fillStyle = 'black'
@@ -497,7 +494,6 @@
       const y = Math.floor(i / board_dimention) * cell_size
       mask_ctx.fillRect(x, y, cell_size, cell_size)
     }
-    load_texture_from_source(gl, 0, mask_texture, mask_cnv)
 
     for (let i = 0; i < max_ripple_count; ++i) {
       if (powers[i] <= 0) {
@@ -511,6 +507,8 @@
 
   requestAnimationFrame(function draw(ts) {
     const time = ts / 1000
+
+    load_texture_from_source(gl, 0, mask_texture, mask_cnv)
 
     gl.uniform1f(loc_u_time, time * speed)
     gl.uniform1f(loc_u_scale_x, scale_x)
