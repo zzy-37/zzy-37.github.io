@@ -369,9 +369,6 @@
   const points = new Float32Array(max_ripple_count * 2)
   const powers = new Float32Array(max_ripple_count)
 
-  const div_fin = document.getElementById('fin')
-  const div_fin_info = document.getElementById('fin-info')
-
   const gen_level = () => {
     const level = Array(board_dimention * board_dimention)
     for (let i = 0; i < level.length; ++i) {
@@ -419,8 +416,11 @@
     return level
   }
 
+  const div_fin = document.getElementById('fin')
+  const div_fin_info = document.getElementById('fin-info')
+
   const game_init = level => {
-    current_level = level ? level : gen_level()
+    current_level = level
     board = [...current_level]
     steps_taken = 0
     div_fin.style.display = 'none'
@@ -429,18 +429,14 @@
     mask_ctx.fillRect(0, 0, w, h)
   }
 
-  if (location.hash) {
-    const level = level_decode_base64(location.hash.slice(1))
-    game_init(level)
-  } else {
-    game_init()
-  }
+  const level = location.hash ? level_decode_base64(location.hash.slice(1)) : gen_level()
+  game_init(level)
 
   const span_steps_taken = document.getElementById('span-steps-taken')
   const button_restart_level = document.getElementById('button-restart-level')
   button_restart_level.onclick = () => game_init(current_level)
   const button_new_level = document.getElementById('button-new-level')
-  button_new_level.onclick = () => game_init()
+  button_new_level.onclick = () => game_init(gen_level())
 
   cnv.onmousemove = e => {
     mouse_x = e.offsetX
