@@ -518,7 +518,7 @@ License](http://creativecommons.org/licenses/by-nc-sa/4.0/).
         (function () {
           const img = createElement('img')
           form_inputs.image.onchange = function () {
-            const f = this.files
+            const f = this.files[0]
             const url = URL.createObjectURL(f)
             img.src = url
           }
