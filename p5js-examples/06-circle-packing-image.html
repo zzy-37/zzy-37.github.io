@@ -1,0 +1,80 @@
+<script src="https://cdnjs.cloudflare.com/ajax/libs/p5.js/1.9.0/p5.min.js"></script>
+<script>
+  let width = 800
+  let height = 600
+
+  let min_size = 5
+  let max_size = 20
+
+  let circles = []
+  let img
+
+  function file_loaded(file) {
+    if (img) img.remove()
+    img = loadImage(file.data)
+  }
+
+  function setup() {
+    describe('select or drop an image to the canvas to see the circle packing effect', LABEL)
+    createFileInput(file_loaded)
+    let c = createCanvas(width, height)
+    c.drop(file_loaded)
+  }
+
+  function draw() {
+    background(0)
+    for (let c of circles) {
+      let color = img
+        ? img.get(c.x/width*img.width, c.y/height*img.height)
+        : [c.x/width*255, c.y/height*255, 255]
+        fill(color)
+        noStroke()
+      circle(c.x, c.y, 2*c.r)
+    }
+
+    if (circles.length == 0) {
+      circles.push(make_circle())
+    } else {
+      let last_c = circles.pop()
+      let new_c = Object.assign(last_c, {r: last_c.r + 1})
+      if (new_c.r * 2 <= max_size && can_fit(new_c)) {
+        circles.push(new_c)
+      } else {
+        circles.push(last_c)
+
+        let can_add = false
+        for (let i = 0; i < 50; ++i) {
+          let c = make_circle()
+          if (can_fit(c)) {
+            circles.push(c)
+            can_add = true
+            break
+          }
+        }
+        if (!can_add) {
+          console.log("stopped looping")
+          noLoop()
+        }
+      }
+    }
+  }
+
+  function make_circle() {
+    let r = min_size / 2
+    let x = random(r, width-r)
+    let y = random(r, height-r)
+    return {x, y, r}
+  }
+
+  function can_fit(c) {
+    if (c.x - c.r < 0 || c.x + c.r > width || c.y - c.r < 0 || c.y + c.r > height)
+      return false
+    for (let oc of circles) {
+      if (c.r + oc.r > dist(c.x, c.y, oc.x, oc.y)){
+        return false
+      }
+    }
+    return true
+  }
+
+</script>

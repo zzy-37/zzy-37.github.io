@@ -1,0 +1,87 @@
+<meta name="color-scheme" content="dark">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/styles/dark.min.css">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/highlight.min.js"></script>
+<style>
+nav {
+  margin: 1rem 0;
+}
+nav label {
+  margin-right: 1rem;
+}
+button {
+  cursor: pointer;
+}
+main {
+  display: flex;
+  flex-wrap: wrap;
+}
+</style>
+
+<h1>p5.js examples</h1>
+
+<p>
+Some <a href="https://p5js.org">p5.js</a> examples.
+To run and edit files locally, click the download button below.
+</p>
+<p>
+Open the html file in a text editor to change the code.
+Open with the web browser to run the code.
+</p>
+
+<nav id="nav"></nav>
+<a id="download" download><button>Download</button></a>
+<button id="reload">Reload</button>
+<main>
+  <iframe id="iframe"></iframe>
+  <pre><code id='code' class="language-js"></code></pre>
+</main>
+
+<script>
+  iframe.onload = () => {
+    const d = iframe.contentWindow.document
+    iframe.width = d.body.scrollWidth
+    iframe.height = d.body.scrollHeight
+
+    const script =  d.querySelector('script:nth-of-type(2)')
+    code.textContent = script.text
+    delete code.dataset.highlighted
+    hljs.highlightAll()
+  }
+
+  reload.onclick = () => {
+    iframe.contentWindow.location.reload()
+  }
+
+  const pages = [
+    '01-basics.html',
+    '02-colors.html',
+    '03-random.html',
+    '04-input.html',
+    '05-circle-packing.html',
+    '06-circle-packing-image.html',
+  ]
+
+  let loaded = false
+  nav.append(...pages.map(url => {
+    const radio = Object.assign(document.createElement('input'), {
+      type: 'radio',
+      name: 'page',
+      value: url,
+      onchange: () => {
+        iframe.src = url
+        download.href = url
+      }
+    })
+    if (!loaded) {
+      radio.checked = true
+      radio.onchange()
+      loaded = true
+    }
+    const label = document.createElement('label')
+    label.style = 'cursor: pointer'
+    label.append(radio, url)
+    return label
+  }))
+
+</script>
+

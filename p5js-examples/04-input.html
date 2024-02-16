@@ -1,0 +1,21 @@
+<script src="https://cdnjs.cloudflare.com/ajax/libs/p5.js/1.9.0/p5.min.js"></script>
+<script>
+  let width = 800
+  let height = 600
+  let size = 10
+
+  function setup() {
+    describe('press the mouse button to draw on the canvas', LABEL)
+    createCanvas(width, height)
+    background(0)
+  }
+
+  function draw() {
+    if (mouseIsPressed) {
+      noStroke()
+      fill(255)
+      circle(mouseX, mouseY, size)
+    }
+  }
+
+</script>
