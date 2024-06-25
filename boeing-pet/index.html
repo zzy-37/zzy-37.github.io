@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Document</title>
+  <title>Your Pet - in flight</title>
   <style>
     * {box-sizing: border-box;}
     :root {
@@ -15,14 +15,43 @@
 
       --corner-radius: 1em;
       --card-padding:  1em;
+      --card-margin:   1em;
     }
     body {
       background-color: var(--color-bg);
       margin: 0;
     }
 
+    main, header {
+      padding: 0 var(--card-margin);
+    }
+    header {
+      color: var(--color-gray2);
+      margin-top: var(--card-margin);
+      display: flex;
+      align-items: center;
+      gap: var(--card-margin);
+    }
+    header h2 {
+      margin: 0;
+    }
+    @media (min-width: 750px) {
+      main {
+        display: flex;
+        width: 100%;
+        gap: var(--card-margin);
+      }
+      main > * {
+        flex: 1;
+      }
+      main > :first-child{
+        flex-basis: 20%;
+      }
+    }
+
     .card {
-      margin: 1em;
+      margin: var(--card-margin) 0;
+      color: var(--color-gray2);
     }
     div.card,
     details.card summary {
@@ -48,7 +77,7 @@
       content: '︿';
     }
     details > :last-child {
-      padding: 1em;
+      padding: var(--card-padding);
     }
     .card h3 {
       margin: 0;
@@ -58,57 +87,89 @@
       cursor: pointer;
     }
 
-    canvas {
+    #graph-large {
       display: block;
       width: 100%;
-    }
-    #graph-large {
       aspect-ratio: 4/3;
-      max-height: 400px;
+      max-height: 70vh;
+    }
+
+    #temperature-card-summary {
+      display: flex;
+      gap: 1em;
+    }
+    #temperature-card-summary >:first-child {
+      flex-shrink: 0;
+    }
+    #temperature-card-summary >:last-child {
+      flex: 1;
+    }
+    #temperature-card-summary >:last-child canvas {
+      width: 100%;
+      max-height: 8em;
     }
   </style>
 </head>
 <body>
+  <header>
+    <h2>Your Pet</h2> in flight - the cargo hold
+  </header>
 
-  <details class="card" open>
-    <summary>
-      <h3>Card title2</h3>
-    </summary>
-    <canvas id="graph-large"></canvas>
-  </details>
+  <main>
+    <div><!-- Left Column -->
+      <details class="card" open>
+        <summary id="temperature-card-summary">
+          <div>
+            <h3>Body Temp</h3>
+            <temperature-widget></temperature-widget>
+          </div>
+          <div><canvas id="graph-small"></canvas></div>
+        </summary>
+        <canvas id="graph-large"></canvas>
+      </details>
+    </div>
 
-
-  <div class="card">
-    <h3>Mic Recording</h3>
-    <div>
-      <button id="mic-start-button">Start</button>
-      <button id="mic-stop-button">Stop</button>
+    <div><!-- Right Column -->
+      <div class="card">
+        <h3>Mic Recording</h3>
+        <div>
+          <button id="mic-start-button">Start</button>
+          <button id="mic-stop-button">Stop</button>
+        </div>
+        <div>
+          <audio id="mic-audio-control" controls></audio>
+        </div>
+        <div>
+          <canvas id="mic-debug-canvas" height="150"></canvas>
+        </div>
+      </div>
+    
+      <div class="card">
+        <h3>Web Socket</h3>
+        <div>
+          <button id="socket-connect-button">Connect</button>
+          <button id="socket-disconnect-button">Disconnect</button>
+        </div>
+        <div>
+          <input id="socket-message-input">
+          <button id="socket-send-button">Send</button>
+        </div>
+      </div>
+    
+      <div class="card">
+        <div id="log"></div>
+      </div>
+    
     </div>
-    <div>
-      <audio id="mic-audio-control" controls></audio>
-    </div>
-    <div>
-      <canvas id="mic-debug-canvas" height="150"></canvas>
-    </div>
-  </div>
-
-  <div class="card">
-    <h3>Web Socket</h3>
-    <div>
-      <button id="socket-connect-button">Connect</button>
-      <button id="socket-disconnect-button">Disconnect</button>
-    </div>
-    <div>
-      <input id="socket-message-input">
-      <button id="socket-send-button">Send</button>
-    </div>
-  </div>
-
-  <div class="card">
-    <div id="err"></div>
-  </div>
+  </main>
 
   <script>
+    const log_element = document.getElementById('log')
+    const log_error = (/** @type{Error} */ error) => 
+      log_element.append(Object.assign(document.createElement('div'), {textContent:error}))
+
+    window.onerror = (event, source, lineno, colno, error) => log_error(error)
+
     //
     /// Global variables
     //
@@ -122,8 +183,12 @@
 
     /** @type {HTMLCanvasElement}        */  const graph_l = document.getElementById('graph-large')
     /** @type {CanvasRenderingContext2D} */  const ctx_l   = graph_l.getContext('2d')
+    /** @type {HTMLCanvasElement}        */  const graph_s = document.getElementById('graph-small')
+    /** @type {CanvasRenderingContext2D} */  const ctx_s   = graph_s.getContext('2d')
 
-    /// stuff to work with temperature
+    //
+    /// Temperature stuff
+    //
 
     /**
      * @typedef TemperatureSample
@@ -132,12 +197,20 @@
      * @property {number} temp - temperature in degrees.
      */
 
+    /** @type {HTMLElement} */ const temp_widget = document.querySelector('temperature-widget')
+    /** @type {TemperatureSample[]} */ const temperature_buffer = []
+
     const get_temperature = (() => {
       let temp = 39
       return () => /** @type {TemperatureSample} */
         ({ temp: temp += (Math.random() - 0.5) * 0.2, time: Date.now() })
     })()
-    /** @type {TemperatureSample[]} */ const temperature_buffer = []
+    
+    function update_temperature() {
+      const t = get_temperature()
+      temperature_buffer.push(t)
+      temp_widget.setAttribute('temperature', t.temp.toFixed(1))
+    }
 
     /// microphone stuff
     //
@@ -160,9 +233,52 @@
     /// Initialization code
     //
 
+    customElements.define('temperature-widget', class extends HTMLElement {
+      static {
+        document.head.append(
+          Object.assign(document.createElement('style'), {
+            textContent: `\
+            temperature-widget {
+              display: flex;
+            }
+            temperature-widget > :first-child {
+              font-size: xx-large;
+              font-weight: bold;
+            }`,
+          })
+        )
+      }
+      constructor() {
+        super()
+        this.current_temperature_element = document.createElement('div')
+        this.temperature_range_element   = document.createElement('div')
+        this.min_temp = Number.MAX_VALUE
+        this.max_temp = Number.MIN_VALUE
+      }
+      connectedCallback() {
+        const append = (/** @type {HTMLElement} */ element, ...children) => (element.append(...children), element)
+        this.append(
+          this.current_temperature_element,
+          append(document.createElement('div'),
+            append(document.createElement('div'), '℃'),
+            this.temperature_range_element
+          )
+        )
+      }
+      static observedAttributes = ["temperature"]
+      attributeChangedCallback(name, oldValue, newValue) {
+        if (name === 'temperature') {
+          if (newValue > this.max_temp) this.max_temp = newValue
+          if (newValue < this.min_temp) this.min_temp = newValue
+          this.current_temperature_element.innerText = newValue
+          this.temperature_range_element.innerText = `/${this.min_temp}-${this.max_temp}`
+        }
+      }
+    })
 
     window.onresize = () => {
       update_size(graph_l)
+      update_size(graph_s)
       update_size(mic_debug_canvas)
     }
     window.onresize()
@@ -170,13 +286,13 @@
     mic_start_button.onclick      = () => init_microphone()
     socket_connect_button.onclick = () => start_web_socket_connection()
 
-    setInterval(() => {
-      const t = get_temperature()
-      temperature_buffer.push(t)
-    }, 300)
+    update_temperature()
+    setInterval(update_temperature, 300)
 
+    // graph rendering loop
     requestAnimationFrame(function draw() {
-      draw_one_frame()
+      draw_tempertaure_graph(ctx_l)
+      draw_tempertaure_graph(ctx_s)
       requestAnimationFrame(draw)
     })
 
@@ -239,12 +355,11 @@
 
       socket.onerror = event => {
         console.error('An web socket error happened:', event)
+        log_error('Web socket errored')
       }
     }
 
     function init_microphone() {
-      try {
-
       mic_start_button.disabled = true
 
       const audio_ctx = new AudioContext()
@@ -257,7 +372,8 @@
         const mic_input_node = audio_ctx.createMediaStreamSource(stream)
         mic_input_node.connect(analyzer_node)
         requestAnimationFrame(visualize_mic_data)
-
+        
+        mic_stop_button.disabled = false
         mic_stop_button.onclick = () => { 
           mic_stop_button.disabled = true
           for (const track of tracks) track.stop()
@@ -298,16 +414,6 @@
 
         requestAnimationFrame(visualize_mic_data)
       }
-
-      } catch (err) {
-        const err_element = document.getElementById('err')
-        err_element.innerText = err
-      }
-    
-    }
-
-    function draw_one_frame() {
-      draw_tempertaure_graph(ctx_l)
     }
 
     /**
@@ -322,9 +428,9 @@
       const now = new Date()
       const now_time = now.getTime()
       const start_time = now_time - 1000 * 60 * 3
-      const min_temp = 36, max_temp = 42
+      const graph_min_temp = 36, graph_max_temp = 42
       const map_time = time => map_range(time, start_time, now_time, 0, line_x)
-      const map_temp = temp => map_range(temp, min_temp, max_temp, graph_bottom, 0)
+      const map_temp = temp => map_range(temp, graph_min_temp, graph_max_temp, graph_bottom, 0)
 
       ctx.font = '22px sans'
       ctx.lineWidth = 3
@@ -351,7 +457,6 @@
 
       // draw temperatures
       if (temperature_buffer.length > 0) {
-
         ctx.strokeStyle = color_gray2
         draw_line(ctx, line_x, 0, line_x, graph_bottom)
         
@@ -384,8 +489,6 @@
         ctx.textBaseline = "middle"
         ctx.fillText(current_sample.temp.toFixed(2), line_x + 20, current_temp_y)
       }
-
-
     }
 
     /** @param {CanvasRenderingContext2D} ctx */
