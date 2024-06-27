@@ -147,6 +147,9 @@
       <div class="card">
         <h3>Web Socket</h3>
         <div>
+          <button id="post-button">Post Data</button>
+        </div>
+        <div>
           <button id="socket-connect-button">Connect</button>
           <button id="socket-disconnect-button">Disconnect</button>
         </div>
@@ -165,7 +168,7 @@
 
   <script>
     const log_element = document.getElementById('log')
-    const log_error = (/** @type{Error} */ error) => 
+    const log_error = (/** @type{Error} */error) => 
       log_element.append(Object.assign(document.createElement('div'), {textContent:error}))
 
     window.onerror = (event, source, lineno, colno, error) => log_error(error)
@@ -205,7 +208,7 @@
       return () => /** @type {TemperatureSample} */
         ({ temp: temp += (Math.random() - 0.5) * 0.2, time: Date.now() })
     })()
-    
+
     function update_temperature() {
       const t = get_temperature()
       temperature_buffer.push(t)
@@ -229,9 +232,24 @@
     /** @type {HTMLButtonElement} */  const socket_send_button   = document.getElementById('socket-send-button')
     /** @type {HTMLInputElement}  */  const socket_message_input = document.getElementById('socket-message-input')
 
+    /** @type {HTMLButtonElement} */  const post_button = document.getElementById('post-button')
+
     //
     /// Initialization code
     //
+
+    post_button.onclick = () => {
+      let count = 0
+      function send() {
+        fetch("http://pet.local/mic-data", {
+          method: "POST",
+          keepalive: true,
+          body: new Blob([`post data ${count++}`]),
+        })
+        if (count < 5) setTimeout(send, 1000)
+      }
+      send()
+    }
 
     customElements.define('temperature-widget', class extends HTMLElement {
       static {
